@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detectives de la desinformación</title>
+<meta name="description" content="Reto de 90 minutos sobre desinformación con datos reales de Colombia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Special+Elite&display=swap">
+<link rel="stylesheet" href="/static/css/reto.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='13' cy='13' r='9' fill='none' stroke='%2317150f' stroke-width='4'/%3E%3Cpath d='M20 20l8 8' stroke='%2317150f' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="cabecera">
+  <div class="cabecera-in">
+    <a class="marca" href="/" aria-label="Inicio">
+      <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="17" cy="17" r="11" fill="none" stroke="#f3eee2" stroke-width="4"/>
+        <path d="M25.5 25.5l9 9" stroke="#ffd23f" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M11 17.5l4 4 8-9" fill="none" stroke="#ffd23f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="marca-texto">Detectives de la desinformación<small id="cab-evento">SALA DE VERIFICACIÓN</small></span>
+    </a>
+    <span class="ficha oculto" id="cab-ficha"><span id="cab-nombre"></span><b id="cab-codigo"></b></span>
+    <span class="puntaje-cab oculto" id="cab-puntaje">Puntos <b id="cab-puntos">0</b></span>
+    <span class="reloj oculto" id="cab-reloj" role="timer" aria-live="off">90:00</span>
+  </div>
+</header>
+<main id="app" aria-live="polite"></main>
+<div class="salida-aviso oculto" id="salida-aviso" role="alert">Saliste del reto: quedó registrado para el docente.</div>
+<p class="pie-pagina">Datos: Colombiacheck · DANE ENTIC 2024 · Banco Mundial · Arechar et al. (2023), <i>Nature Human Behaviour</i></p>
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/estudiante.js"></script>
+</body>
+</html>

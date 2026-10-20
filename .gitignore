@@ -1,0 +1,15 @@
+# Datos de cada ejecución del reto: base de datos y clave docente se crean solas al iniciar
+2_Aplicacion_Reto/datos/
+2_Aplicacion_Reto/datos_prueba/
+
+# Python / R
+__pycache__/
+*.pyc
+.Rhistory
+
+# Sistema / editores
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+~$*

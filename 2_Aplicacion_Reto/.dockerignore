@@ -1,0 +1,6 @@
+datos/
+datos_prueba/
+__pycache__/
+.DS_Store
+*.bat
+*.command

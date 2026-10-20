@@ -1,0 +1,46 @@
+DATASET VERIFICADO - Colombiacheck (solo registros con marcado ClaimReview)
+==========================================================================
+
+TRAZABILIDAD DEL FILTRO
+  URL unicas en el listado ............ 4,829
+  Articulos efectivamente descargados . 4,829
+  Con ClaimReview completo ............ 2,989
+  Excluidos por ser previos a 2020 .... 9
+  DATASET FINAL ....................... 2,980
+
+COLUMNAS DESCARTADAS POR ESTAR VACIAS: (ninguna)
+
+RANGO TEMPORAL: 2020-01-25 -> 2026-09-17
+FECHAS EXACTAS: 100% (declaradas por la fuente, con hora)
+
+CALIFICACION (declarada por Colombiacheck)
+calificacion
+Falso                2284
+Cuestionable          605
+Verdadero              46
+Verdadero pero...      45
+
+CHEQUEOS POR ANIO
+anio
+2020    475
+2021    434
+2022    459
+2023    467
+2024    479
+2025    423
+2026    243
+
+COMPLETITUD DE CAMPOS (% con dato)
+url                      100.0
+fecha                    100.0
+hora                     100.0
+anio                     100.0
+mes                      100.0
+dia_semana               100.0
+titulo                   100.0
+afirmacion_verificada    100.0
+calificacion             100.0
+calificacion_valor       100.0
+autor_chequeo            100.0
+
+COHERENCIA etiqueta vs valor numerico (control de calidad): 100.0%

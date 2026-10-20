@@ -1,0 +1,17 @@
+# Publicación en Render (https://render.com): New → Blueprint → elegir el repositorio.
+# El disco persistente guarda la base de datos (inscripciones y respuestas) aunque el servicio se reinicie.
+services:
+  - type: web
+    name: reto-desinformacion
+    runtime: docker
+    dockerfilePath: ./2_Aplicacion_Reto/Dockerfile   # rutas relativas a la raíz del repositorio
+    dockerContext: ./2_Aplicacion_Reto               # la imagen solo lleva la aplicación (no las guías con respuestas)
+    plan: 0.5c-512mb       # plan de pago más barato (lo necesario para tener disco); el gratis no sirve para un reto en vivo
+    healthCheckPath: /api/publico
+    envVars:
+      - key: RETO_CLAVE    # clave del panel docente: Render te la pide al crear el servicio (ej. 8 letras/números)
+        sync: false
+    disk:
+      name: datos
+      mountPath: /data
+      sizeGB: 1
