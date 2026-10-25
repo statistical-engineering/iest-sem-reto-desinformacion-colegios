@@ -41,3 +41,6 @@ aidlc/spaces/*/intents/*/.aidlc-*
 aidlc/diagnostics/
 .claude/settings.local.json
 # END AI-DLC:gitignore
+
+# Binario de cloudflared que descarga iniciar_internet.py
+2_Aplicacion_Reto/.herramientas/

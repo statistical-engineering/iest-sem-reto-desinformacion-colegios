@@ -1,0 +1,65 @@
+# Revisión automática de cada PR hacia develop o main.
+# Corre los mismos ganchos de pre-commit que cada persona tiene en su máquina, así nadie se
+# los salta: archivos, simulacro (si cambia el servidor, el banco o las pantallas), mensajes
+# de commit, título del PR y tamaño máximo de 400 líneas de código.
+name: Revisar PR
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ github.event.pull_request.base.sha }}
+      CABEZA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Instalar pre-commit
+        run: python -m pip install pre-commit==4.6.2
+
+      - name: Ganchos sobre los archivos del PR
+        run: pre-commit run --show-diff-on-failure --from-ref "$BASE" --to-ref "$CABEZA"
+
+      - name: Simulacro de 40 participantes (si aplica)
+        run: pre-commit run --hook-stage pre-push --from-ref "$BASE" --to-ref "$CABEZA"
+
+      - name: Mensajes de commit
+        run: |
+          fallo=0
+          for sha in $(git rev-list --no-merges "$BASE..$CABEZA"); do
+            git log -1 --format=%B "$sha" > "$RUNNER_TEMP/mensaje.txt"
+            echo "== $(git log -1 --format='%h %s' "$sha")"
+            python .github/scripts/revisar_mensaje_commit.py "$RUNNER_TEMP/mensaje.txt" || fallo=1
+            pre-commit run prohibir-atribucion-ia --hook-stage commit-msg \
+              --commit-msg-filename "$RUNNER_TEMP/mensaje.txt" || fallo=1
+          done
+          exit "$fallo"
+
+      - name: Título del PR (es el mensaje del commit al fusionar con squash)
+        env:
+          TITULO: ${{ github.event.pull_request.title }}
+        run: |
+          printf '%s\n' "$TITULO" > "$RUNNER_TEMP/titulo.txt"
+          python .github/scripts/revisar_mensaje_commit.py "$RUNNER_TEMP/titulo.txt"
+
+      - name: Tamaño (máximo 400 líneas de código)
+        run: |
+          git diff --numstat "$BASE...$CABEZA" -- . ':(exclude)*.md' ':(exclude)aidlc/' \
+            ':(exclude)1_Analisis_de_datos/' ':(exclude)2_Aplicacion_Reto/banco_preguntas.json' \
+            | awk '{a+=$1; b+=$2} END {
+                print "Líneas de código: +" a+0 " / -" b+0 " = " a+b
+                if (a+b > 400) { print "Pasa de 400 líneas: divide el PR."; exit 1 }
+              }'
