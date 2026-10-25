@@ -1,13 +1,2 @@
-# Responsables del código. GitHub pide su revisión en cada PR que toque estas rutas.
-# Gana la última regla que coincida con el archivo.
-# Para usar el equipo del semillero (@statistical-engineering/semillero-iest), el equipo
-# necesita permiso Write o superior sobre el repositorio.
-
+# Único responsable del código: revisa y aprueba todo PR.
 * @RamiroSeb2021
-
-# Respuestas del reto y servidor: un cambio aquí puede filtrar respuestas o romper el reto.
-/3_Guia_docente/            @RamiroSeb2021
-/2_Aplicacion_Reto/         @RamiroSeb2021
-/4_Codigo_y_datos/scripts/  @RamiroSeb2021
-/render.yaml                @RamiroSeb2021
-/.github/                   @RamiroSeb2021

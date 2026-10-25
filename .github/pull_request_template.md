@@ -1,61 +1,35 @@
-## Trazabilidad
+## Qué cambia y por qué
+<!-- 2 líneas. Enlace a la tarea, intención AI-DLC o issue si hay. -->
 
-- Rama origen → destino:
-  - [ ] `refactor/...`, `fix/...`, `feat/...` o `chore/...` → `develop`
-  - [ ] `develop` → `main` (versión final, ya desplegada y verificada desde `develop`)
-- Intención AI-DLC / unidad (si aplica): `aidlc/spaces/default/intents/...`
-- Fecha:
+## Dónde mirar primero
+<!-- 1 o 2 líneas: lo que el revisor debe mirar con más cuidado (lógica, nombres, un caso borde). -->
 
-## Tipo de cambio
+## Cobertura
+<!-- Alcance del PR. -->
+- **Tocado:**
+- **No revisar (generado o movido sin cambios):**
 
-- [ ] Corrección (`fix`)
-- [ ] Funcionalidad (`feat`)
-- [ ] Refactorización sin cambio visible (`refactor`)
-- [ ] Despliegue o configuración (`chore`)
-- [ ] Documentación (`docs`)
+## Cómo verificar
+<!-- Comandos exactos que corrí y su resultado, para repetirlos. -->
+| Comando | Resultado |
+|---|---|
+| `pre-commit run --all-files` | |
+| `python3 -m unittest` (desde `2_Aplicacion_Reto/`) | |
+| `python3 pruebas/simulacro.py 40` (desde `2_Aplicacion_Reto/`) | |
 
-## Resumen del cambio
+## Fuente de verdad
+<!-- 4_Codigo_y_datos/datos_originales/ es de solo lectura. -->
+- `git diff --stat develop...HEAD -- 4_Codigo_y_datos/datos_originales/` → (vacío)
+- Salidas regeneradas: (ninguna / cuáles y con qué script)
 
->
+## Decisiones que tomé solo
+<!-- Decisión → alternativa descartada y por qué. «Ninguna» si no hubo. -->
+-
 
-## Partes que toca
-
-- [ ] Servidor (`2_Aplicacion_Reto/servidor.py`)
-- [ ] Pantallas (`2_Aplicacion_Reto/web/`)
-- [ ] Banco de preguntas o scripts de datos (`4_Codigo_y_datos/scripts/`, regenerado, nunca a mano)
-- [ ] Guías docentes (`3_Guia_docente/`)
-- [ ] Despliegue (`render.yaml`, `Dockerfile`, `PUBLICAR_EN_INTERNET.md`)
-- [ ] Lanzadores `.bat` / `.command`
-- [ ] Documentación
-
-## Cómo se probó
-
-- [ ] `python3 pruebas/simulacro.py 40` desde `2_Aplicacion_Reto/` termina en «TODO BIEN» (obligatorio si cambia el servidor o el banco)
-- [ ] Pruebas `unittest` nuevas o tocadas pasan; cobertura ≥ 80 % medida con `trace`
-- [ ] Probado en el hosting desde `develop` (obligatorio en el PR a `main`)
-
-Salida o evidencia:
-
->
-
-## Invariantes del reto
-
-- [ ] Las respuestas correctas no llegan al navegador antes de «resultados»
-- [ ] El banco suma 1.000 puntos y no se editó ningún archivo generado a mano
-- [ ] No cambia nada visible (pantallas, preguntas, puntajes, desempates, flujo de estados), salvo corregir una fuga
-- [ ] No incluye claves docentes, `2_Aplicacion_Reto/datos/`, `datos_prueba/` ni `.herramientas/`
-- [ ] No se despliega con un reto en curso
-
-## Riesgo
-
-- [ ] Bajo
-- [ ] Medio
-- [ ] Alto
-
-Observaciones y cómo volver atrás:
-
->
-
-## Lección aprendida (opcional)
-
->
+## Checklist
+- [ ] `pre-commit run --all-files` pasa
+- [ ] El mensaje de cada commit pasa `commit-msg` (`tipo: descripción`)
+- [ ] Sin secretos ni claves docentes en el diff
+- [ ] Sin datos sensibles: nada de `2_Aplicacion_Reto/datos/`, `datos_prueba/` ni nombres de estudiantes
+- [ ] Sin archivos de más de 500 KB
+- [ ] Si toca el servidor o el banco: simulacro en «TODO BIEN» y ninguna respuesta llega al navegador antes de «resultados»
