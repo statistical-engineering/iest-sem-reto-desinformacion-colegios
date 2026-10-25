@@ -9,6 +9,18 @@
 - **Tocado:**
 - **No revisar (generado o movido sin cambios):**
 
+## Tamaño
+<!-- Máximo 400 líneas de código (añadidas + borradas). Si pasa de 400, el revisor devuelve el PR
+     sin revisarlo y se divide en varios. No cuentan .md, aidlc/ ni archivos generados.
+     Cambia «develop» por la rama destino del PR. -->
+- Líneas de código: **+__ / −__ = __**
+- Comando:
+  ```bash
+  git diff --numstat develop...HEAD -- . ':(exclude)*.md' ':(exclude)aidlc/' \
+    ':(exclude)1_Analisis_de_datos/' ':(exclude)2_Aplicacion_Reto/banco_preguntas.json' \
+    | awk '{a+=$1; b+=$2} END {print "+" a+0 " / -" b+0 " = " a+b}'
+  ```
+
 ## Cómo verificar
 <!-- Comandos exactos que corrí y su resultado, para repetirlos. -->
 | Comando | Resultado |
@@ -27,6 +39,7 @@
 -
 
 ## Checklist
+- [ ] Máximo 400 líneas de código (sección «Tamaño»)
 - [ ] `pre-commit run --all-files` pasa
 - [ ] El mensaje de cada commit pasa `commit-msg` (`tipo: descripción`)
 - [ ] Sin secretos ni claves docentes en el diff
