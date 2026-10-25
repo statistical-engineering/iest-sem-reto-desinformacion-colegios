@@ -13,3 +13,6 @@ desktop.ini
 .DS_Store
 .vscode/
 ~$*
+
+# Binario de cloudflared que descarga iniciar_internet.py
+2_Aplicacion_Reto/.herramientas/

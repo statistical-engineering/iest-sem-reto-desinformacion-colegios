@@ -1,0 +1,70 @@
+# =============================================================================
+# Reto «Detectives de la desinformación» - configuración de pre-commit
+# Adaptada del proyecto FDN. Sin linter ni formateador de Python (decisión del equipo).
+# Uso (pre-commit ya instalado en la máquina):
+#   pre-commit install                 # instala los ganchos pre-commit y commit-msg
+#   pre-commit run --all-files         # revisa todo el repositorio
+# =============================================================================
+
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
+# Datos originales (fuente única de verdad) y archivos generados por los scripts: nunca se
+# editan a mano, así que ningún gancho los corrige.
+exclude: >-
+  (?x)^(
+    4_Codigo_y_datos/datos_originales/.*
+    |2_Aplicacion_Reto/banco_preguntas\.json
+    |3_Guia_docente/CLAVE_DE_RESPUESTAS\.md
+    |1_Analisis_de_datos/.*
+  )$
+
+repos:
+# -------------------------
+# GANCHOS GENERALES
+# -------------------------
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: trailing-whitespace
+      args: [--markdown-linebreak-ext=md]
+    - id: end-of-file-fixer
+    - id: mixed-line-ending
+    - id: check-added-large-files
+    - id: detect-private-key
+    - id: check-yaml
+    - id: check-json
+    - id: check-merge-conflict
+
+# -------------------------
+# DATOS DEL RETO Y ARCHIVOS LOCALES
+# -------------------------
+# Bloquea archivos que nunca se versionan aunque se agreguen con «git add -f»:
+# base de datos y clave docente del reto, binario de cloudflared, instrucciones locales
+# de Claude y archivos de entorno.
+- repo: local
+  hooks:
+    - id: prohibir-archivos-privados
+      name: prohibir datos del reto y archivos locales
+      entry: "Archivo privado o local en el commit; quítalo con «git restore --staged» (ver .gitignore)."
+      language: fail
+      files: >-
+        (?x)(
+          ^2_Aplicacion_Reto/(datos|datos_prueba|\.herramientas)/
+          |(^|/)clave_docente\.txt$
+          |\.(db|sqlite3?)(-wal|-shm)?$
+          |(^|/)CLAUDE(\.local)?\.md$
+          |^\.claude/
+          |(^|/)\.env(\..+)?$
+        )
+
+# -------------------------
+# MENSAJES DE COMMIT: «tipo: descripción»
+# -------------------------
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v4.0.0
+  hooks:
+    - id: conventional-pre-commit
+      stages: [commit-msg]
+      args: [--verbose]
