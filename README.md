@@ -53,7 +53,26 @@ Reto_Desinformacion_Colegios/
    En Mac, si no abre: clic derecho → **Abrir** (solo la primera vez).
 3. El día del reto: doble clic en `2_Aplicacion_Reto/INICIAR_RETO`, proyectar el tablero y seguir la guía docente.
 
+## Para quien desarrolla (semillero)
+
+Las dependencias se manejan con [uv](https://docs.astral.sh/uv/): `pyproject.toml` las declara y
+`uv.lock` fija las versiones exactas, para que todos trabajen con lo mismo.
+
+| Grupo | Para qué | Paquetes |
+|---|---|---|
+| (base) | Aplicación del reto | Ninguno hoy: solo la biblioteca estándar |
+| `datos` | Scripts de `4_Codigo_y_datos/scripts/` | `pandas`, `numpy`, `matplotlib` |
+| `dev` | Herramientas del repositorio | `pre-commit` |
+
+1. Instalar uv: <https://docs.astral.sh/uv/getting-started/installation/>.
+2. En la raíz del repositorio: `uv sync --all-groups` (crea `.venv/` con Python 3.12 y todo lo anterior).
+3. Activar las revisiones antes del primer commit: `uv run pre-commit install`.
+4. Correr cualquier script con `uv run`, por ejemplo `uv run --group datos python 4_Codigo_y_datos/scripts/construir_banco.py`.
+
+Para agregar un paquete: `uv add <paquete>` (app) o `uv add --group datos <paquete>`; el cambio en
+`pyproject.toml` y `uv.lock` va en el mismo PR y necesita aprobación del responsable del repositorio.
+
 ## Si cambian los datos o las preguntas
 
-Doble clic en `4_Codigo_y_datos/REGENERAR_TODO` (`.bat` / `.command`): regenera el análisis, el banco de preguntas
+Con uv instalado, doble clic en `4_Codigo_y_datos/REGENERAR_TODO` (`.bat` / `.command`): regenera el análisis, el banco de preguntas
 (comprobando cada respuesta contra los datos), la clave de respuestas y corre el simulacro.

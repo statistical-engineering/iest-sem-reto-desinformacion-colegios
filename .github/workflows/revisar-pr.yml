@@ -58,7 +58,7 @@ jobs:
       - name: Tamaño (máximo 400 líneas de código)
         run: |
           git diff --numstat "$BASE...$CABEZA" -- . ':(exclude)*.md' ':(exclude)aidlc/' \
-            ':(exclude)1_Analisis_de_datos/' ':(exclude)2_Aplicacion_Reto/banco_preguntas.json' \
+            ':(exclude)1_Analisis_de_datos/' ':(exclude)2_Aplicacion_Reto/banco_preguntas.json' ':(exclude)uv.lock' \
             | awk '{a+=$1; b+=$2} END {
                 print "Líneas de código: +" a+0 " / -" b+0 " = " a+b
                 if (a+b > 400) { print "Pasa de 400 líneas: divide el PR."; exit 1 }

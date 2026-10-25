@@ -1,6 +1,8 @@
 # Aplicación del reto — documentación técnica
 
-Servidor web en **Python puro** (solo biblioteca estándar, Python 3.9+) con base de datos SQLite.
+Servidor web en **Python** con base de datos SQLite. Hoy usa solo la biblioteca estándar (Python 3.9+);
+si llega a necesitar paquetes, se declaran en `pyproject.toml` (raíz del repositorio) y se instalan con
+[uv](https://docs.astral.sh/uv/) (ver «Para quien desarrolla» en `README.md`).
 Los estudiantes no instalan nada: usan el navegador.
 
 ## Uso rápido
