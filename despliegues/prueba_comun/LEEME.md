@@ -1,7 +1,7 @@
 # Prueba común
 
 Una sola prueba que corre contra la URL de cualquier versión desplegada (requisito FR12.3). Así las
-cuatro opciones se miden igual.
+cinco opciones se miden igual.
 
 ## Qué revisa
 

@@ -17,6 +17,7 @@ despliegues/
 ├── prueba_comun/         la misma prueba para todas las opciones, contra su URL
 ├── render/               Render con Docker y disco persistente
 ├── cloudflare/           Cloudflare Workers con D1 y un Durable Object por sala
+├── cloudflare-containers/ Cloudflare Containers con el Dockerfile actual
 ├── apps-script/          Google Apps Script con Google Sheets
 └── github-pages/         pantallas en GitHub Pages y la API en otro servicio
 ```
@@ -51,3 +52,5 @@ Si la plataforma obliga a otra ubicación (por ejemplo, Apps Script guarda el HT
 - **Primero el corte delgado.** Cada opción sube primero una versión mínima que deja inscribirse y
   responder una pregunta, y la verifica con la prueba común. Solo después se construye el resto.
 - **Si hay que agregar un paquete** (en Python, JavaScript o cualquier lenguaje), se pide aprobación antes.
+- **Nada que cueste se despliega** sin aprobar antes el monto y un tope. Una opción sin plan gratuito
+  entra en la comparación solo con datos de su documentación oficial.
