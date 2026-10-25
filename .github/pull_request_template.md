@@ -43,6 +43,7 @@
 - [ ] `pre-commit run --all-files` pasa
 - [ ] El mensaje de cada commit pasa `commit-msg` (`tipo: descripción`)
 - [ ] Sin secretos ni claves docentes en el diff
+- [ ] Sin atribución a la IA en los commits ni en esta descripción: la autoría es del equipo
 - [ ] Sin datos sensibles: nada de `2_Aplicacion_Reto/datos/`, `datos_prueba/` ni nombres de estudiantes
 - [ ] Sin archivos de más de 500 KB
 - [ ] Si toca el servidor o el banco: simulacro en «TODO BIEN» y ninguna respuesta llega al navegador antes de «resultados»

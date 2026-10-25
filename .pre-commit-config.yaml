@@ -68,3 +68,15 @@ repos:
     - id: conventional-pre-commit
       stages: [commit-msg]
       args: [--verbose]
+
+# -------------------------
+# AUTORÍA: commits y PR son de las personas del equipo
+# -------------------------
+- repo: local
+  hooks:
+    - id: prohibir-atribucion-ia
+      name: prohibir atribución a la IA en el mensaje de commit
+      language: pygrep
+      entry: 'co-authored-by:.*(claude|anthropic|openai|copilot|gpt)|generated with .*(claude|copilot|chatgpt)|noreply@anthropic\.com'
+      args: [--ignore-case]
+      stages: [commit-msg]
