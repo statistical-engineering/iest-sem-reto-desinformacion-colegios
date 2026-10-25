@@ -6,6 +6,7 @@ Paleta validada (colorblind-safe) con el validador de la guia de visualizacion:
   "Inchequeable" queda en gris neutro porque no pertenece a la escala.
 - Secuencial (mapas de calor): rampa azul clara -> oscura.
 """
+
 import matplotlib as mpl
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, Normalize
@@ -32,52 +33,67 @@ CALIF_COLORS = {
     "Sin veredicto único": NEUTRAL,  # múltiple + inchequeable, agrupados en graficas apiladas
 }
 
-BLUE_RAMP = ["#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
-             "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b"]
+BLUE_RAMP = [
+    "#cde2fb",
+    "#b7d3f6",
+    "#9ec5f4",
+    "#86b6ef",
+    "#6da7ec",
+    "#5598e7",
+    "#3987e5",
+    "#2a78d6",
+    "#256abf",
+    "#1c5cab",
+    "#184f95",
+    "#104281",
+    "#0d366b",
+]
 SEQ_CMAP = LinearSegmentedColormap.from_list("azul_secuencial", BLUE_RAMP)
 
 MESES_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
 
 
 def apply():
-    mpl.rcParams.update({
-        "figure.facecolor": SURFACE,
-        "axes.facecolor": SURFACE,
-        "savefig.facecolor": SURFACE,
-        "figure.dpi": 110,
-        "savefig.dpi": 160,
-        "savefig.bbox": "tight",
-        "font.family": ["Segoe UI", "DejaVu Sans", "sans-serif"],
-        "font.size": 10,
-        "text.color": INK,
-        "axes.labelcolor": INK_2,
-        "axes.titlesize": 13,
-        "axes.titleweight": "semibold",
-        "axes.titlelocation": "left",
-        "axes.titlepad": 26,
-        "axes.edgecolor": AXIS,
-        "axes.linewidth": 0.8,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.grid": True,
-        "axes.axisbelow": True,
-        "grid.color": GRID,
-        "grid.linewidth": 0.8,
-        "grid.linestyle": "-",
-        "xtick.color": MUTED,
-        "ytick.color": MUTED,
-        "xtick.labelcolor": INK_2,
-        "ytick.labelcolor": INK_2,
-        "xtick.major.size": 0,
-        "ytick.major.size": 0,
-        "lines.linewidth": 2,
-        "lines.solid_capstyle": "round",
-        "lines.solid_joinstyle": "round",
-        "legend.frameon": False,
-        "legend.labelcolor": INK_2,
-        "legend.fontsize": 9,
-        "axes.prop_cycle": mpl.cycler(color=SERIES),
-    })
+    mpl.rcParams.update(
+        {
+            "figure.facecolor": SURFACE,
+            "axes.facecolor": SURFACE,
+            "savefig.facecolor": SURFACE,
+            "figure.dpi": 110,
+            "savefig.dpi": 160,
+            "savefig.bbox": "tight",
+            "font.family": ["Segoe UI", "DejaVu Sans", "sans-serif"],
+            "font.size": 10,
+            "text.color": INK,
+            "axes.labelcolor": INK_2,
+            "axes.titlesize": 13,
+            "axes.titleweight": "semibold",
+            "axes.titlelocation": "left",
+            "axes.titlepad": 26,
+            "axes.edgecolor": AXIS,
+            "axes.linewidth": 0.8,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "axes.grid": True,
+            "axes.axisbelow": True,
+            "grid.color": GRID,
+            "grid.linewidth": 0.8,
+            "grid.linestyle": "-",
+            "xtick.color": MUTED,
+            "ytick.color": MUTED,
+            "xtick.labelcolor": INK_2,
+            "ytick.labelcolor": INK_2,
+            "xtick.major.size": 0,
+            "ytick.major.size": 0,
+            "lines.linewidth": 2,
+            "lines.solid_capstyle": "round",
+            "lines.solid_joinstyle": "round",
+            "legend.frameon": False,
+            "legend.labelcolor": INK_2,
+            "legend.fontsize": 9,
+            "axes.prop_cycle": mpl.cycler(color=SERIES),
+        }
+    )
 
 
 def n_fmt(v):
@@ -96,8 +112,17 @@ def titles(ax, title, sub=None):
     """Titulo en tinta primaria y subtitulo gris justo debajo."""
     ax.set_title(title)
     if sub:
-        ax.annotate(sub, (0, 1), xycoords="axes fraction", xytext=(0, 7), textcoords="offset points",
-                    color=INK_2, fontsize=9.5, va="bottom", ha="left")
+        ax.annotate(
+            sub,
+            (0, 1),
+            xycoords="axes fraction",
+            xytext=(0, 7),
+            textcoords="offset points",
+            color=INK_2,
+            fontsize=9.5,
+            va="bottom",
+            ha="left",
+        )
 
 
 def thousands(ax, axis="y"):
@@ -115,9 +140,16 @@ def hbar(ax, s, color=SERIES[0], fmt=n_fmt, height=0.55):
     s = s.iloc[::-1]
     colors = list(color)[::-1] if isinstance(color, (list, tuple)) else color
     bars = ax.barh([str(i) for i in s.index], s.to_numpy(dtype=float), height=height, color=colors)
-    for b, v in zip(bars, s.to_numpy(dtype=float)):
-        ax.annotate(fmt(v), (b.get_width(), b.get_y() + b.get_height() / 2), xytext=(4, 0),
-                    textcoords="offset points", va="center", fontsize=9, color=INK_2)
+    for b, v in zip(bars, s.to_numpy(dtype=float)):  # noqa: B905
+        ax.annotate(
+            fmt(v),
+            (b.get_width(), b.get_y() + b.get_height() / 2),
+            xytext=(4, 0),
+            textcoords="offset points",
+            va="center",
+            fontsize=9,
+            color=INK_2,
+        )
     ax.grid(axis="y", visible=False)
     ax.margins(x=0.16)
     ax.spines["left"].set_visible(False)

@@ -4,6 +4,7 @@ directamente banco_preguntas.json: es exactamente lo que califica la aplicación
 
     python generar_clave_respuestas.py
 """
+
 import json
 import sys
 from pathlib import Path
@@ -33,22 +34,33 @@ def respuesta(q, c):
         txt = {i["id"]: i["texto"] for i in c["items"]}
         return [f"{n}. {txt[x]}" for n, x in enumerate(r, 1)]
     if t == "construir":
-        return [f"- *{p['etiqueta']}:* **{next(o['texto'] for o in p['opciones'] if o['id'] == r[p['id']])}**"
-                for p in c["partes"]]
+        return [
+            f"- *{p['etiqueta']}:* **{next(o['texto'] for o in p['opciones'] if o['id'] == r[p['id']])}**"
+            for p in c["partes"]
+        ]
     if t in ("numero", "estimar"):
         tol = q.get("tolerancia", 0)
-        extra = f" (se acepta ± {num(tol)}; " + ("puntaje según cercanía)" if t == "estimar" else
-                                                  "media nota hasta ± " + num(3 * tol) + ")") if tol else " (exacto)"
+        extra = (
+            f" (se acepta ± {num(tol)}; "
+            + ("puntaje según cercanía)" if t == "estimar" else "media nota hasta ± " + num(3 * tol) + ")")
+            if tol
+            else " (exacto)"
+        )
         return [f"**{num(r)} {q.get('unidad', '')}**{extra}"]
     return [str(r)]
 
 
 def main():
     banco = json.loads(BANCO.read_text(encoding="utf-8"))
-    out = [f"# Clave de respuestas — {banco['titulo']}", "",
-           f"Generada automáticamente desde `banco_preguntas.json` (versión **{banco.get('version')}**). Es exactamente "
-           "lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.", "",
-           "> Guarda este documento: contiene todas las respuestas. No lo compartas con los estudiantes antes del reto.", ""]
+    out = [
+        f"# Clave de respuestas — {banco['titulo']}",
+        "",
+        f"Generada automáticamente desde `banco_preguntas.json` (versión **{banco.get('version')}**). Es exactamente "
+        "lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.",
+        "",
+        "> Guarda este documento: contiene todas las respuestas. No lo compartas con los estudiantes antes del reto.",
+        "",
+    ]
     for i, m in enumerate(banco["misiones"], 1):
         pts = sum(q["puntos"] for q in m["preguntas"])
         out += [f"## Exp. {i:02d} · {m['titulo']} — {pts} puntos", "", f"*{m.get('intro', '')}*", ""]

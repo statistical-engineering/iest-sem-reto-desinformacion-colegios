@@ -16,20 +16,21 @@ ninguna se escribe a mano. Si los datos cambian, basta con volver a ejecutar:
 La aplicacion del reto (carpeta 2_Aplicacion_Reto) construye sus preguntas a
 partir de los archivos limpios que deja este script.
 """
+
 import sys
 from pathlib import Path
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # noqa: I001
 import numpy as np
 import pandas as pd
 
 import estilo_graficos as est
 
-RAIZ = Path(__file__).resolve().parents[2]          # carpeta Reto_Desinformacion_Colegios
-AQUI = RAIZ / "1_Analisis_de_datos"                   # aquí se escriben los resultados
+RAIZ = Path(__file__).resolve().parents[2]  # carpeta Reto_Desinformacion_Colegios
+AQUI = RAIZ / "1_Analisis_de_datos"  # aquí se escriben los resultados
 DATOS = RAIZ / "4_Codigo_y_datos" / "datos_originales"
 SRC_CC = DATOS / "colombiacheck" / "colombiacheck_verificado.csv"
 # De aquí solo se toma «tipo» (sección del medio: «Desinformación en redes» / «Discurso público»).
@@ -40,17 +41,31 @@ SRC_CC_TIPO = DATOS / "colombiacheck" / "colombiacheck_tipo_de_chequeo.csv"
 SRC_DANE = DATOS / "dane_entic_2024"
 SRC_BM = DATOS / "banco_mundial"
 
-DIAS_ES = {"Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles", "Thursday": "Jueves",
-           "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"}
+DIAS_ES = {
+    "Monday": "Lunes",
+    "Tuesday": "Martes",
+    "Wednesday": "Miércoles",
+    "Thursday": "Jueves",
+    "Friday": "Viernes",
+    "Saturday": "Sábado",
+    "Sunday": "Domingo",
+}
 ORDEN_DIAS = list(DIAS_ES.values())
 ORDEN_CALIF = ["Falso", "Cuestionable", "Verdadero pero...", "Verdadero"]
 # Jornadas electorales nacionales y locales del periodo (mes de la votación)
-ELECCIONES = {"2022-03": "Legislativas 2022", "2022-05": "Presidencial 2022 (1.ª vuelta)",
-              "2022-06": "Presidencial 2022 (2.ª vuelta)", "2023-10": "Locales 2023",
-              "2026-03": "Legislativas 2026", "2026-05": "Presidencial 2026 (1.ª vuelta)",
-              "2026-06": "Presidencial 2026 (2.ª vuelta)"}
-PATRON_ELECTORAL = (r"elecci|electoral|registradur|candidat|jurado|escrutinio|tarjet[oó]n|votaci|\bvot(?:o|os|ar|ante)\b"
-                    r"|\burnas?\b|consulta (?:popular|interpartidista|presidencial|anticorrupci)")
+ELECCIONES = {
+    "2022-03": "Legislativas 2022",
+    "2022-05": "Presidencial 2022 (1.ª vuelta)",
+    "2022-06": "Presidencial 2022 (2.ª vuelta)",
+    "2023-10": "Locales 2023",
+    "2026-03": "Legislativas 2026",
+    "2026-05": "Presidencial 2026 (1.ª vuelta)",
+    "2026-06": "Presidencial 2026 (2.ª vuelta)",
+}
+PATRON_ELECTORAL = (
+    r"elecci|electoral|registradur|candidat|jurado|escrutinio|tarjet[oó]n|votaci|\bvot(?:o|os|ar|ante)\b"
+    r"|\burnas?\b|consulta (?:popular|interpartidista|presidencial|anticorrupci)"
+)
 
 # Palabras clave en los TITULOS de Colombiacheck. Son conteos transparentes de
 # palabras, no una clasificacion tematica validada: se presentan como tales.
@@ -135,8 +150,10 @@ def tabla_md(df, cols=None, fmt=None):
     """DataFrame -> tabla Markdown (sin dependencias extra)."""
     fmt = fmt or {}
     cols = cols or list(df.columns)
-    filas = ["| " + " | ".join(str(c) for c in cols) + " |",
-             "|" + "|".join("---:" if pd.api.types.is_numeric_dtype(df[c]) else "---" for c in cols) + "|"]
+    filas = [
+        "| " + " | ".join(str(c) for c in cols) + " |",
+        "|" + "|".join("---:" if pd.api.types.is_numeric_dtype(df[c]) else "---" for c in cols) + "|",
+    ]
     for i in range(len(df)):
         celdas = []
         for c in cols:
@@ -179,11 +196,20 @@ def leer_dane(nombre):
     for c in df.columns[3:]:
         if df[c].dtype == object and not str(c).endswith("_cve"):
             df[c] = pd.to_numeric(df[c], errors="coerce")
-    df["ambito"] = df["ambito"].replace({"CENTROS POBLADOS Y RURAL DISPERSO": "RURAL (centros poblados y rural disperso)"})
-    df["ambito"] = (df["ambito"].str.title().str.replace(" Del ", " del ", regex=False)
-                    .str.replace(" De ", " de ", regex=False))
-    df["ambito"] = df["ambito"].replace({"Bogotá D.C.": "Bogotá D.C.", "Rural (Centros Poblados Y Rural Disperso)": "Rural",
-                                         "Cabecera": "Cabecera (urbano)", "Total": "Total nacional"})
+    df["ambito"] = df["ambito"].replace(
+        {"CENTROS POBLADOS Y RURAL DISPERSO": "RURAL (centros poblados y rural disperso)"}
+    )
+    df["ambito"] = (
+        df["ambito"].str.title().str.replace(" Del ", " del ", regex=False).str.replace(" De ", " de ", regex=False)
+    )
+    df["ambito"] = df["ambito"].replace(
+        {
+            "Bogotá D.C.": "Bogotá D.C.",
+            "Rural (Centros Poblados Y Rural Disperso)": "Rural",
+            "Cabecera": "Cabecera (urbano)",
+            "Total": "Total nacional",
+        }
+    )
     return df.reset_index(drop=True)
 
 
@@ -195,8 +221,9 @@ def analizar_colombiacheck():
     cc = cc.merge(tipos, on="url", how="left")
     cc["tipo"] = cc["tipo"].replace({"Desinformación en redes": TIPO_REDES})
     cc["fecha"] = pd.to_datetime(cc["fecha"])
-    cc["tema_electoral"] = (cc["titulo"] + " " + cc["afirmacion_verificada"]).str.lower().str.contains(
-        PATRON_ELECTORAL, regex=True)
+    cc["tema_electoral"] = (
+        (cc["titulo"] + " " + cc["afirmacion_verificada"]).str.lower().str.contains(PATRON_ELECTORAL, regex=True)
+    )
     cc["dia_semana_es"] = cc["dia_semana"].map(DIAS_ES)
     cc["hora_num"] = cc["hora"].str[:2].astype(int)
     titulo = cc["titulo"].str.lower()
@@ -206,8 +233,23 @@ def analizar_colombiacheck():
     for plat, pat in PLATAFORMAS.items():
         cc[f"menciona_{plat}"] = texto.str.contains(pat, regex=True)
 
-    limpio = cc[["url", "fecha", "hora", "anio", "mes", "dia_semana_es", "tipo", "titulo",
-                 "afirmacion_verificada", "calificacion", "calificacion_valor", "autor_chequeo", "tema_electoral"]]
+    limpio = cc[
+        [
+            "url",
+            "fecha",
+            "hora",
+            "anio",
+            "mes",
+            "dia_semana_es",
+            "tipo",
+            "titulo",
+            "afirmacion_verificada",
+            "calificacion",
+            "calificacion_valor",
+            "autor_chequeo",
+            "tema_electoral",
+        ]
+    ]
     limpio = limpio.rename(columns={"dia_semana_es": "dia_semana"})
     limpio.to_csv(base / "datos" / "colombiacheck_verificado_limpio.csv", index=False, encoding="utf-8-sig")
 
@@ -218,14 +260,26 @@ def analizar_colombiacheck():
 
     # --- calificacion
     cal = cc["calificacion"].value_counts().reindex(ORDEN_CALIF).fillna(0).astype(int)
-    t_cal = pd.DataFrame({"calificacion": cal.index, "chequeos": cal.values,
-                          "porcentaje": (cal.values / n * 100).round(2)})
+    t_cal = pd.DataFrame(
+        {"calificacion": cal.index, "chequeos": cal.values, "porcentaje": (cal.values / n * 100).round(2)}
+    )
     t_cal.to_csv(base / "tablas" / "calificacion.csv", index=False, encoding="utf-8-sig")
     fig, ax = plt.subplots(figsize=(7.5, 2.8))
-    est.hbar(ax, cal, color=[est.CALIF_COLORS["Falso"], est.CALIF_COLORS["Cuestionable"],
-                             est.CALIF_COLORS["Verdadero pero"], est.CALIF_COLORS["Verdadero"]])
-    est.titles(ax, "Tres de cada cuatro chequeos terminan en «Falso»",
-               f"Chequeos de Colombiacheck por calificación, {est.mes_es(ini)}–{est.mes_es(fin)} (n = {ent(n)})")
+    est.hbar(
+        ax,
+        cal,
+        color=[
+            est.CALIF_COLORS["Falso"],
+            est.CALIF_COLORS["Cuestionable"],
+            est.CALIF_COLORS["Verdadero pero"],
+            est.CALIF_COLORS["Verdadero"],
+        ],
+    )
+    est.titles(
+        ax,
+        "Tres de cada cuatro chequeos terminan en «Falso»",
+        f"Chequeos de Colombiacheck por calificación, {est.mes_es(ini)}–{est.mes_es(fin)} (n = {ent(n)})",
+    )
     f_cal = guardar(fig, base, "01_calificaciones")
 
     # --- por anio
@@ -239,40 +293,76 @@ def analizar_colombiacheck():
     fig, ax = plt.subplots(figsize=(7.5, 3.4))
     colores = [est.NEUTRAL if a == xa.index.max() else est.SERIES[0] for a in xa.index]
     barras = ax.bar(xa.index.astype(str), xa["total"], color=colores, width=0.55)
-    for b, v in zip(barras, xa["total"]):
-        ax.annotate(ent(v), (b.get_x() + b.get_width() / 2, v), xytext=(0, 3), textcoords="offset points",
-                    ha="center", fontsize=9, color=est.INK_2)
+    for b, v in zip(barras, xa["total"]):  # noqa: B905
+        ax.annotate(
+            ent(v),
+            (b.get_x() + b.get_width() / 2, v),
+            xytext=(0, 3),
+            textcoords="offset points",
+            ha="center",
+            fontsize=9,
+            color=est.INK_2,
+        )
     ax.grid(axis="x", visible=False)
-    est.titles(ax, "Unos 420–480 chequeos al año; 2026 aún no termina",
-               f"Chequeos publicados por año (2026 llega hasta el {fin:%d-%m-%Y}, por eso va en gris)")
+    est.titles(
+        ax,
+        "Unos 420–480 chequeos al año; 2026 aún no termina",
+        f"Chequeos publicados por año (2026 llega hasta el {fin:%d-%m-%Y}, por eso va en gris)",
+    )
     f_anio = guardar(fig, base, "02_chequeos_por_anio")
 
     fig, ax = plt.subplots(figsize=(7.5, 3.4))
     ax.plot(xa.index, xa["pct_falso"], marker="o", color=est.SERIES[0], label="% Falso")
     ax.plot(xa.index, xa["pct_cuestionable"], marker="o", color=est.SERIES[1], label="% Cuestionable")
     for serie in ("pct_falso", "pct_cuestionable"):
-        ax.annotate(f"{num(xa[serie].iloc[-1])} %", (xa.index[-1], xa[serie].iloc[-1]), xytext=(6, 0),
-                    textcoords="offset points", va="center", fontsize=9, color=est.INK_2)
+        ax.annotate(
+            f"{num(xa[serie].iloc[-1])} %",
+            (xa.index[-1], xa[serie].iloc[-1]),
+            xytext=(6, 0),
+            textcoords="offset points",
+            va="center",
+            fontsize=9,
+            color=est.INK_2,
+        )
     ax.set_ylim(0, 100)
     ax.legend(loc="center left", bbox_to_anchor=(1.08, 0.5))
-    est.titles(ax, "La proporción de «Falso» se mueve entre 70 % y 83 %",
-               "Porcentaje de chequeos de cada año con calificación Falso y Cuestionable")
+    est.titles(
+        ax,
+        "La proporción de «Falso» se mueve entre 70 % y 83 %",
+        "Porcentaje de chequeos de cada año con calificación Falso y Cuestionable",
+    )
     f_pct = guardar(fig, base, "03_pct_falso_cuestionable_por_anio")
 
     # --- serie mensual
     mens = cc.set_index("fecha").resample("MS").size()
     mens.rename("chequeos").to_csv(base / "tablas" / "chequeos_por_mes.csv", encoding="utf-8-sig")
     meses_max = " y ".join(est.mes_es(f) for f in mens[mens == mens.max()].index)
-    nota_covid = (" Marzo de 2020 coincide con la llegada de la COVID-19 a Colombia."
-                  if pd.Timestamp("2020-03-01") in mens[mens == mens.max()].index else "")
+    nota_covid = (
+        " Marzo de 2020 coincide con la llegada de la COVID-19 a Colombia."
+        if pd.Timestamp("2020-03-01") in mens[mens == mens.max()].index
+        else ""
+    )
     fig, ax = plt.subplots(figsize=(9, 3.4))
     ax.plot(mens.index, mens.values, color=est.SERIES[0], linewidth=1.6)
     ax.fill_between(mens.index, mens.values, color=est.SERIES[0], alpha=0.10)
     for fecha in mens[mens == mens.max()].index:
-        ax.plot([fecha], [mens.max()], "o", color=est.SERIES[0], markersize=6, markeredgecolor=est.SURFACE,
-                markeredgewidth=2)
-        ax.annotate(f"{est.mes_es(fecha)}: {mens.max()}", (fecha, mens.max()), xytext=(6, 4),
-                    textcoords="offset points", fontsize=9, color=est.INK_2)
+        ax.plot(
+            [fecha],
+            [mens.max()],
+            "o",
+            color=est.SERIES[0],
+            markersize=6,
+            markeredgecolor=est.SURFACE,
+            markeredgewidth=2,
+        )
+        ax.annotate(
+            f"{est.mes_es(fecha)}: {mens.max()}",
+            (fecha, mens.max()),
+            xytext=(6, 4),
+            textcoords="offset points",
+            fontsize=9,
+            color=est.INK_2,
+        )
     ax.set_ylim(0, mens.max() * 1.18)
     est.titles(ax, "Producción mensual de chequeos", "Chequeos publicados por mes")
     f_mes = guardar(fig, base, "04_serie_mensual")
@@ -283,8 +373,11 @@ def analizar_colombiacheck():
     finde = dias[["Sábado", "Domingo"]].sum()
     fig, ax = plt.subplots(figsize=(7.5, 3.2))
     est.hbar(ax, dias, color=[est.SERIES[0]] * 5 + [est.NEUTRAL] * 2)
-    est.titles(ax, "Los chequeos se publican en días laborales",
-               f"Chequeos por día de publicación; fin de semana = {num(finde / n * 100)} % del total")
+    est.titles(
+        ax,
+        "Los chequeos se publican en días laborales",
+        f"Chequeos por día de publicación; fin de semana = {num(finde / n * 100)} % del total",
+    )
     f_dia = guardar(fig, base, "05_dia_semana")
 
     horas = cc["hora_num"].value_counts().reindex(range(24), fill_value=0)
@@ -292,12 +385,19 @@ def analizar_colombiacheck():
     hora_pico = int(horas.idxmax())
     laboral = horas.loc[8:18].sum()
     fig, ax = plt.subplots(figsize=(8.5, 3.2))
-    ax.bar(horas.index, horas.values, color=[est.SERIES[1] if h == hora_pico else est.SERIES[0] for h in horas.index],
-           width=0.7)
+    ax.bar(
+        horas.index,
+        horas.values,
+        color=[est.SERIES[1] if h == hora_pico else est.SERIES[0] for h in horas.index],
+        width=0.7,
+    )
     ax.set_xticks(range(0, 24, 2), [f"{h}:00" for h in range(0, 24, 2)])
     ax.grid(axis="x", visible=False)
-    est.titles(ax, f"Hora pico de publicación: {hora_pico}:00–{hora_pico}:59",
-               f"Chequeos por hora de publicación; {num(laboral / n * 100)} % sale entre 8:00 y 18:59")
+    est.titles(
+        ax,
+        f"Hora pico de publicación: {hora_pico}:00–{hora_pico}:59",
+        f"Chequeos por hora de publicación; {num(laboral / n * 100)} % sale entre 8:00 y 18:59",
+    )
     f_hora = guardar(fig, base, "06_hora_publicacion")
 
     # --- palabras en titulos por anio
@@ -311,23 +411,43 @@ def analizar_colombiacheck():
     fig, ax = plt.subplots(figsize=(7.5, 3.6))
     ax.plot(fam.index, cov, marker="o", color=est.SERIES[0], label="COVID-19 / vacunas")
     ax.plot(fam.index, ia, marker="o", color=est.SERIES[1], label="Inteligencia artificial")
-    ax.annotate(f"{cov.iloc[0]}", (fam.index[0], cov.iloc[0]), xytext=(6, 2), textcoords="offset points",
-                fontsize=9, color=est.INK_2)
-    ax.annotate(f"{ia.max()}", (ia.idxmax(), ia.max()), xytext=(0, 7), textcoords="offset points", ha="center",
-                fontsize=9, color=est.INK_2)
+    ax.annotate(
+        f"{cov.iloc[0]}",
+        (fam.index[0], cov.iloc[0]),
+        xytext=(6, 2),
+        textcoords="offset points",
+        fontsize=9,
+        color=est.INK_2,
+    )
+    ax.annotate(
+        f"{ia.max()}",
+        (ia.idxmax(), ia.max()),
+        xytext=(0, 7),
+        textcoords="offset points",
+        ha="center",
+        fontsize=9,
+        color=est.INK_2,
+    )
     ax.legend(loc="upper right")
-    est.titles(ax, "La desinformación cambia de tema: de la COVID-19 a la IA",
-               "Chequeos por año cuyo TÍTULO menciona cada tema (conteo de palabras)")
+    est.titles(
+        ax,
+        "La desinformación cambia de tema: de la COVID-19 a la IA",
+        "Chequeos por año cuyo TÍTULO menciona cada tema (conteo de palabras)",
+    )
     f_temas = guardar(fig, base, "07_temas_covid_vs_ia")
 
     # --- plataformas mencionadas
     plat = pd.Series({p: int(cc[f"menciona_{p}"].sum()) for p in PLATAFORMAS}).sort_values(ascending=False)
-    plat.rename("chequeos_que_la_mencionan").to_csv(base / "tablas" / "plataformas_mencionadas.csv",
-                                                    encoding="utf-8-sig")
+    plat.rename("chequeos_que_la_mencionan").to_csv(
+        base / "tablas" / "plataformas_mencionadas.csv", encoding="utf-8-sig"
+    )
     fig, ax = plt.subplots(figsize=(7.5, 3.0))
     est.hbar(ax, plat)
-    est.titles(ax, "Plataformas nombradas en título o afirmación",
-               "Número de chequeos que mencionan la plataforma (no es dónde circuló: solo si se nombra)")
+    est.titles(
+        ax,
+        "Plataformas nombradas en título o afirmación",
+        "Número de chequeos que mencionan la plataforma (no es dónde circuló: solo si se nombra)",
+    )
     f_plat = guardar(fig, base, "08_plataformas_mencionadas")
 
     # --- autores
@@ -350,13 +470,21 @@ def analizar_colombiacheck():
     fig, ax = plt.subplots(figsize=(8, 3.6))
     pos = np.arange(len(ORDEN_CALIF))
     for k, t in enumerate([TIPO_REDES, "Discurso público"]):
-        ax.bar(pos + (k - 0.5) * 0.36, xt.loc[t].to_numpy(), width=0.34, color=est.SERIES[k],
-               label=f"{t} (n = {ent(nt[t])})")
+        ax.bar(
+            pos + (k - 0.5) * 0.36,
+            xt.loc[t].to_numpy(),
+            width=0.34,
+            color=est.SERIES[k],
+            label=f"{t} (n = {ent(nt[t])})",
+        )
     ax.set_xticks(pos, ORDEN_CALIF)
     ax.grid(axis="x", visible=False)
     ax.legend(loc="upper right")
-    est.titles(ax, "El discurso público rara vez es «Falso»: casi la mitad es «Cuestionable»",
-               "% de chequeos de cada tipo según su calificación (tipo declarado por Colombiacheck)")
+    est.titles(
+        ax,
+        "El discurso público rara vez es «Falso»: casi la mitad es «Cuestionable»",
+        "% de chequeos de cada tipo según su calificación (tipo declarado por Colombiacheck)",
+    )
     f_tipo = guardar(fig, base, "09_calificacion_por_tipo")
 
     # --- elecciones: volumen total vs agenda electoral
@@ -365,8 +493,9 @@ def analizar_colombiacheck():
     mens_e = mens_e.rename(columns={"size": "chequeos", "sum": "chequeos_tema_electoral"})
     mens_e.index = mens_e.index.astype(str)
     mens_e["mes_electoral"] = mens_e.index.isin(list(ELECCIONES))
-    mens_e.round(1).reset_index(names="mes").to_csv(base / "tablas" / "tema_electoral_por_mes.csv", index=False,
-                                                    encoding="utf-8-sig")
+    mens_e.round(1).reset_index(names="mes").to_csv(
+        base / "tablas" / "tema_electoral_por_mes.csv", index=False, encoding="utf-8-sig"
+    )
     ventana = mens_e.loc["2022-01":]
     con_e, sin_e = ventana[ventana["mes_electoral"]], ventana[~ventana["mes_electoral"]]
     fig, axs = plt.subplots(2, 1, figsize=(9, 5.6), sharex=True)
@@ -379,8 +508,13 @@ def analizar_colombiacheck():
     for a in axs:
         a.grid(axis="x", visible=False)
     axs[1].set_xticks(xs[::6], list(ventana.index[::6]))
-    fig.suptitle("Las elecciones no disparan el volumen… pero sí cambian la agenda (naranja = mes de elecciones)",
-                 x=0.01, ha="left", fontsize=12.5, fontweight="semibold")
+    fig.suptitle(
+        "Las elecciones no disparan el volumen… pero sí cambian la agenda (naranja = mes de elecciones)",
+        x=0.01,
+        ha="left",
+        fontsize=12.5,
+        fontweight="semibold",
+    )
     fig.tight_layout()
     f_elec = guardar(fig, base, "10_elecciones_volumen_vs_agenda")
 
@@ -411,12 +545,12 @@ sólida del proyecto: nada de eso lo interpretamos nosotros.
 | Variable | Qué es | Ejemplo |
 |---|---|---|
 | `url` | Enlace al chequeo (permite comprobar cualquier fila) | colombiacheck.com/chequeos/… |
-| `fecha`, `hora` | Fecha y hora de publicación declaradas por el medio | {ej['fecha']:%Y-%m-%d}, {ej['hora']} |
-| `anio`, `mes`, `dia_semana` | Derivadas de la fecha | {ej['anio']}, {ej['mes']}, {ej['dia_semana_es']} |
-| `titulo` | Titular del chequeo (ya dice qué se encontró) | {ej['titulo']} |
-| `afirmacion_verificada` | Lo que circulaba, tal como lo resume el medio | {ej['afirmacion_verificada']} |
-| `calificacion` | Veredicto: Falso, Cuestionable, Verdadero pero…, Verdadero | {ej['calificacion']} |
-| `calificacion_valor` | Veredicto en número (1 = Falso … 5 = Verdadero) | {ej['calificacion_valor']:.0f} |
+| `fecha`, `hora` | Fecha y hora de publicación declaradas por el medio | {ej["fecha"]:%Y-%m-%d}, {ej["hora"]} |
+| `anio`, `mes`, `dia_semana` | Derivadas de la fecha | {ej["anio"]}, {ej["mes"]}, {ej["dia_semana_es"]} |
+| `titulo` | Titular del chequeo (ya dice qué se encontró) | {ej["titulo"]} |
+| `afirmacion_verificada` | Lo que circulaba, tal como lo resume el medio | {ej["afirmacion_verificada"]} |
+| `calificacion` | Veredicto: Falso, Cuestionable, Verdadero pero…, Verdadero | {ej["calificacion"]} |
+| `calificacion_valor` | Veredicto en número (1 = Falso … 5 = Verdadero) | {ej["calificacion_valor"]:.0f} |
 | `autor_chequeo` | Periodista que firmó el chequeo | — |
 
 Completitud: todas las variables tienen dato en el 100 % de las filas (una fila «Falso» no
@@ -443,16 +577,16 @@ trae el valor numérico). La afirmación verificada llega recortada a {largo.max
 
 {tabla_md(xa.reset_index().rename(columns={"anio": "año"}), cols=["año", "Falso", "Cuestionable", "Verdadero pero...", "Verdadero", "total", "pct_falso", "pct_cuestionable"], fmt={"año": str, "Falso": ent, "Cuestionable": ent, "Verdadero pero...": ent, "Verdadero": ent, "total": ent, "pct_falso": lambda v: num(v) + " %", "pct_cuestionable": lambda v: num(v) + " %"})}
 
-- Entre 2020 y 2025 el medio publicó entre {ent(xa.loc[2020:2025, 'total'].min())} y
-  {ent(xa.loc[2020:2025, 'total'].max())} chequeos al año; el máximo fue {anio_max}.
+- Entre 2020 y 2025 el medio publicó entre {ent(xa.loc[2020:2025, "total"].min())} y
+  {ent(xa.loc[2020:2025, "total"].max())} chequeos al año; el máximo fue {anio_max}.
 - **2026 parece bajar, pero es un año incompleto** (los datos llegan al {fin:%d-%m-%Y}).
   Comparar un año parcial con años completos es un error clásico de lectura de datos.
 
 ![Porcentaje Falso y Cuestionable]({f_pct})
 
-- El porcentaje de *Falso* va de {num(xa['pct_falso'].min())} % ({xa['pct_falso'].idxmin()}) a
-  {num(xa['pct_falso'].max())} % ({xa['pct_falso'].idxmax()}). *Cuestionable* tuvo su
-  máximo en {xa['pct_cuestionable'].idxmax()} ({num(xa['pct_cuestionable'].max())} %).
+- El porcentaje de *Falso* va de {num(xa["pct_falso"].min())} % ({xa["pct_falso"].idxmin()}) a
+  {num(xa["pct_falso"].max())} % ({xa["pct_falso"].idxmax()}). *Cuestionable* tuvo su
+  máximo en {xa["pct_cuestionable"].idxmax()} ({num(xa["pct_cuestionable"].max())} %).
 
 ### 2.3 Mes a mes
 
@@ -488,7 +622,7 @@ artificial»). Es un conteo transparente de palabras, no una clasificación tem�
   {cov.iloc[-1]} en {cov.index[-1]}.
 - Los que mencionan **inteligencia artificial** aparecen por primera vez en {primer_ia} y
   llegan a {ia.max()} en {ia.idxmax()}. En 2026 (año incompleto) ya son {ia.iloc[-1]} de
-  {fam['total_chequeos'].iloc[-1]} chequeos ({num(ia.iloc[-1] / fam['total_chequeos'].iloc[-1] * 100)} %).
+  {fam["total_chequeos"].iloc[-1]} chequeos ({num(ia.iloc[-1] / fam["total_chequeos"].iloc[-1] * 100)} %).
 - Lectura: los temas de la desinformación siguen la actualidad (pandemia, luego imágenes y
   videos fabricados con IA). Las habilidades para detectarla deben actualizarse igual de rápido.
 
@@ -588,12 +722,19 @@ y si creen ciertas afirmaciones verificadas por Colombiacheck, y la clase compar
 | `tablas/calificacion_por_tipo.csv`, `tablas/tipo_por_anio.csv` | Redes vs. discurso público y efecto de composición |
 | `tablas/tema_electoral_por_mes.csv` | Chequeos y % de tema electoral por mes, con meses de votación |
 | `figuras/*.png` | Las 10 gráficas de este documento |
-"""
+"""  # noqa: E501
     (base / "ANALISIS.md").write_text(md, encoding="utf-8")
     return {
-        "n": n, "inicio": ini, "fin": fin, "pct_falso": t_cal.porcentaje.iloc[0],
-        "pct_cuest": t_cal.porcentaje.iloc[1], "ia_max": int(ia.max()), "ia_anio": int(ia.idxmax()),
-        "cov_ini": int(cov.iloc[0]), "cov_fin": int(cov.iloc[-1]), "finde": finde / n * 100,
+        "n": n,
+        "inicio": ini,
+        "fin": fin,
+        "pct_falso": t_cal.porcentaje.iloc[0],
+        "pct_cuest": t_cal.porcentaje.iloc[1],
+        "ia_max": int(ia.max()),
+        "ia_anio": int(ia.idxmax()),
+        "cov_ini": int(cov.iloc[0]),
+        "cov_fin": int(cov.iloc[-1]),
+        "finde": finde / n * 100,
     }
 
 
@@ -611,51 +752,90 @@ def analizar_dane_horas():
     urb, rur = area.loc["Cabecera (urbano)"], area.loc["Rural"]
     sexo = h[(h.nivel == "TOTAL NACIONAL")].set_index("sexo")
     dep = tot[tot.nivel == "DEPARTAMENTO"].set_index("ambito").sort_values("horas_dia_promedio", ascending=False)
-    t_dep = dep[["usuarios_internet", "pct_usan_todos_los_dias", "horas_dia_promedio", "horas_dia_ic",
-                 "horas_dia_cve_pct"]].reset_index().rename(columns={"ambito": "departamento"})
+    t_dep = (
+        dep[["usuarios_internet", "pct_usan_todos_los_dias", "horas_dia_promedio", "horas_dia_ic", "horas_dia_cve_pct"]]
+        .reset_index()
+        .rename(columns={"ambito": "departamento"})
+    )
     t_dep.to_csv(base / "tablas" / "horas_por_departamento.csv", index=False, encoding="utf-8-sig")
 
     fig, ax = plt.subplots(figsize=(7.5, 9.5))
     serie = dep["horas_dia_promedio"]
     est.hbar(ax, serie, fmt=lambda v: num(v, 2), height=0.6)
     ax.axvline(nac.horas_dia_promedio, color=est.AXIS, linewidth=1, zorder=0)
-    ax.annotate(f"Nacional {num(nac.horas_dia_promedio, 2)} h", (nac.horas_dia_promedio, -0.9), fontsize=9,
-                color=est.INK_2, ha="left", xytext=(4, 0), textcoords="offset points")
-    est.titles(ax, "Horas al día usando internet, por departamento",
-               "Promedio entre quienes usan internet · ENTIC Hogares 2024 (DANE)")
+    ax.annotate(
+        f"Nacional {num(nac.horas_dia_promedio, 2)} h",
+        (nac.horas_dia_promedio, -0.9),
+        fontsize=9,
+        color=est.INK_2,
+        ha="left",
+        xytext=(4, 0),
+        textcoords="offset points",
+    )
+    est.titles(
+        ax,
+        "Horas al día usando internet, por departamento",
+        "Promedio entre quienes usan internet · ENTIC Hogares 2024 (DANE)",
+    )
     f_dep = guardar(fig, base, "01_horas_por_departamento")
 
     diario = dep["pct_usan_todos_los_dias"].sort_values(ascending=False)
     fig, ax = plt.subplots(figsize=(7.5, 9.5))
     est.hbar(ax, diario / 100, fmt=lambda v: f"{num(v * 100)} %", height=0.6)
     est.percent(ax, "x")
-    est.titles(ax, "¿Qué parte de los usuarios se conecta todos los días?",
-               "% de usuarios de internet que lo usan a diario · ENTIC Hogares 2024")
+    est.titles(
+        ax,
+        "¿Qué parte de los usuarios se conecta todos los días?",
+        "% de usuarios de internet que lo usan a diario · ENTIC Hogares 2024",
+    )
     f_diario = guardar(fig, base, "02_uso_diario_por_departamento")
 
-    comp = pd.Series({"Cabecera (urbano)": urb.horas_dia_promedio, "Rural": rur.horas_dia_promedio,
-                      "Hombres": sexo.loc["Hombres", "horas_dia_promedio"],
-                      "Mujeres": sexo.loc["Mujeres", "horas_dia_promedio"]})
+    comp = pd.Series(
+        {
+            "Cabecera (urbano)": urb.horas_dia_promedio,
+            "Rural": rur.horas_dia_promedio,
+            "Hombres": sexo.loc["Hombres", "horas_dia_promedio"],
+            "Mujeres": sexo.loc["Mujeres", "horas_dia_promedio"],
+        }
+    )
     fig, ax = plt.subplots(figsize=(7.5, 2.6))
-    est.hbar(ax, comp, color=[est.SERIES[0], est.SERIES[0], est.SERIES[2], est.SERIES[2]],
-             fmt=lambda v: f"{num(v, 2)} h")
-    est.titles(ax, "La brecha grande es urbano–rural, no hombres–mujeres",
-               "Horas al día usando internet · eje desde cero")
+    est.hbar(
+        ax, comp, color=[est.SERIES[0], est.SERIES[0], est.SERIES[2], est.SERIES[2]], fmt=lambda v: f"{num(v, 2)} h"
+    )
+    est.titles(
+        ax, "La brecha grande es urbano–rural, no hombres–mujeres", "Horas al día usando internet · eje desde cero"
+    )
     f_comp = guardar(fig, base, "03_urbano_rural_sexo")
 
     corr = dep["pct_usan_todos_los_dias"].corr(dep["horas_dia_promedio"])
     fig, ax = plt.subplots(figsize=(7, 4.6))
-    ax.scatter(dep["pct_usan_todos_los_dias"], dep["horas_dia_promedio"], s=40, color=est.SERIES[0],
-               edgecolor=est.SURFACE, linewidth=1.5, zorder=3)
+    ax.scatter(
+        dep["pct_usan_todos_los_dias"],
+        dep["horas_dia_promedio"],
+        s=40,
+        color=est.SERIES[0],
+        edgecolor=est.SURFACE,
+        linewidth=1.5,
+        zorder=3,
+    )
     for nombre in ["San Andrés", "Bogotá D.C.", "Huila", "Vaupés", "Chocó", "Magdalena", "Atlántico"]:
         if nombre in dep.index:
             r = dep.loc[nombre]
-            ax.annotate(nombre, (r.pct_usan_todos_los_dias, r.horas_dia_promedio), xytext=(5, 3),
-                        textcoords="offset points", fontsize=8.5, color=est.INK_2)
+            ax.annotate(
+                nombre,
+                (r.pct_usan_todos_los_dias, r.horas_dia_promedio),
+                xytext=(5, 3),
+                textcoords="offset points",
+                fontsize=8.5,
+                color=est.INK_2,
+            )
     ax.set_xlabel("% de usuarios que se conecta a diario")
     ax.set_ylabel("Horas al día")
-    est.titles(ax, "Conectarse a diario no implica más horas",
-               f"Cada punto es un departamento · correlación r = {num(corr, 2)}")
+    est.titles(
+        ax,
+        "Conectarse a diario no implica más horas",
+        f"Cada punto es un departamento · correlación r = {num(corr, 2)}",
+    )
     f_disp = guardar(fig, base, "04_diario_vs_horas")
 
     md = f"""# DANE · ENTIC Hogares 2024 — horas de uso de internet
@@ -695,9 +875,9 @@ La limpieza quitó las filas de notas al pie que traía el CSV y convirtió las 
 - **Urbano vs rural:** {num(urb.horas_dia_promedio, 2)} h en cabeceras frente a
   {num(rur.horas_dia_promedio, 2)} h en zona rural: {ent((urb.horas_dia_promedio - rur.horas_dia_promedio) * 60)}
   minutos más al día en la ciudad. En uso diario: {num(urb.pct_usan_todos_los_dias)} % vs {num(rur.pct_usan_todos_los_dias)} %.
-- **Hombres vs mujeres:** {num(sexo.loc['Hombres', 'horas_dia_promedio'], 2)} h vs
-  {num(sexo.loc['Mujeres', 'horas_dia_promedio'], 2)} h, una diferencia de apenas
-  {ent((sexo.loc['Hombres', 'horas_dia_promedio'] - sexo.loc['Mujeres', 'horas_dia_promedio']) * 60)} minutos.
+- **Hombres vs mujeres:** {num(sexo.loc["Hombres", "horas_dia_promedio"], 2)} h vs
+  {num(sexo.loc["Mujeres", "horas_dia_promedio"], 2)} h, una diferencia de apenas
+  {ent((sexo.loc["Hombres", "horas_dia_promedio"] - sexo.loc["Mujeres", "horas_dia_promedio"]) * 60)} minutos.
   (En el reto se muestra un gráfico **tramposo** que exagera esta diferencia cortando el eje.)
 
 ![Urbano rural y sexo]({f_comp})
@@ -722,7 +902,7 @@ La limpieza quitó las filas de notas al pie que traía el CSV y convirtió las 
 
 - La correlación entre «% que se conecta a diario» y «horas al día» es baja (r = {num(corr, 2)}).
   Por ejemplo, {diario.index[-1]} tiene el uso diario más bajo y aun así sus usuarios
-  promedian {num(dep.loc[diario.index[-1], 'horas_dia_promedio'], 2)} horas. Son dos cosas distintas:
+  promedian {num(dep.loc[diario.index[-1], "horas_dia_promedio"], 2)} horas. Son dos cosas distintas:
   **frecuencia** (cuántos días) e **intensidad** (cuántas horas).
 
 Tabla completa: `tablas/horas_por_departamento.csv`.
@@ -745,7 +925,7 @@ sociales, leer intervalos de confianza y no dejarse engañar por gráficos con e
 
 Caso 4 (dispersión por departamento y promedio ponderado urbano–rural), Caso 6 (intervalos de
 confianza por departamento, porcentaje vs. cantidad de personas) y Caso 7 (gráfico con el eje cortado).
-"""
+"""  # noqa: E501
     (base / "ANALISIS.md").write_text(md, encoding="utf-8")
     return {"horas_nac": nac.horas_dia_promedio, "urb": urb.horas_dia_promedio, "rur": rur.horas_dia_promedio}
 
@@ -766,19 +946,33 @@ def analizar_dane_actividades_internet():
     area = a[(a.nivel == "ÁREA") & (a.sexo == "Total")].set_index("ambito")[acts].T
     area["dif_urbano_menos_rural"] = area["Cabecera (urbano)"] - area["Rural"]
     tabla = nac.join(area).sort_values("Total", ascending=False)
-    tabla.reset_index(names="actividad").to_csv(base / "tablas" / "actividades_nacional_sexo_area.csv",
-                                                index=False, encoding="utf-8-sig")
+    tabla.reset_index(names="actividad").to_csv(
+        base / "tablas" / "actividades_nacional_sexo_area.csv", index=False, encoding="utf-8-sig"
+    )
     usuarios = a[(a.nivel == "TOTAL NACIONAL") & (a.sexo == "Total")]["usuarios_internet"].iloc[0]
 
     orden = tabla["Total"]
-    destacar = {"Redes sociales", "Buscar información de salud", "Usar herramientas de IA",
-                "Periódicos, revistas o libros digitales", "Chats, blogs y foros de noticias"}
+    destacar = {
+        "Redes sociales",
+        "Buscar información de salud",
+        "Usar herramientas de IA",
+        "Periódicos, revistas o libros digitales",
+        "Chats, blogs y foros de noticias",
+    }
     fig, ax = plt.subplots(figsize=(7.5, 9))
-    est.hbar(ax, orden / 100, color=[est.SERIES[1] if i in destacar else est.SERIES[0] for i in orden.index],
-             fmt=lambda v: f"{num(v * 100)} %", height=0.6)
+    est.hbar(
+        ax,
+        orden / 100,
+        color=[est.SERIES[1] if i in destacar else est.SERIES[0] for i in orden.index],
+        fmt=lambda v: f"{num(v * 100)} %",
+        height=0.6,
+    )
     est.percent(ax, "x")
-    est.titles(ax, "¿Para qué usan internet los colombianos?",
-               "% de usuarios de internet que hace cada actividad · naranja = relevantes para desinformación")
+    est.titles(
+        ax,
+        "¿Para qué usan internet los colombianos?",
+        "% de usuarios de internet que hace cada actividad · naranja = relevantes para desinformación",
+    )
     f_tot = guardar(fig, base, "01_actividades_nacional")
 
     dif = nac["dif_H_menos_M"].sort_values()
@@ -787,21 +981,30 @@ def analizar_dane_actividades_internet():
     colores = [est.SERIES[1] if v < 0 else est.SERIES[0] for v in extremos]
     ax.barh(extremos.index, extremos.values, color=colores, height=0.55)
     for i, v in enumerate(extremos.values):
-        ax.annotate(f"{v:+.1f} pp".replace(".", ","), (v, i), xytext=(4 if v > 0 else -4, 0),
-                    textcoords="offset points", va="center", ha="left" if v > 0 else "right", fontsize=9,
-                    color=est.INK_2)
+        ax.annotate(
+            f"{v:+.1f} pp".replace(".", ","),
+            (v, i),
+            xytext=(4 if v > 0 else -4, 0),
+            textcoords="offset points",
+            va="center",
+            ha="left" if v > 0 else "right",
+            fontsize=9,
+            color=est.INK_2,
+        )
     ax.axvline(0, color=est.AXIS, linewidth=1)
     ax.grid(axis="y", visible=False)
     ax.margins(x=0.25)
-    est.titles(ax, "Donde más se diferencian hombres y mujeres",
-               "Puntos porcentuales: azul = más hombres, naranja = más mujeres")
+    est.titles(
+        ax,
+        "Donde más se diferencian hombres y mujeres",
+        "Puntos porcentuales: azul = más hombres, naranja = más mujeres",
+    )
     f_sexo = guardar(fig, base, "02_diferencias_hombres_mujeres")
 
     dur = area["dif_urbano_menos_rural"].sort_values(ascending=False).head(8)
     fig, ax = plt.subplots(figsize=(7.5, 3.6))
     est.hbar(ax, dur, fmt=lambda v: f"+{num(v)} pp")
-    est.titles(ax, "Las mayores brechas urbano–rural",
-               "Diferencia en puntos porcentuales (cabecera menos rural)")
+    est.titles(ax, "Las mayores brechas urbano–rural", "Diferencia en puntos porcentuales (cabecera menos rural)")
     f_area = guardar(fig, base, "03_brecha_urbano_rural")
 
     md = f"""# DANE · ENTIC Hogares 2024 — actividades en internet
@@ -820,27 +1023,27 @@ def analizar_dane_actividades_internet():
 
 - Lo más común: **{orden.index[0]}** ({num(orden.iloc[0])} %), **{orden.index[1]}** ({num(orden.iloc[1])} %)
   y {orden.index[2]} ({num(orden.iloc[2])} %).
-- **Redes sociales: {num(orden['Redes sociales'])} %** de los usuarios de internet, frente a solo
-  **{num(orden['Periódicos, revistas o libros digitales'])} %** que lee periódicos, revistas o libros
-  digitales y {num(orden['Chats, blogs y foros de noticias'])} % que entra a foros de noticias.
+- **Redes sociales: {num(orden["Redes sociales"])} %** de los usuarios de internet, frente a solo
+  **{num(orden["Periódicos, revistas o libros digitales"])} %** que lee periódicos, revistas o libros
+  digitales y {num(orden["Chats, blogs y foros de noticias"])} % que entra a foros de noticias.
   Muchas más personas pasan por las redes que por los medios.
-- **{num(orden['Buscar información de salud'])} %** busca información de salud en internet: la
+- **{num(orden["Buscar información de salud"])} %** busca información de salud en internet: la
   salud es justamente uno de los temas con más desinformación (COVID-19, curas milagrosas).
-- **{num(orden['Usar herramientas de IA'])} %** ya usa herramientas de inteligencia artificial,
+- **{num(orden["Usar herramientas de IA"])} %** ya usa herramientas de inteligencia artificial,
   la misma tecnología con la que hoy se fabrican videos e imágenes falsas.
 
 ![Diferencias por sexo]({f_sexo})
 
 - Las mujeres usan más internet para **salud** (citas médicas, resultados, información:
-  entre 11 y 13 puntos más). Los hombres, para **jugar** (+{num(nac.loc['Jugar en línea', 'dif_H_menos_M'])} pp)
-  y **apostar** ({num(nac.loc['Apostar en línea', 'Hombres'])} % vs {num(nac.loc['Apostar en línea', 'Mujeres'])} %).
-- En redes sociales casi no hay diferencia ({num(nac.loc['Redes sociales', 'Hombres'])} % hombres,
-  {num(nac.loc['Redes sociales', 'Mujeres'])} % mujeres).
+  entre 11 y 13 puntos más). Los hombres, para **jugar** (+{num(nac.loc["Jugar en línea", "dif_H_menos_M"])} pp)
+  y **apostar** ({num(nac.loc["Apostar en línea", "Hombres"])} % vs {num(nac.loc["Apostar en línea", "Mujeres"])} %).
+- En redes sociales casi no hay diferencia ({num(nac.loc["Redes sociales", "Hombres"])} % hombres,
+  {num(nac.loc["Redes sociales", "Mujeres"])} % mujeres).
 
 ![Brecha urbano rural]({f_area})
 
-- La zona rural se parece a la urbana en **redes sociales** ({num(area.loc['Redes sociales', 'Rural'])} % vs
-  {num(area.loc['Redes sociales', 'Cabecera (urbano)'])} %) y en **mensajería**, pero se queda muy atrás en
+- La zona rural se parece a la urbana en **redes sociales** ({num(area.loc["Redes sociales", "Rural"])} % vs
+  {num(area.loc["Redes sociales", "Cabecera (urbano)"])} %) y en **mensajería**, pero se queda muy atrás en
   correo, banca y trámites. Es decir: en el campo, las redes y la mensajería son la puerta
   principal a la información.
 
@@ -860,7 +1063,7 @@ que circulan casi todas las piezas que verifica Colombiacheck) frente a cuántas
 ## 4. Dónde se usa en el reto
 
 Caso 4 de los casos estadísticos (qué se hace en internet en la ciudad y en el campo).
-"""
+"""  # noqa: E501
     (base / "ANALISIS.md").write_text(md, encoding="utf-8")
     return {"redes": orden["Redes sociales"], "usuarios": usuarios}
 
@@ -871,31 +1074,36 @@ def analizar_dane_redes():
     r = leer_dane("dane_entic2024_actividades_redes_sociales.csv")
     ren = etiquetar_cortas(r.columns, ACT_REDES)
     pd.DataFrame({"nombre_oficial_DANE": list(ren), "etiqueta_corta": list(ren.values())}).to_csv(
-        base / "tablas" / "diccionario_actividades.csv", index=False, encoding="utf-8-sig")
+        base / "tablas" / "diccionario_actividades.csv", index=False, encoding="utf-8-sig"
+    )
     r = r.rename(columns=ren)
-    r.to_csv(base / "datos" / "dane_entic2024_actividades_redes_sociales_limpio.csv", index=False,
-             encoding="utf-8-sig")
+    r.to_csv(base / "datos" / "dane_entic2024_actividades_redes_sociales_limpio.csv", index=False, encoding="utf-8-sig")
     acts = list(ren.values())
     personas = r[(r.nivel == "TOTAL NACIONAL") & (r.sexo == "Total")]["personas_usan_redes"].iloc[0]
 
     nac = r[r.nivel == "TOTAL NACIONAL"].set_index("sexo")[acts].T
     area = r[(r.nivel == "ÁREA") & (r.sexo == "Total")].set_index("ambito")[acts].T
     tabla = nac.join(area).sort_values("Total", ascending=False)
-    tabla.reset_index(names="actividad").to_csv(base / "tablas" / "actividades_redes_nacional_sexo_area.csv",
-                                                index=False, encoding="utf-8-sig")
+    tabla.reset_index(names="actividad").to_csv(
+        base / "tablas" / "actividades_redes_nacional_sexo_area.csv", index=False, encoding="utf-8-sig"
+    )
     orden = tabla["Total"]
 
     fig, ax = plt.subplots(figsize=(7.5, 4.8))
     est.hbar(ax, orden / 100, fmt=lambda v: f"{num(v * 100)} %", height=0.6)
     est.percent(ax, "x")
-    est.titles(ax, "Las redes se usan, sobre todo, para hablar con los cercanos",
-               f"% de quienes usan redes sociales ({num(personas / 1e6)} millones) · ENTIC 2024")
+    est.titles(
+        ax,
+        "Las redes se usan, sobre todo, para hablar con los cercanos",
+        f"% de quienes usan redes sociales ({num(personas / 1e6)} millones) · ENTIC 2024",
+    )
     f_tot = guardar(fig, base, "01_actividades_en_redes")
 
     dep = r[(r.nivel == "DEPARTAMENTO") & (r.sexo == "Total")].set_index("ambito")
     opinar = dep["Opinar sobre temas públicos"].sort_values(ascending=False)
-    opinar.rename("pct_opina_temas_publicos").to_csv(base / "tablas" / "opinar_temas_publicos_por_departamento.csv",
-                                                     encoding="utf-8-sig")
+    opinar.rename("pct_opina_temas_publicos").to_csv(
+        base / "tablas" / "opinar_temas_publicos_por_departamento.csv", encoding="utf-8-sig"
+    )
 
     md = f"""# DANE · ENTIC Hogares 2024 — actividades dentro de las redes sociales
 
@@ -914,13 +1122,13 @@ def analizar_dane_redes():
 {tabla_md(tabla.reset_index(names="actividad"), cols=["actividad", "Total", "Hombres", "Mujeres", "Cabecera (urbano)", "Rural"], fmt={c: (lambda v: num(v) + " %") for c in ["Total", "Hombres", "Mujeres", "Cabecera (urbano)", "Rural"]})}
 
 - **{num(orden.iloc[0])} %** usa las redes para **comunicarse con familia y amigos** y
-  {num(orden['Entretenimiento'])} % para entretenimiento. Ver lo que publican otros y comentar:
-  {num(orden['Ver contenidos de otros y comentar'])} %.
-- Solo **{num(orden['Producir contenido propio'])} %** produce contenido propio y
-  **{num(orden['Opinar sobre temas públicos'])} %** opina sobre temas públicos: **la mayoría consume y
+  {num(orden["Entretenimiento"])} % para entretenimiento. Ver lo que publican otros y comentar:
+  {num(orden["Ver contenidos de otros y comentar"])} %.
+- Solo **{num(orden["Producir contenido propio"])} %** produce contenido propio y
+  **{num(orden["Opinar sobre temas públicos"])} %** opina sobre temas públicos: **la mayoría consume y
   reenvía; pocos producen.**
-- Urbano y rural casi no se diferencian en comunicarse ({num(tabla.loc['Comunicarse con familia y amigos', 'Cabecera (urbano)'])} %
-  vs {num(tabla.loc['Comunicarse con familia y amigos', 'Rural'])} %).
+- Urbano y rural casi no se diferencian en comunicarse ({num(tabla.loc["Comunicarse con familia y amigos", "Cabecera (urbano)"])} %
+  vs {num(tabla.loc["Comunicarse con familia y amigos", "Rural"])} %).
 - Opinar sobre temas públicos varía por departamento: de {num(opinar.iloc[0])} % ({opinar.index[0]}) a
   {num(opinar.iloc[-1])} % ({opinar.index[-1]}).
 
@@ -942,7 +1150,7 @@ exactitud en el momento de compartir.
 
 En la versión actual del reto no tiene preguntas propias: es contexto para la discusión final (por qué
 las cadenas falsas llegan «avaladas» por personas de confianza).
-"""
+"""  # noqa: E501
     (base / "ANALISIS.md").write_text(md, encoding="utf-8")
     return {"comunicarse": orden.iloc[0], "personas": personas}
 
@@ -961,24 +1169,58 @@ def analizar_banco_mundial():
     ax.plot(inet.index, inet.values, color=est.SERIES[0], marker="o", markersize=3.5)
     ax.fill_between(inet.index, inet.values, color=est.SERIES[0], alpha=0.10)
     ax.axhline(50, color=est.AXIS, linewidth=1)
-    ax.annotate(f"{mitad}: {num(inet[mitad])} % (más de la mitad)", (mitad, inet[mitad]), xytext=(-10, 12),
-                textcoords="offset points", ha="right", fontsize=9, color=est.INK_2)
-    ax.annotate(f"{num(inet.iloc[-1])} %", (inet.index[-1], inet.iloc[-1]), xytext=(6, 0),
-                textcoords="offset points", va="center", fontsize=9, color=est.INK_2)
+    ax.annotate(
+        f"{mitad}: {num(inet[mitad])} % (más de la mitad)",
+        (mitad, inet[mitad]),
+        xytext=(-10, 12),
+        textcoords="offset points",
+        ha="right",
+        fontsize=9,
+        color=est.INK_2,
+    )
+    ax.annotate(
+        f"{num(inet.iloc[-1])} %",
+        (inet.index[-1], inet.iloc[-1]),
+        xytext=(6, 0),
+        textcoords="offset points",
+        va="center",
+        fontsize=9,
+        color=est.INK_2,
+    )
     ax.set_ylim(0, 100)
-    est.titles(ax, "De 2 % a casi 80 % de la población en internet",
-               "% de personas que usan internet en Colombia · Banco Mundial / UIT")
+    est.titles(
+        ax,
+        "De 2 % a casi 80 % de la población en internet",
+        "% de personas que usan internet en Colombia · Banco Mundial / UIT",
+    )
     f_inet = guardar(fig, base, "01_personas_usan_internet")
 
     fig, ax = plt.subplots(figsize=(8, 3.6))
     ax.plot(movil.index, movil.values, color=est.SERIES[0], marker="o", markersize=3.5)
     ax.axhline(100, color=est.AXIS, linewidth=1)
-    ax.annotate(f"{cien}: más líneas que personas", (cien, movil[cien]), xytext=(-10, 10),
-                textcoords="offset points", ha="right", fontsize=9, color=est.INK_2)
-    ax.annotate(num(movil.iloc[-1]), (movil.index[-1], movil.iloc[-1]), xytext=(6, 0),
-                textcoords="offset points", va="center", fontsize=9, color=est.INK_2)
-    est.titles(ax, "Suscripciones de telefonía móvil por cada 100 personas",
-               "Banco Mundial / UIT · por encima de 100 = hay personas con más de una línea")
+    ax.annotate(
+        f"{cien}: más líneas que personas",
+        (cien, movil[cien]),
+        xytext=(-10, 10),
+        textcoords="offset points",
+        ha="right",
+        fontsize=9,
+        color=est.INK_2,
+    )
+    ax.annotate(
+        num(movil.iloc[-1]),
+        (movil.index[-1], movil.iloc[-1]),
+        xytext=(6, 0),
+        textcoords="offset points",
+        va="center",
+        fontsize=9,
+        color=est.INK_2,
+    )
+    est.titles(
+        ax,
+        "Suscripciones de telefonía móvil por cada 100 personas",
+        "Banco Mundial / UIT · por encima de 100 = hay personas con más de una línea",
+    )
     f_mov = guardar(fig, base, "02_suscripciones_movil")
 
     crec = bm[["personas_usan_internet_pct", "suscripciones_movil_por_100"]].diff()
@@ -1003,11 +1245,11 @@ def analizar_banco_mundial():
   **{num(inet.iloc[-1])} %**.
 - **{mitad}** es el primer año en que más de la mitad de la población usa internet
   ({num(inet[mitad])} %; un año antes era {num(inet[mitad - 1])} %).
-- Mayor salto anual: {int(crec['personas_usan_internet_pct'].idxmax())}
-  (+{num(crec['personas_usan_internet_pct'].max())} puntos). Entre 2014 y 2024 subió
+- Mayor salto anual: {int(crec["personas_usan_internet_pct"].idxmax())}
+  (+{num(crec["personas_usan_internet_pct"].max())} puntos). Entre 2014 y 2024 subió
   {num(inet[2024] - inet[2014])} puntos porcentuales.
-- Casi nunca baja: solo {int((crec['personas_usan_internet_pct'] < 0).sum())} año con caída
-  ({', '.join(str(a) for a in crec.index[crec['personas_usan_internet_pct'] < 0])}).
+- Casi nunca baja: solo {int((crec["personas_usan_internet_pct"] < 0).sum())} año con caída
+  ({", ".join(str(a) for a in crec.index[crec["personas_usan_internet_pct"] < 0])}).
 
 ![Suscripciones móviles]({f_mov})
 
@@ -1033,7 +1275,7 @@ verificación.
 
 En la versión actual del reto no tiene preguntas propias: es contexto para la guía docente y para la
 discusión final (la desinformación digital alcanza hoy a 8 de cada 10 personas).
-"""
+"""  # noqa: E501
     (base / "ANALISIS.md").write_text(md, encoding="utf-8")
     return {"inet_2024": inet.iloc[-1], "mitad": mitad}
 
@@ -1118,7 +1360,7 @@ Datos y código abiertos: https://osf.io/g65qu/ · Versión preliminar (abierta)
 > investigación. Si el semillero quiere usar los datos del reto en una investigación, necesita
 > consentimiento informado de los acudientes y asentimiento de los estudiantes (son menores
 > de edad), y aval de un comité de ética.
-"""
+"""  # noqa: E501
     (base / "RESUMEN_Y_USO_EN_EL_RETO.md").write_text(md, encoding="utf-8")
 
 
@@ -1147,17 +1389,17 @@ python ../4_Codigo_y_datos/scripts/generar_analisis.py
 
 ## Diez ideas clave (calculadas de los datos)
 
-1. Colombiacheck publicó **{ent(r_cc['n'])} chequeos verificados** entre {r_cc['inicio']:%m-%Y} y {r_cc['fin']:%m-%Y}.
-2. **{num(r_cc['pct_falso'])} %** terminan en «Falso» y {num(r_cc['pct_cuest'])} % en «Cuestionable».
+1. Colombiacheck publicó **{ent(r_cc["n"])} chequeos verificados** entre {r_cc["inicio"]:%m-%Y} y {r_cc["fin"]:%m-%Y}.
+2. **{num(r_cc["pct_falso"])} %** terminan en «Falso» y {num(r_cc["pct_cuest"])} % en «Cuestionable».
 3. …pero eso **no** mide cuánta desinformación hay en redes: el verificador elige qué revisar (sesgo de selección).
-4. La desinformación cambia de tema: títulos con COVID‑19/vacunas pasan de {r_cc['cov_ini']} (2020) a
-   {r_cc['cov_fin']} (2026); títulos con inteligencia artificial pasan de 0 (2022) a {r_cc['ia_max']} ({r_cc['ia_anio']}).
-5. Solo {num(r_cc['finde'])} % de los chequeos sale en fin de semana: eso refleja el horario de la redacción, no el de los rumores.
-6. **{num(r_bm['inet_2024'])} %** de los colombianos usa internet (2024); en {r_bm['mitad']} se superó por primera vez la mitad.
-7. Los usuarios de internet pasan en promedio **{num(r_h['horas_nac'], 2)} horas al día** conectados
-   ({num(r_h['urb'], 2)} h urbano vs {num(r_h['rur'], 2)} h rural). Son horas de **internet**, no de redes.
-8. **{num(r_a['redes'])} %** de los usuarios de internet usa redes sociales ({num(r_r['personas'] / 1e6)} millones de personas).
-9. **{num(r_r['comunicarse'])} %** usa las redes para hablar con familia y amigos: por eso las cadenas
+4. La desinformación cambia de tema: títulos con COVID‑19/vacunas pasan de {r_cc["cov_ini"]} (2020) a
+   {r_cc["cov_fin"]} (2026); títulos con inteligencia artificial pasan de 0 (2022) a {r_cc["ia_max"]} ({r_cc["ia_anio"]}).
+5. Solo {num(r_cc["finde"])} % de los chequeos sale en fin de semana: eso refleja el horario de la redacción, no el de los rumores.
+6. **{num(r_bm["inet_2024"])} %** de los colombianos usa internet (2024); en {r_bm["mitad"]} se superó por primera vez la mitad.
+7. Los usuarios de internet pasan en promedio **{num(r_h["horas_nac"], 2)} horas al día** conectados
+   ({num(r_h["urb"], 2)} h urbano vs {num(r_h["rur"], 2)} h rural). Son horas de **internet**, no de redes.
+8. **{num(r_a["redes"])} %** de los usuarios de internet usa redes sociales ({num(r_r["personas"] / 1e6)} millones de personas).
+9. **{num(r_r["comunicarse"])} %** usa las redes para hablar con familia y amigos: por eso las cadenas
    falsas llegan «avaladas» por gente de confianza.
 10. El estudio de Nature (16 países, 34.286 personas) muestra que la gente comparte falsedades que
     reconocería como falsas si se detuviera a pensar, y que un simple recordatorio de exactitud ayuda.
@@ -1167,7 +1409,7 @@ python ../4_Codigo_y_datos/scripts/generar_analisis.py
 La app (`../2_Aplicacion_Reto/`) arma sus preguntas leyendo los archivos limpios de estas
 carpetas (`4_Codigo_y_datos/scripts/construir_banco.py`). Si se actualizan los datos: primero se
 corre este análisis y después `construir_banco.py` (o todo junto con `4_Codigo_y_datos/REGENERAR_TODO.bat`).
-"""
+"""  # noqa: E501
     (AQUI / "LEEME.md").write_text(md, encoding="utf-8")
 
 

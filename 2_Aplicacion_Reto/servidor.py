@@ -17,6 +17,7 @@ Reglas que hace cumplir el servidor (no el navegador):
   * el tiempo (90 min por defecto) lo mide el servidor; al vencerse, se entrega solo;
   * la clasificación es un orden total: nunca hay dos participantes en el mismo puesto.
 """
+
 import argparse
 import csv
 import hashlib
@@ -37,7 +38,9 @@ from urllib.parse import parse_qs, urlparse
 
 AQUI = Path(__file__).resolve().parent
 WEB = AQUI / "web"
-DATOS = Path(os.environ["RETO_DATOS"]).resolve() if os.environ.get("RETO_DATOS") else AQUI / "datos"  # en un hosting: el disco persistente
+DATOS = (
+    Path(os.environ["RETO_DATOS"]).resolve() if os.environ.get("RETO_DATOS") else AQUI / "datos"
+)  # en un hosting: el disco persistente
 BANCO_PATH = AQUI / "banco_preguntas.json"
 ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # sin 0/O ni 1/I para evitar confusiones
 ESTADOS = ("inscripcion", "abierto", "cerrado", "resultados")
@@ -82,14 +85,22 @@ def cfg(clave, defecto=None):
 
 
 def set_cfg(clave, valor):
-    DB.execute("INSERT INTO config(clave, valor) VALUES(?, ?) ON CONFLICT(clave) DO UPDATE SET valor=excluded.valor",
-               (clave, str(valor)))
+    DB.execute(
+        "INSERT INTO config(clave, valor) VALUES(?, ?) ON CONFLICT(clave) DO UPDATE SET valor=excluded.valor",
+        (clave, str(valor)),
+    )
 
 
 def inicializar_config():
-    defaults = {"estado": "inscripcion", "sala": "".join(secrets.choice(ALFABETO[:24]) for _ in range(4)),
-                "modo_sorpresa": "1", "retro": "1", "duracion_min": str(BANCO["duracion_min"]),
-                "evento": "Sala de verificación", "reloj_global": "1"}
+    defaults = {
+        "estado": "inscripcion",
+        "sala": "".join(secrets.choice(ALFABETO[:24]) for _ in range(4)),
+        "modo_sorpresa": "1",
+        "retro": "1",
+        "duracion_min": str(BANCO["duracion_min"]),
+        "evento": "Sala de verificación",
+        "reloj_global": "1",
+    }
     for k, v in defaults.items():
         if cfg(k) is None:
             set_cfg(k, v)
@@ -127,8 +138,29 @@ def visible_para(p, q):
 def version_publica(p, q):
     """Lo que ve el navegador: sin respuesta, sin explicación, con el orden barajado."""
     _, c = resolver(p, q)
-    pub = {k: c[k] for k in ("id", "tipo", "enunciado", "puntos", "unidad", "min", "max", "paso", "grafico", "tabla",
-                             "categorias", "estilo", "requiere", "experimento", "entero", "max", "simulador") if k in c}
+    pub = {
+        k: c[k]
+        for k in (
+            "id",
+            "tipo",
+            "enunciado",
+            "puntos",
+            "unidad",
+            "min",
+            "max",
+            "paso",
+            "grafico",
+            "tabla",
+            "categorias",
+            "estilo",
+            "requiere",
+            "experimento",
+            "entero",
+            "max",
+            "simulador",
+        )
+        if k in c
+    }
     if "opciones" in c:
         ops = list(c["opciones"])
         rng_para(p["semilla"], q["id"]).shuffle(ops)
@@ -225,7 +257,7 @@ def validar_respuesta(q, r):
     raise AssertionError("tipo desconocido")
 
 
-def fraccion(q, r):
+def fraccion(q, r):  # noqa: C901
     t = q["tipo"]
     ok = q.get("respuesta")
     if not q.get("puntos"):
@@ -286,8 +318,11 @@ def finalizar(p, ahora, motivo):
     t_resp = min(dur, max(0.0, (ultima if ultima is not None else fin) - p["inicio"]))
     puntos = recalcular_puntos(p["id"])
     bono = BONO_MAX * (puntos / PUNTOS_TOTALES) * (1 - t_resp / dur)
-    DB.execute("UPDATE participantes SET estado='finalizado', fin=?, tiempo_usado=?, tiempo_respuestas=?, bono=?, "
-               "total=?, motivo_fin=? WHERE id=?", (fin, usado, t_resp, bono, puntos + bono, motivo, p["id"]))
+    DB.execute(
+        "UPDATE participantes SET estado='finalizado', fin=?, tiempo_usado=?, tiempo_respuestas=?, bono=?, "
+        "total=?, motivo_fin=? WHERE id=?",
+        (fin, usado, t_resp, bono, puntos + bono, motivo, p["id"]),
+    )
 
 
 def vencer_tiempos():
@@ -300,17 +335,29 @@ def vencer_tiempos():
 def clasificacion():
     """Orden total: puntaje total ↓, puntos ↓, momento de la última respuesta ↑, hora de entrega ↑, inscripción ↑."""
     filas = DB.execute("SELECT * FROM participantes WHERE estado='finalizado'").fetchall()
-    filas = sorted(filas, key=lambda p: (-round(p["total"], 9), -round(p["puntos"], 9), p["tiempo_respuestas"],
-                                         p["fin"], p["id"]))
+    filas = sorted(
+        filas, key=lambda p: (-round(p["total"], 9), -round(p["puntos"], 9), p["tiempo_respuestas"], p["fin"], p["id"])
+    )
     salida = []
     for i, p in enumerate(filas, 1):
-        salida.append({"puesto": i, "id": p["id"], "codigo": p["codigo"], "nombre": p["nombre"],
-                       "colegio": p["colegio"], "grado": p["grado"], "puntos": round(p["puntos"], 4),
-                       "bono": round(p["bono"], 4), "total": round(p["total"], 4),
-                       "nota": round(1 + 4 * p["puntos"] / PUNTOS_TOTALES, 2),
-                       "tiempo_usado": round(p["tiempo_usado"], 1),
-                       "tiempo_respuestas": round(p["tiempo_respuestas"], 3), "salidas": p["salidas"],
-                       "motivo_fin": p["motivo_fin"]})
+        salida.append(
+            {
+                "puesto": i,
+                "id": p["id"],
+                "codigo": p["codigo"],
+                "nombre": p["nombre"],
+                "colegio": p["colegio"],
+                "grado": p["grado"],
+                "puntos": round(p["puntos"], 4),
+                "bono": round(p["bono"], 4),
+                "total": round(p["total"], 4),
+                "nota": round(1 + 4 * p["puntos"] / PUNTOS_TOTALES, 2),
+                "tiempo_usado": round(p["tiempo_usado"], 1),
+                "tiempo_respuestas": round(p["tiempo_respuestas"], 3),
+                "salidas": p["salidas"],
+                "motivo_fin": p["motivo_fin"],
+            }
+        )
     return salida
 
 
@@ -326,9 +373,11 @@ def experimento():
     q_ver = PREGUNTAS["m1_veracidad"][1]
     verdad = q_ver["respuesta"]
     resp = {}
-    for r in DB.execute("SELECT r.participante_id pid, r.pregunta_id q, r.respuesta, p.grupo FROM respuestas r "
-                        "JOIN participantes p ON p.id=r.participante_id WHERE p.estado != 'descalificado' AND "
-                        "r.pregunta_id IN ('m1_compartir','m1_veracidad')").fetchall():
+    for r in DB.execute(
+        "SELECT r.participante_id pid, r.pregunta_id q, r.respuesta, p.grupo FROM respuestas r "
+        "JOIN participantes p ON p.id=r.participante_id WHERE p.estado != 'descalificado' AND "
+        "r.pregunta_id IN ('m1_compartir','m1_veracidad')"
+    ).fetchall():
         resp.setdefault(r["pid"], {"grupo": r["grupo"]})[r["q"]] = json.loads(r["respuesta"])
     completos = [v for v in resp.values() if "m1_compartir" in v and "m1_veracidad" in v]
     n = len(completos)
@@ -346,8 +395,15 @@ def experimento():
             return None
         c_f, c_v = tasa(grupo, "m1_compartir", "S", falsos), tasa(grupo, "m1_compartir", "S", ciertos)
         b_f, b_v = tasa(grupo, "m1_veracidad", "V", falsos), tasa(grupo, "m1_veracidad", "V", ciertos)
-        return {"n": len(grupo), "comparte_falsas": c_f, "comparte_verdaderas": c_v, "cree_falsas": b_f,
-                "cree_verdaderas": b_v, "discernimiento_compartir": c_v - c_f, "discernimiento_creer": b_v - b_f}
+        return {
+            "n": len(grupo),
+            "comparte_falsas": c_f,
+            "comparte_verdaderas": c_v,
+            "cree_falsas": b_f,
+            "cree_verdaderas": b_v,
+            "discernimiento_compartir": c_v - c_f,
+            "discernimiento_creer": b_v - b_f,
+        }
 
     # Sabiduría de la multitud: ¿acierta el promedio de la clase más que el estudiante promedio?
     aciertos_multitud, por_post = 0, []
@@ -356,20 +412,32 @@ def experimento():
         pct_comp = 100 * sum(x["m1_compartir"][k] == "S" for x in completos) / n
         veredicto = "V" if pct_v >= 50 else "F"
         aciertos_multitud += veredicto == v
-        por_post.append({"id": k, "verdad": v, "pct_cree_verdadera": pct_v, "pct_compartiria": pct_comp,
-                         "multitud_acierta": veredicto == v})
+        por_post.append(
+            {
+                "id": k,
+                "verdad": v,
+                "pct_cree_verdadera": pct_v,
+                "pct_compartiria": pct_comp,
+                "multitud_acierta": veredicto == v,
+            }
+        )
     individuales = [sum(x["m1_veracidad"][k] == v for k, v in verdad.items()) for x in completos]
     textos = {pp["id"]: pp["texto"] for pp in PREGUNTAS["m1_compartir"][1]["publicaciones"]}
     for pp in por_post:
         pp["texto"] = textos[pp["id"]]
     return {
-        "n": n, "listo": True, "total_posts": len(verdad),
+        "n": n,
+        "listo": True,
+        "total_posts": len(verdad),
         "clase": resumen(completos),
         "grupo_sin_recordatorio": resumen([x for x in completos if x["grupo"] == "A"]),
         "grupo_con_recordatorio": resumen([x for x in completos if x["grupo"] == "B"]),
-        "multitud": {"aciertos_multitud": aciertos_multitud, "promedio_individual": sum(individuales) / n,
-                     "mejor_individual": max(individuales),
-                     "pct_estudiantes_superados": 100 * sum(i < aciertos_multitud for i in individuales) / n},
+        "multitud": {
+            "aciertos_multitud": aciertos_multitud,
+            "promedio_individual": sum(individuales) / n,
+            "mejor_individual": max(individuales),
+            "pct_estudiantes_superados": 100 * sum(i < aciertos_multitud for i in individuales) / n,
+        },
         "por_publicacion": por_post,
     }
 
@@ -390,26 +458,40 @@ def estado_participante(p):
     if p["estado"] == "en_curso":
         restante = max(0, p["inicio"] + duracion_seg() - ahora)
     datos = {
-        "reto": {"titulo": BANCO["titulo"], "evento": cfg("evento"), "estado": estado_reto,
-                 "n_misiones": len(BANCO["misiones"]),
-                 "duracion_min": duracion_seg() / 60, "puntos_totales": PUNTOS_TOTALES, "bono_max": BONO_MAX,
-                 "retro": retro, "reloj_global": cfg("reloj_global", "1") == "1"},
-        "participante": {"codigo": p["codigo"], "nombre": p["nombre"], "colegio": p["colegio"], "grado": p["grado"],
-                         "estado": p["estado"], "restante_seg": restante,
-                         "tiempo_usado": p["tiempo_usado"]},
+        "reto": {
+            "titulo": BANCO["titulo"],
+            "evento": cfg("evento"),
+            "estado": estado_reto,
+            "n_misiones": len(BANCO["misiones"]),
+            "duracion_min": duracion_seg() / 60,
+            "puntos_totales": PUNTOS_TOTALES,
+            "bono_max": BONO_MAX,
+            "retro": retro,
+            "reloj_global": cfg("reloj_global", "1") == "1",
+        },
+        "participante": {
+            "codigo": p["codigo"],
+            "nombre": p["nombre"],
+            "colegio": p["colegio"],
+            "grado": p["grado"],
+            "estado": p["estado"],
+            "restante_seg": restante,
+            "tiempo_usado": p["tiempo_usado"],
+        },
         "respuestas": respuestas,
         "servidor_ahora": ahora,
     }
     if p["estado"] in ("en_curso", "finalizado"):
         datos["misiones"] = examen_publico(p, frozenset(r["pregunta_id"] for r in filas))
     if p["estado"] == "finalizado" and retro:
-        datos["participante"].update({"puntos": round(p["puntos"], 2), "bono": round(p["bono"], 2),
-                                      "total": round(p["total"], 2)})
+        datos["participante"].update(
+            {"puntos": round(p["puntos"], 2), "bono": round(p["bono"], 2), "total": round(p["total"], 2)}
+        )
     if estado_reto == "resultados" and p["estado"] == "finalizado":
         datos["participante"]["puesto"] = puesto_de(p["id"])
         datos["participante"]["nota"] = round(1 + 4 * p["puntos"] / PUNTOS_TOTALES, 2)
         datos["revision"] = {}
-        for qid, (m, q) in PREGUNTAS.items():
+        for qid, (m, q) in PREGUNTAS.items():  # noqa: B007
             if visible_para(p, q):
                 _, c = resolver(p, q)
                 datos["revision"][qid] = {"respuesta": c.get("respuesta"), "explicacion": c.get("explicacion", "")}
@@ -418,18 +500,33 @@ def estado_participante(p):
 
 def publico():
     estado = cfg("estado")
-    cuenta = {r["estado"]: r["n"] for r in
-              DB.execute("SELECT estado, COUNT(*) n FROM participantes GROUP BY estado").fetchall()}
-    datos = {"evento": cfg("evento"), "titulo": BANCO["titulo"], "estado": estado, "sala": cfg("sala"),
-             "urls": URLS, "duracion_min": duracion_seg() / 60, "abierto_en": float(cfg("abierto_en", 0) or 0),
-             "cerrado_en": float(cfg("cerrado_en", 0) or 0), "servidor_ahora": time.time(),
-             "modo_sorpresa": cfg("modo_sorpresa") == "1", "reloj_global": cfg("reloj_global", "1") == "1",
-             "conteo": {"inscritos": sum(cuenta.values()) - cuenta.get("descalificado", 0),
-                        "en_curso": cuenta.get("en_curso", 0), "finalizados": cuenta.get("finalizado", 0)}}
+    cuenta = {
+        r["estado"]: r["n"]
+        for r in DB.execute("SELECT estado, COUNT(*) n FROM participantes GROUP BY estado").fetchall()
+    }
+    datos = {
+        "evento": cfg("evento"),
+        "titulo": BANCO["titulo"],
+        "estado": estado,
+        "sala": cfg("sala"),
+        "urls": URLS,
+        "duracion_min": duracion_seg() / 60,
+        "abierto_en": float(cfg("abierto_en", 0) or 0),
+        "cerrado_en": float(cfg("cerrado_en", 0) or 0),
+        "servidor_ahora": time.time(),
+        "modo_sorpresa": cfg("modo_sorpresa") == "1",
+        "reloj_global": cfg("reloj_global", "1") == "1",
+        "conteo": {
+            "inscritos": sum(cuenta.values()) - cuenta.get("descalificado", 0),
+            "en_curso": cuenta.get("en_curso", 0),
+            "finalizados": cuenta.get("finalizado", 0),
+        },
+    }
     ranking = clasificacion()
     if estado == "resultados" or cfg("modo_sorpresa") != "1":
-        datos["ranking"] = [{k: f[k] for k in ("puesto", "nombre", "colegio", "grado", "total", "puntos")}
-                            for f in ranking[:10]]
+        datos["ranking"] = [
+            {k: f[k] for k in ("puesto", "nombre", "colegio", "grado", "total", "puntos")} for f in ranking[:10]
+        ]
     if estado in ("cerrado", "resultados"):
         datos["experimento"] = experimento()
     return datos
@@ -438,64 +535,158 @@ def publico():
 def resumen_admin():
     ahora = time.time()
     rank = {f["id"]: f for f in clasificacion()}
-    resp_count = {r["participante_id"]: r["n"] for r in
-                  DB.execute("SELECT participante_id, COUNT(*) n FROM respuestas GROUP BY participante_id").fetchall()}
+    resp_count = {
+        r["participante_id"]: r["n"]
+        for r in DB.execute("SELECT participante_id, COUNT(*) n FROM respuestas GROUP BY participante_id").fetchall()
+    }
     total_preg = len(PREGUNTAS)
     filas = []
     for p in DB.execute("SELECT * FROM participantes ORDER BY id").fetchall():
         restante = max(0, p["inicio"] + duracion_seg() - ahora) if p["estado"] == "en_curso" else None
         f = rank.get(p["id"], {})
-        filas.append({"id": p["id"], "codigo": p["codigo"], "nombre": p["nombre"], "colegio": p["colegio"],
-                      "grado": p["grado"], "integrantes": p["integrantes"], "grupo": p["grupo"],
-                      "estado": p["estado"], "respondidas": resp_count.get(p["id"], 0),
-                      "total_preguntas": sum(visible_para(p, q) for _, q in PREGUNTAS.values()),
-                      "puntos": round(p["puntos"], 2), "bono": round(p["bono"], 2), "total": round(p["total"], 2),
-                      "tiempo_usado": p["tiempo_usado"], "tiempo_respuestas": p["tiempo_respuestas"],
-                      "restante_seg": restante, "salidas": p["salidas"],
-                      "puesto": f.get("puesto"), "nota": f.get("nota"), "motivo_fin": p["motivo_fin"]})
-    return {"config": {k: cfg(k) for k in ("estado", "sala", "modo_sorpresa", "retro", "duracion_min", "evento",
-                                           "abierto_en", "cerrado_en", "reloj_global")},
-            "urls": URLS, "banco": {"version": BANCO.get("version"), "preguntas": total_preg,
-                                    "puntos_totales": PUNTOS_TOTALES, "bono_max": BONO_MAX},
-            "participantes": filas, "experimento": experimento(), "servidor_ahora": ahora}
+        filas.append(
+            {
+                "id": p["id"],
+                "codigo": p["codigo"],
+                "nombre": p["nombre"],
+                "colegio": p["colegio"],
+                "grado": p["grado"],
+                "integrantes": p["integrantes"],
+                "grupo": p["grupo"],
+                "estado": p["estado"],
+                "respondidas": resp_count.get(p["id"], 0),
+                "total_preguntas": sum(visible_para(p, q) for _, q in PREGUNTAS.values()),
+                "puntos": round(p["puntos"], 2),
+                "bono": round(p["bono"], 2),
+                "total": round(p["total"], 2),
+                "tiempo_usado": p["tiempo_usado"],
+                "tiempo_respuestas": p["tiempo_respuestas"],
+                "restante_seg": restante,
+                "salidas": p["salidas"],
+                "puesto": f.get("puesto"),
+                "nota": f.get("nota"),
+                "motivo_fin": p["motivo_fin"],
+            }
+        )
+    return {
+        "config": {
+            k: cfg(k)
+            for k in (
+                "estado",
+                "sala",
+                "modo_sorpresa",
+                "retro",
+                "duracion_min",
+                "evento",
+                "abierto_en",
+                "cerrado_en",
+                "reloj_global",
+            )
+        },
+        "urls": URLS,
+        "banco": {
+            "version": BANCO.get("version"),
+            "preguntas": total_preg,
+            "puntos_totales": PUNTOS_TOTALES,
+            "bono_max": BONO_MAX,
+        },
+        "participantes": filas,
+        "experimento": experimento(),
+        "servidor_ahora": ahora,
+    }
 
 
 def csv_resultados():
     buf = io.StringIO()
     qids = list(PREGUNTAS)
     w = csv.writer(buf, delimiter=";")
-    w.writerow(["puesto", "codigo", "nombre", "colegio", "grado", "integrantes", "estado", "puntos_sobre_1000",
-                "bono_tiempo", "puntaje_total", "nota_1a5", "tiempo_usado_min", "ultima_respuesta_min",
-                "salidas_de_pestana", "motivo_fin",
-                *qids])
+    w.writerow(
+        [
+            "puesto",
+            "codigo",
+            "nombre",
+            "colegio",
+            "grado",
+            "integrantes",
+            "estado",
+            "puntos_sobre_1000",
+            "bono_tiempo",
+            "puntaje_total",
+            "nota_1a5",
+            "tiempo_usado_min",
+            "ultima_respuesta_min",
+            "salidas_de_pestana",
+            "motivo_fin",
+            *qids,
+        ]
+    )
     rank = {f["id"]: f for f in clasificacion()}
     pts = {}
     for r in DB.execute("SELECT participante_id, pregunta_id, puntos FROM respuestas").fetchall():
         pts.setdefault(r["participante_id"], {})[r["pregunta_id"]] = r["puntos"]
     filas = DB.execute("SELECT * FROM participantes").fetchall()
-    filas = sorted(filas, key=lambda p: (rank.get(p["id"], {}).get("puesto") or 10 ** 6, p["id"]))
+    filas = sorted(filas, key=lambda p: (rank.get(p["id"], {}).get("puesto") or 10**6, p["id"]))
     fmt = lambda v: f"{v:.4f}".replace(".", ",") if isinstance(v, float) else v  # noqa: E731
     for p in filas:
         f = rank.get(p["id"], {})
-        w.writerow([f.get("puesto", ""), p["codigo"], p["nombre"], p["colegio"], p["grado"], p["integrantes"],
-                    p["estado"], fmt(p["puntos"]), fmt(p["bono"]), fmt(p["total"]),
-                    fmt(f["nota"]) if f else "",
-                    fmt(p["tiempo_usado"] / 60) if p["tiempo_usado"] is not None else "",
-                    fmt(p["tiempo_respuestas"] / 60) if p["tiempo_respuestas"] is not None else "", p["salidas"],
-                    p["motivo_fin"] or "", *(fmt(pts.get(p["id"], {}).get(q, "")) for q in qids)])
+        w.writerow(
+            [
+                f.get("puesto", ""),
+                p["codigo"],
+                p["nombre"],
+                p["colegio"],
+                p["grado"],
+                p["integrantes"],
+                p["estado"],
+                fmt(p["puntos"]),
+                fmt(p["bono"]),
+                fmt(p["total"]),
+                fmt(f["nota"]) if f else "",
+                fmt(p["tiempo_usado"] / 60) if p["tiempo_usado"] is not None else "",
+                fmt(p["tiempo_respuestas"] / 60) if p["tiempo_respuestas"] is not None else "",
+                p["salidas"],
+                p["motivo_fin"] or "",
+                *(fmt(pts.get(p["id"], {}).get(q, "")) for q in qids),
+            ]
+        )
     return "﻿" + buf.getvalue()
 
 
 def csv_respuestas():
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=";")
-    w.writerow(["codigo", "nombre", "grupo_experimento", "pregunta", "variante", "respuesta", "fraccion", "puntos",
-                "max_puntos", "segundos_desde_inicio"])
-    for r in DB.execute("SELECT r.*, p.codigo, p.nombre, p.grupo, p.inicio FROM respuestas r JOIN participantes p "
-                        "ON p.id=r.participante_id ORDER BY p.id, r.momento").fetchall():
-        w.writerow([r["codigo"], r["nombre"], r["grupo"], r["pregunta_id"], r["variante"], r["respuesta"],
-                    f"{r['fraccion']:.4f}".replace(".", ","), f"{r['puntos']:.4f}".replace(".", ","), r["max_puntos"],
-                    round(r["momento"] - (r["inicio"] or r["momento"]))])
+    w.writerow(
+        [
+            "codigo",
+            "nombre",
+            "grupo_experimento",
+            "pregunta",
+            "variante",
+            "respuesta",
+            "fraccion",
+            "puntos",
+            "max_puntos",
+            "segundos_desde_inicio",
+        ]
+    )
+    for r in DB.execute(
+        "SELECT r.*, p.codigo, p.nombre, p.grupo, p.inicio FROM respuestas r JOIN participantes p "
+        "ON p.id=r.participante_id ORDER BY p.id, r.momento"
+    ).fetchall():
+        w.writerow(
+            [
+                r["codigo"],
+                r["nombre"],
+                r["grupo"],
+                r["pregunta_id"],
+                r["variante"],
+                r["respuesta"],
+                f"{r['fraccion']:.4f}".replace(".", ","),
+                f"{r['puntos']:.4f}".replace(".", ","),
+                r["max_puntos"],
+                round(r["momento"] - (r["inicio"] or r["momento"])),
+            ]
+        )
     return "﻿" + buf.getvalue()
 
 
@@ -529,17 +720,32 @@ def registrar(d):
         raise ErrorAPI("Escribe tu nombre (o el del equipo).")
     if grado not in ("9", "10", "11"):
         raise ErrorAPI("Elige el grado: 9, 10 u 11.")
-    if DB.execute("SELECT 1 FROM participantes WHERE lower(nombre)=lower(?) AND lower(colegio)=lower(?) AND grado=?",
-                  (nombre, colegio, grado)).fetchone():
-        raise ErrorAPI("Ya hay alguien inscrito con ese nombre en ese colegio y grado. Si eres tú, entra con tu "
-                       "código; si no, agrega tu segundo apellido.")
+    if DB.execute(
+        "SELECT 1 FROM participantes WHERE lower(nombre)=lower(?) AND lower(colegio)=lower(?) AND grado=?",
+        (nombre, colegio, grado),
+    ).fetchone():
+        raise ErrorAPI(
+            "Ya hay alguien inscrito con ese nombre en ese colegio y grado. Si eres tú, entra con tu "
+            "código; si no, agrega tu segundo apellido."
+        )
     n = DB.execute("SELECT COUNT(*) n FROM participantes").fetchone()["n"]
     grupo = "AB"[n % 2]  # asignación alternada: grupos del mismo tamaño para el experimento
     codigo, token = nuevo_codigo(), secrets.token_urlsafe(24)
-    DB.execute("INSERT INTO participantes(codigo, token, nombre, colegio, grado, integrantes, grupo, semilla, creado, "
-               "estado) VALUES(?,?,?,?,?,?,?,?,?, 'registrado')",
-               (codigo, token, nombre, colegio, grado, limpiar(d.get("integrantes"), 200), grupo,
-                secrets.token_hex(8), time.time()))
+    DB.execute(
+        "INSERT INTO participantes(codigo, token, nombre, colegio, grado, integrantes, grupo, semilla, creado, "
+        "estado) VALUES(?,?,?,?,?,?,?,?,?, 'registrado')",
+        (
+            codigo,
+            token,
+            nombre,
+            colegio,
+            grado,
+            limpiar(d.get("integrantes"), 200),
+            grupo,
+            secrets.token_hex(8),
+            time.time(),
+        ),
+    )
     return {"token": token, "codigo": codigo}
 
 
@@ -586,18 +792,24 @@ def responder(p, d):
         raise ErrorAPI("Pregunta no disponible.")
     if DB.execute("SELECT 1 FROM respuestas WHERE participante_id=? AND pregunta_id=?", (p["id"], qid)).fetchone():
         raise ErrorAPI("Esa pregunta ya fue respondida.")
-    if q.get("requiere") and not DB.execute("SELECT 1 FROM respuestas WHERE participante_id=? AND pregunta_id=?",
-                                            (p["id"], q["requiere"])).fetchone():
+    if (
+        q.get("requiere")
+        and not DB.execute(
+            "SELECT 1 FROM respuestas WHERE participante_id=? AND pregunta_id=?", (p["id"], q["requiere"])
+        ).fetchone()
+    ):
         raise ErrorAPI("Primero responde la parte anterior de esta misión.")
     var, cuerpo = resolver(p, q)
     try:
         r = validar_respuesta(cuerpo, d.get("respuesta"))
     except (AssertionError, ValueError, TypeError):
-        raise ErrorAPI("Respuesta incompleta o con formato no válido.")
+        raise ErrorAPI("Respuesta incompleta o con formato no válido.")  # noqa: B904
     frac = fraccion(cuerpo, r)
     pts = frac * q["puntos"]
-    DB.execute("INSERT INTO respuestas VALUES(?,?,?,?,?,?,?,?)",
-               (p["id"], qid, var, json.dumps(r, ensure_ascii=False), frac, pts, q["puntos"], ahora))
+    DB.execute(
+        "INSERT INTO respuestas VALUES(?,?,?,?,?,?,?,?)",
+        (p["id"], qid, var, json.dumps(r, ensure_ascii=False), frac, pts, q["puntos"], ahora),
+    )
     recalcular_puntos(p["id"])
     if cfg("retro") == "1":
         return {"ok": True, "puntos": round(pts, 2), "max": q["puntos"], "fraccion": round(frac, 4)}
@@ -625,12 +837,16 @@ def accion_participante(d):
         raise ErrorAPI("Participante no encontrado.", 404)
     accion = d.get("accion")
     if accion == "descalificar":
-        DB.execute("UPDATE participantes SET estado='descalificado', motivo_fin=? WHERE id=?",
-                   (f"descalificado (antes: {p['estado']})", p["id"]))
+        DB.execute(
+            "UPDATE participantes SET estado='descalificado', motivo_fin=? WHERE id=?",
+            (f"descalificado (antes: {p['estado']})", p["id"]),
+        )
     elif accion == "reactivar" and p["estado"] == "descalificado":
         previo = re.search(r"antes: (\w+)", p["motivo_fin"] or "")
-        DB.execute("UPDATE participantes SET estado=?, motivo_fin=NULL WHERE id=?",
-                   (previo.group(1) if previo else "finalizado", p["id"]))
+        DB.execute(
+            "UPDATE participantes SET estado=?, motivo_fin=NULL WHERE id=?",
+            (previo.group(1) if previo else "finalizado", p["id"]),
+        )
     elif accion == "finalizar":
         finalizar(p, time.time(), "docente")
     elif accion == "eliminar" and p["estado"] in ("registrado", "no_inicio"):
@@ -644,8 +860,10 @@ def reiniciar(d):
         raise ErrorAPI("Escribe BORRAR para confirmar.")
     copia = RUTA_DB.parent / f"copia_reto_{time.strftime('%Y%m%d_%H%M%S')}.db"
     DB.execute("VACUUM INTO ?", (str(copia),))
-    DB.executescript("DELETE FROM respuestas; DELETE FROM eventos; DELETE FROM participantes; "
-                     "DELETE FROM sqlite_sequence WHERE name='participantes';")
+    DB.executescript(
+        "DELETE FROM respuestas; DELETE FROM eventos; DELETE FROM participantes; "
+        "DELETE FROM sqlite_sequence WHERE name='participantes';"
+    )
     for k in ("abierto_en", "cerrado_en"):
         DB.execute("DELETE FROM config WHERE clave=?", (k,))
     set_cfg("estado", "inscripcion")
@@ -653,9 +871,16 @@ def reiniciar(d):
 
 
 # =========================================================================== HTTP
-TIPOS = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
-         ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon",
-         ".json": "application/json; charset=utf-8", ".woff2": "font/woff2"}
+TIPOS = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".ico": "image/x-icon",
+    ".json": "application/json; charset=utf-8",
+    ".woff2": "font/woff2",
+}
 PAGINAS = {"/": "estudiante.html", "/admin": "admin.html", "/tablero": "tablero.html"}
 
 
@@ -688,7 +913,7 @@ class Manejador(BaseHTTPRequestHandler):
         try:
             return json.loads(self.rfile.read(largo) or b"{}")
         except json.JSONDecodeError:
-            raise ErrorAPI("JSON no válido.")
+            raise ErrorAPI("JSON no válido.")  # noqa: B904
 
     def token(self):
         aut = self.headers.get("Authorization", "")
@@ -699,14 +924,14 @@ class Manejador(BaseHTTPRequestHandler):
         return secrets.compare_digest(clave.strip().upper().encode("utf-8"), CLAVE_ADMIN.encode("utf-8"))
 
     # ---- rutas
-    def do_GET(self):
+    def do_GET(self):  # noqa: C901
         url = urlparse(self.path)
         qs = parse_qs(url.query)
         try:
             if url.path in PAGINAS:
                 return self.archivo(WEB / PAGINAS[url.path])
             if url.path.startswith("/static/"):
-                return self.archivo(WEB / url.path[len("/static/"):])
+                return self.archivo(WEB / url.path[len("/static/") :])
             with LOCK:
                 vencer_tiempos()
                 if url.path == "/api/estado":
@@ -722,11 +947,19 @@ class Manejador(BaseHTTPRequestHandler):
                     if url.path == "/api/admin/resumen":
                         return self.enviar(200, resumen_admin())
                     if url.path == "/api/admin/resultados.csv":
-                        return self.enviar(200, csv_resultados(), "text/csv; charset=utf-8",
-                                           {"Content-Disposition": 'attachment; filename="resultados_reto.csv"'})
+                        return self.enviar(
+                            200,
+                            csv_resultados(),
+                            "text/csv; charset=utf-8",
+                            {"Content-Disposition": 'attachment; filename="resultados_reto.csv"'},
+                        )
                     if url.path == "/api/admin/respuestas.csv":
-                        return self.enviar(200, csv_respuestas(), "text/csv; charset=utf-8",
-                                           {"Content-Disposition": 'attachment; filename="respuestas_detalle.csv"'})
+                        return self.enviar(
+                            200,
+                            csv_respuestas(),
+                            "text/csv; charset=utf-8",
+                            {"Content-Disposition": 'attachment; filename="respuestas_detalle.csv"'},
+                        )
             raise ErrorAPI("No encontrado.", 404)
         except ErrorAPI as e:
             self.enviar(e.codigo, {"error": str(e)})
@@ -734,7 +967,7 @@ class Manejador(BaseHTTPRequestHandler):
             print("[error]", repr(e), file=sys.stderr)
             self.enviar(500, {"error": "Error interno del servidor."})
 
-    def do_POST(self):
+    def do_POST(self):  # noqa: C901
         url = urlparse(self.path)
         qs = parse_qs(url.query)
         try:
@@ -828,6 +1061,7 @@ def ips_locales():
 
 class ServidorDual(ThreadingHTTPServer):
     """Escucha en IPv6 e IPv4 a la vez: así «localhost» (que Windows resuelve a ::1) responde sin demora."""
+
     address_family = socket.AF_INET6
     daemon_threads = True
 
@@ -853,11 +1087,17 @@ def main():
     global DB, CLAVE_ADMIN, URLS, RUTA_DB
     ap = argparse.ArgumentParser(description="Servidor del reto Detectives de la desinformación")
     ap.add_argument("--puerto", type=int, default=int(os.environ.get("PORT", 8000)))  # PORT: lo fijan los hostings
-    ap.add_argument("--clave", default=os.environ.get("RETO_CLAVE", ""),
-                    help="clave del panel docente (si no se da, se genera y se guarda en datos/)")
+    ap.add_argument(
+        "--clave",
+        default=os.environ.get("RETO_CLAVE", ""),
+        help="clave del panel docente (si no se da, se genera y se guarda en datos/)",
+    )
     ap.add_argument("--db", default=str(DATOS / "reto.db"))
-    ap.add_argument("--url-publica", default=os.environ.get("RETO_URL_PUBLICA", ""),
-                    help="dirección pública (https://...) si el reto se abre por internet con un túnel o un hosting")
+    ap.add_argument(
+        "--url-publica",
+        default=os.environ.get("RETO_URL_PUBLICA", ""),
+        help="dirección pública (https://...) si el reto se abre por internet con un túnel o un hosting",
+    )
     a = ap.parse_args()
 
     DATOS.mkdir(parents=True, exist_ok=True)

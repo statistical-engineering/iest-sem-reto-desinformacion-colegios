@@ -16,6 +16,7 @@ de acierto y verifica que:
     python pruebas/simulacro.py          (40 estudiantes)
     python pruebas/simulacro.py 80
 """
+
 import json
 import random
 import sqlite3
@@ -57,7 +58,7 @@ def comprobar(condicion, mensaje):
         FALLAS.append(mensaje)
 
 
-def respuesta_para(q, cuerpo, acertar):
+def respuesta_para(q, cuerpo, acertar):  # noqa: C901
     """Construye una respuesta correcta (acertar=True) o incorrecta para la pregunta resuelta."""
     t, ok = q["tipo"], cuerpo.get("respuesta")
     if t in ("compartir", "recordatorio"):
@@ -75,8 +76,14 @@ def respuesta_para(q, cuerpo, acertar):
     if t == "ordenar":
         return list(ok) if acertar else list(reversed(ok))
     if t == "construir":
-        return {k: (v if acertar else next(o["id"] for pt in cuerpo["partes"] if pt["id"] == k
-                                           for o in pt["opciones"] if o["id"] != v)) for k, v in ok.items()}
+        return {
+            k: (
+                v
+                if acertar
+                else next(o["id"] for pt in cuerpo["partes"] if pt["id"] == k for o in pt["opciones"] if o["id"] != v)
+            )
+            for k, v in ok.items()
+        }
     if t == "texto":
         return "Mi conclusión: las elecciones cambian la agenda del verificador (gráfico B), no el volumen (A)."
     if t == "estimar":
@@ -91,13 +98,16 @@ def respuesta_para(q, cuerpo, acertar):
     raise ValueError(t)
 
 
-def main(n_estudiantes):
+def main(n_estudiantes):  # noqa: C901
     import servidor as S  # mismo banco y misma lógica de variantes que el servidor
 
     tmp = Path(tempfile.mkdtemp(prefix="simulacro_reto_"))
     db = tmp / "simulacro.db"
-    proc = subprocess.Popen([sys.executable, str(APP / "servidor.py"), "--puerto", str(PUERTO), "--clave", CLAVE,
-                             "--db", str(db)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        [sys.executable, str(APP / "servidor.py"), "--puerto", str(PUERTO), "--clave", CLAVE, "--db", str(db)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+    )
     try:
         for _ in range(50):
             try:
@@ -117,16 +127,22 @@ def main(n_estudiantes):
         estudiantes = []
         for i in range(n_estudiantes):
             grado = random.choice("9 10 11".split())
-            st, r = pedir("/api/registro", {"nombre": f"Estudiante {i:02d}", "colegio": "Colegio Simulado",
-                                            "grado": grado, "sala": sala})
+            st, r = pedir(
+                "/api/registro",
+                {"nombre": f"Estudiante {i:02d}", "colegio": "Colegio Simulado", "grado": grado, "sala": sala},
+            )
             assert st == 200, r
             estudiantes.append({**r, "grado": grado, "nivel": i / max(1, n_estudiantes - 1)})
         comprobar(len({e["codigo"] for e in estudiantes}) == n_estudiantes, "códigos únicos para todos")
-        st, r = pedir("/api/registro", {"nombre": "estudiante 00", "colegio": "colegio simulado",
-                                        "grado": estudiantes[0]["grado"], "sala": sala})
+        st, r = pedir(
+            "/api/registro",
+            {"nombre": "estudiante 00", "colegio": "colegio simulado", "grado": estudiantes[0]["grado"], "sala": sala},
+        )
         comprobar(st == 400, "no deja inscribir dos veces el mismo nombre, colegio y grado")
         st, r = pedir("/api/entrar", {"codigo": estudiantes[0]["codigo"].lower()})
-        comprobar(st == 200 and r["token"] == estudiantes[0]["token"], "entrar de nuevo con el código recupera la sesión")
+        comprobar(
+            st == 200 and r["token"] == estudiantes[0]["token"], "entrar de nuevo con el código recupera la sesión"
+        )
 
         st, r = pedir("/api/comenzar", {}, token=estudiantes[0]["token"])
         comprobar(st == 400, "no se puede empezar antes de que el docente abra el reto")
@@ -148,8 +164,10 @@ def main(n_estudiantes):
             p = filas[tok]
             ids_vistos = {q["id"] for m in est["misiones"] for q in m["preguntas"]}
             if k < 2:
-                comprobar(("m1_recordatorio" in ids_vistos) == (p["grupo"] == "B"),
-                          f"grupo {p['grupo']}: recordatorio {'visible' if p['grupo'] == 'B' else 'oculto'}")
+                comprobar(
+                    ("m1_recordatorio" in ids_vistos) == (p["grupo"] == "B"),
+                    f"grupo {p['grupo']}: recordatorio {'visible' if p['grupo'] == 'B' else 'oculto'}",
+                )
             if k == 0:
                 st, r = pedir("/api/responder", {"pregunta": "m1_veracidad", "respuesta": {}}, token=tok)
                 comprobar(st == 400, "la fase «¿es verdad?» exige responder antes «¿lo compartirías?»")
@@ -163,8 +181,11 @@ def main(n_estudiantes):
                         acertar = False
                     else:
                         acertar = random.random() < 0.25 + 0.7 * e["nivel"]
-                    st, r = pedir("/api/responder", {"pregunta": q["id"], "respuesta":
-                                                     respuesta_para(q, cuerpo, acertar)}, token=tok)
+                    st, r = pedir(
+                        "/api/responder",
+                        {"pregunta": q["id"], "respuesta": respuesta_para(q, cuerpo, acertar)},
+                        token=tok,
+                    )
                     assert st == 200, (q["id"], r)
             if k == 0:
                 st, r = pedir("/api/responder", {"pregunta": "m3_sesgo", "respuesta": "a"}, token=tok)
@@ -172,14 +193,21 @@ def main(n_estudiantes):
             if k < n_estudiantes - 3:
                 time.sleep(random.uniform(0, 0.05))
                 pedir("/api/finalizar", {}, token=tok)
-        comprobar(all(k not in texto_estado for k in ('"respuesta"', '"explicacion"', '"tolerancia"', "REVISION")),
-                  "el navegador nunca recibe respuestas correctas ni explicaciones durante el reto")
+        comprobar(
+            all(k not in texto_estado for k in ('"respuesta"', '"explicacion"', '"tolerancia"', "REVISION")),
+            "el navegador nunca recibe respuestas correctas ni explicaciones durante el reto",
+        )
 
         print("\n2b) Reloj global")
         inicios = {r[0] for r in con.execute("SELECT inicio FROM participantes WHERE inicio IS NOT NULL")}
         abierto_en = float(con.execute("SELECT valor FROM config WHERE clave='abierto_en'").fetchone()[0])
-        comprobar(inicios == {abierto_en}, "reloj global: todos los intentos comparten la misma hora de inicio (la de abrir el reto)")
-        st, r = pedir("/api/registro", {"nombre": "Llegó tarde", "colegio": "Colegio Simulado", "grado": "10", "sala": sala})
+        comprobar(
+            inicios == {abierto_en},
+            "reloj global: todos los intentos comparten la misma hora de inicio (la de abrir el reto)",
+        )
+        st, r = pedir(
+            "/api/registro", {"nombre": "Llegó tarde", "colegio": "Colegio Simulado", "grado": "10", "sala": sala}
+        )
         tarde = r
         con.execute("UPDATE config SET valor=? WHERE clave='abierto_en'", (str(abierto_en - 6000),))
         con.commit()
@@ -194,7 +222,7 @@ def main(n_estudiantes):
 
         print("\n3) Tiempo")
         ultimos = [e["token"] for e in estudiantes[-3:]]
-        con.execute(f"UPDATE participantes SET inicio = inicio - 6000 WHERE token IN ({','.join('?' * 3)})", ultimos)
+        con.execute(f"UPDATE participantes SET inicio = inicio - 6000 WHERE token IN ({','.join('?' * 3)})", ultimos)  # noqa: S608
         con.commit()
         st, est = pedir("/api/estado", token=ultimos[0])
         comprobar(est["participante"]["estado"] == "finalizado", "al vencerse los 90 min el intento se entrega solo")
@@ -209,7 +237,10 @@ def main(n_estudiantes):
         comprobar(cero["puntos"] < 1e-6, f"todo incorrecto = 0 puntos (obtuvo {cero['puntos']})")
         comprobar(0 < perfecto["bono"] <= 20, f"bono de tiempo entre 0 y 20 (obtuvo {perfecto['bono']})")
         vencidos = [por_codigo[e["codigo"]] for e in estudiantes[-3:]]
-        comprobar(all(v["bono"] == 0 for v in vencidos), "quien responde su última pregunta al final del tiempo no recibe bono")
+        comprobar(
+            all(v["bono"] == 0 for v in vencidos),
+            "quien responde su última pregunta al final del tiempo no recibe bono",
+        )
 
         print("\n5) Clasificación")
         pedir("/api/admin/estado", {"estado": "resultados"}, admin=True)
@@ -219,18 +250,26 @@ def main(n_estudiantes):
         orden = sorted((f for f in adm["participantes"] if f["puesto"]), key=lambda f: f["puesto"])
         comprobar(all(a["total"] >= b["total"] for a, b in zip(orden, orden[1:])), "ordenados por puntaje total")
         totales = [f["total"] for f in orden]
-        print(f"     puntajes distintos: {len(set(totales))} de {len(totales)} · podio: "
-              + ", ".join(f"{f['puesto']}.º {f['nombre']} {f['total']:.2f}" for f in orden[:3]))
+        print(
+            f"     puntajes distintos: {len(set(totales))} de {len(totales)} · podio: "
+            + ", ".join(f"{f['puesto']}.º {f['nombre']} {f['total']:.2f}" for f in orden[:3])
+        )
 
         print("\n6) Revisión, experimento y exportaciones")
         st, est = pedir("/api/estado", token=estudiantes[5]["token"])
-        comprobar("revision" in est and est["participante"].get("puesto"), "con resultados publicados hay revisión y puesto")
+        comprobar(
+            "revision" in est and est["participante"].get("puesto"), "con resultados publicados hay revisión y puesto"
+        )
         _, pub = pedir("/api/publico")
         exp = pub.get("experimento", {})
-        comprobar(exp.get("listo") and exp["n"] == n_estudiantes, "el experimento de clase usa a todos los participantes")
+        comprobar(
+            exp.get("listo") and exp["n"] == n_estudiantes, "el experimento de clase usa a todos los participantes"
+        )
         comprobar(len(pub.get("ranking", [])) == min(10, n_estudiantes), "el tablero muestra el top 10")
         st, csv1 = pedir("/api/admin/resultados.csv", admin=True, crudo=True)
-        comprobar(st == 200 and csv1.count("\n") == n_estudiantes + 1, "CSV de resultados con una fila por participante")
+        comprobar(
+            st == 200 and csv1.count("\n") == n_estudiantes + 1, "CSV de resultados con una fila por participante"
+        )
         st, csv2 = pedir("/api/admin/respuestas.csv", admin=True, crudo=True)
         comprobar(st == 200 and csv2.count("\n") > n_estudiantes * 30, "CSV con el detalle de cada respuesta")
 
@@ -239,8 +278,10 @@ def main(n_estudiantes):
         comprobar(st == 400, "el reinicio exige escribir BORRAR")
         st, r = pedir("/api/admin/reiniciar", {"confirmar": "BORRAR"}, admin=True)
         _, pub = pedir("/api/publico")
-        comprobar(st == 200 and pub["conteo"]["inscritos"] == 0 and (tmp / r["copia"]).exists(),
-                  "reiniciar deja copia de seguridad y empieza de cero")
+        comprobar(
+            st == 200 and pub["conteo"]["inscritos"] == 0 and (tmp / r["copia"]).exists(),
+            "reiniciar deja copia de seguridad y empieza de cero",
+        )
         con.close()
     finally:
         proc.terminate()

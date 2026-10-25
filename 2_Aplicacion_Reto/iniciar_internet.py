@@ -9,6 +9,7 @@ Funciona en Windows, Mac y Linux. Los estudiantes entran desde CUALQUIER red con
 El computador debe quedar encendido, con internet y esta ventana abierta durante todo el reto.
 El enlace cambia cada vez que se inicia. La primera vez descarga la herramienta `cloudflared` (una sola vez).
 """
+
 import argparse
 import os
 import platform
@@ -102,10 +103,11 @@ def mantener_despierto():
     try:
         if os.name == "nt":
             import ctypes
+
             ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001 | 0x00000002)
         elif platform.system() == "Darwin" and shutil.which("caffeinate"):
             subprocess.Popen(["caffeinate", "-dis", "-w", str(os.getpid())])
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001, S110
         pass
 
 
@@ -121,7 +123,9 @@ def main():
     a, extra = ap.parse_known_args()
 
     if puerto_ocupado(a.puerto):
-        print(f"\n  Ya hay algo abierto en el puerto {a.puerto} (¿otra ventana del reto?). Cierrala y vuelve a intentar.")
+        print(
+            f"\n  Ya hay algo abierto en el puerto {a.puerto} (¿otra ventana del reto?). Cierrala y vuelve a intentar."
+        )
         return 1
     try:
         cf = buscar_cloudflared()
@@ -132,8 +136,11 @@ def main():
     log = tempfile.NamedTemporaryFile(prefix="tunel_", suffix=".log", delete=False)
     log.close()
     with open(log.name, "wb") as f:
-        tunel = subprocess.Popen([cf, "tunnel", "--no-autoupdate", "--url", f"http://localhost:{a.puerto}"],
-                                 stdout=f, stderr=subprocess.STDOUT)
+        tunel = subprocess.Popen(
+            [cf, "tunnel", "--no-autoupdate", "--url", f"http://localhost:{a.puerto}"],
+            stdout=f,
+            stderr=subprocess.STDOUT,
+        )
     try:
         print("\n  Creando el enlace publico (unos segundos)...")
         url = esperar_url(log.name, tunel)
@@ -143,8 +150,10 @@ def main():
             return 1
         mantener_despierto()
         env = dict(os.environ, PYTHONIOENCODING="utf-8")
-        subprocess.run([sys.executable, str(AQUI / "servidor.py"), "--puerto", str(a.puerto),
-                        "--url-publica", url, *extra], env=env)
+        subprocess.run(
+            [sys.executable, str(AQUI / "servidor.py"), "--puerto", str(a.puerto), "--url-publica", url, *extra],
+            env=env,
+        )
     except KeyboardInterrupt:
         pass
     finally:

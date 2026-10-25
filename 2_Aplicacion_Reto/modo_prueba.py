@@ -8,6 +8,7 @@ los datos del reto real. Cada vez que se abre empieza de cero.
     python modo_prueba.py            # empieza de cero
     python modo_prueba.py --seguir   # conserva lo que se hizo en la revisión anterior
 """
+
 import json
 import shutil
 import socket
@@ -34,8 +35,12 @@ def puerto_ocupado():
 
 
 def admin(ruta, datos):
-    req = urllib.request.Request(BASE + ruta, data=json.dumps(datos).encode(), method="POST",
-                                 headers={"Content-Type": "application/json", "X-Clave-Admin": CLAVE})
+    req = urllib.request.Request(
+        BASE + ruta,
+        data=json.dumps(datos).encode(),
+        method="POST",
+        headers={"Content-Type": "application/json", "X-Clave-Admin": CLAVE},
+    )
     urllib.request.urlopen(req, timeout=5).read()
 
 
@@ -48,9 +53,13 @@ def main():
         shutil.rmtree(DATOS, ignore_errors=True)
     DATOS.mkdir(exist_ok=True)
 
-    proc = subprocess.Popen([sys.executable, str(SERVIDOR), "--puerto", str(PUERTO), "--clave", CLAVE,
-                             "--db", str(DATOS / "reto.db")],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    proc = subprocess.Popen(
+        [sys.executable, str(SERVIDOR), "--puerto", str(PUERTO), "--clave", CLAVE, "--db", str(DATOS / "reto.db")],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+    )
     for _ in range(60):
         if puerto_ocupado():
             break
