@@ -2,9 +2,13 @@
 chcp 65001 >nul
 title Regenerar analisis, banco de preguntas y clave de respuestas
 cd /d "%~dp0scripts"
-set PY=python
-where py >nul 2>nul
-if not errorlevel 1 set PY=py -3
+where uv >nul 2>nul
+if errorlevel 1 (
+  echo  Falta uv: https://docs.astral.sh/uv/getting-started/installation/
+  goto error
+)
+rem uv usa las versiones exactas de uv.lock (pandas, numpy, matplotlib).
+set PY=uv run --group datos python
 echo.
 echo  1/4  Analisis de los datos (tablas, graficas y ANALISIS.md)...
 %PY% generar_analisis.py || goto error

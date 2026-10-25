@@ -31,10 +31,15 @@ misma carpeta, así que cualquier persona del semillero puede repetirlo.
 ```
 
 **Programas usados:** Python 3.12 con `pandas` (datos), `numpy` (cálculos) y `matplotlib`
-(gráficas del análisis). La aplicación del reto usa solo la biblioteca estándar de Python y, en el
-navegador, HTML, CSS y JavaScript sin librerías externas (sus gráficos se dibujan en SVG).
+(gráficas del análisis). Las versiones exactas quedan fijas en `uv.lock`, en la raíz del repositorio,
+y las instala [uv](https://docs.astral.sh/uv/): así todos regeneran con las mismas versiones. Con
+pandas 2.3.3, numpy 2.5.4 y matplotlib 3.11.2 el banco sale idéntico al versionado (misma
+«version» del banco). Con pandas 3 el análisis falla, por eso `pyproject.toml` pide `pandas<3`.
+La aplicación del reto declara sus dependencias en el mismo `pyproject.toml` (hoy no tiene: usa solo
+la biblioteca estándar) y, en el navegador, HTML, CSS y JavaScript sin librerías externas (sus
+gráficos se dibujan en SVG).
 
-**Para repetir todo:** doble clic en `REGENERAR_TODO.bat`. Corre, en orden: análisis → banco de
+**Para repetir todo:** instalar uv una vez y hacer doble clic en `REGENERAR_TODO.bat` (o `.command`). Corre, en orden: análisis → banco de
 preguntas → clave de respuestas → simulacro de la aplicación.
 
 ---

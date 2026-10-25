@@ -1,0 +1,24 @@
+[project]
+name = "reto-desinformacion-colegios"
+version = "0.1.0"
+description = "Reto «Detectives de la desinformación»: app del reto, análisis de datos y banco de preguntas."
+readme = "README.md"
+requires-python = ">=3.12"
+# Dependencias de la app (2_Aplicacion_Reto/). Hoy usa solo la biblioteca estándar.
+dependencies = []
+
+[dependency-groups]
+# Scripts de 4_Codigo_y_datos/scripts/: análisis, banco de preguntas y clave de respuestas.
+datos = [
+    "pandas>=2.2,<3",
+    "numpy",
+    "matplotlib",
+]
+# Herramientas del repositorio.
+dev = [
+    "pre-commit==4.6.2",
+]
+
+[tool.uv]
+# El proyecto no se empaqueta: uv solo maneja el entorno y el lockfile.
+package = false
