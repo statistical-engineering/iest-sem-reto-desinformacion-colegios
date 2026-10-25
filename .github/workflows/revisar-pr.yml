@@ -56,7 +56,27 @@ jobs:
           python .github/scripts/revisar_mensaje_commit.py "$RUNNER_TEMP/titulo.txt"
 
       - name: Tamaño (máximo 400 líneas de código)
+        env:
+          TITULO: ${{ github.event.pull_request.title }}
         run: |
+          # Un PR «style:» que solo toca .py sin cambiar su árbol sintáctico queda exento (ADR-008).
+          if [[ "$TITULO" == style:* ]] && python - <<'PY'
+          import ast, os, subprocess, sys
+          cabeza = os.environ["CABEZA"]
+          base = subprocess.run(["git", "merge-base", os.environ["BASE"], cabeza],
+                                capture_output=True, text=True, check=True).stdout.strip()
+          archivos = subprocess.run(["git", "diff", "--name-only", f"{base}...{cabeza}"],
+                                    capture_output=True, text=True, check=True).stdout.split()
+          def arbol(ref, ruta):
+              return ast.dump(ast.parse(subprocess.run(["git", "show", f"{ref}:{ruta}"],
+                                                       capture_output=True, text=True, check=True).stdout))
+          sys.exit(0 if archivos and all(r.endswith(".py") and arbol(base, r) == arbol(cabeza, r)
+                                         for r in archivos) else 1)
+          PY
+          then
+            echo "PR de solo formato: mismo árbol sintáctico en cada .py; exento del límite."
+            exit 0
+          fi
           git diff --numstat "$BASE...$CABEZA" -- . ':(exclude)*.md' ':(exclude)aidlc/' \
             ':(exclude)1_Analisis_de_datos/' ':(exclude)2_Aplicacion_Reto/banco_preguntas.json' ':(exclude)uv.lock' \
             | awk '{a+=$1; b+=$2} END {

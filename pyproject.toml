@@ -17,7 +17,61 @@ datos = [
 # Herramientas del repositorio.
 dev = [
     "pre-commit==4.6.2",
+    "ruff==0.17.0",
 ]
+
+[tool.ruff]
+# Fuente del estilo de Python (.claude/rules/python-code.md, «Estilo»). Misma versión que .pre-commit-config.yaml.
+line-length = 120
+target-version = "py312"
+# La app la arranca el docente con su propio Python: debe correr en 3.9.
+per-file-target-version = { "2_Aplicacion_Reto/**/*.py" = "py39" }
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",  # pycodestyle y pyflakes
+    "I",            # orden de imports
+    "N",            # nombres
+    "D",            # docstrings
+    "ANN",          # anotaciones en firmas
+    "FA",           # from __future__ import annotations
+    "UP",           # sintaxis moderna según target-version
+    "B",            # errores comunes (mutable por defecto, B006)
+    "BLE",          # except Exception sin decidir nada
+    "S110", "S608", # try-except-pass y SQL armado con cadenas
+    "G",            # logging sin f-string
+    "C90",          # complejidad ciclomática
+    "PLR0913",      # número de parámetros
+    "PD002",        # pandas inplace
+    "PGH004",       # noqa siempre con código
+]
+ignore = [
+    "ANN401",       # Any se permite en la frontera; lo revisa el PR
+    "D105", "D107", # métodos mágicos y __init__ sin docstring propio
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/test_*.py" = ["D1"]
+# Código anterior a la regla: sin docstrings, anotaciones ni nombres nuevos todavía.
+# Cada archivo sale de esta lista en el PR que lo refactoriza.
+"2_Aplicacion_Reto/servidor.py" = ["D", "ANN", "N"]
+"2_Aplicacion_Reto/pruebas/simulacro.py" = ["D", "ANN", "N"]
+"2_Aplicacion_Reto/modo_prueba.py" = ["D", "ANN", "N"]
+"2_Aplicacion_Reto/iniciar_internet.py" = ["D", "ANN", "N"]
+"4_Codigo_y_datos/scripts/*.py" = ["D", "ANN", "N"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 6
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.uv]
 # El proyecto no se empaqueta: uv solo maneja el entorno y el lockfile.

@@ -76,6 +76,14 @@ NEVER enviar las respuestas correctas al navegador antes de que el docente publi
 NEVER cambiar el banco ni el código con un reto en curso (fuente: `2_Aplicacion_Reto/LEEME.md`).
 NEVER escribir claves docentes reales ni datos de `2_Aplicacion_Reto/datos/` en archivos versionados.
 
+NEVER cambiar la conducta visible del reto (pantallas, preguntas, puntajes, desempates ni flujo de estados) al refactorizar o migrar; corregir fugas de respuestas antes de «resultados» sí se permite (fuente: entrevista Q1 y Q8). (affirmed 2026-10-24)
+
+NEVER editar `4_Codigo_y_datos/datos_originales/`, la única fuente de verdad de los datos (fuente: `CLAUDE.md`, «Fuente de verdad»). (affirmed 2026-10-24)
+
+NEVER poner respuestas del reto en material para estudiantes (fuente: `CLAUDE.md`, «Convenciones de idioma y código»; `.claude/rules/markdown-docs.md`, «Confidencialidad»). (affirmed 2026-10-24)
+
+NEVER versionar `2_Aplicacion_Reto/.herramientas/`, donde queda el binario de `cloudflared` (fuente: `CLAUDE.md`, «Gotchas»). (affirmed 2026-10-24)
+
 ## Mandated
 
 <!-- Populated by practices-discovery affirmation gate. -->
@@ -85,7 +93,21 @@ NEVER escribir claves docentes reales ni datos de `2_Aplicacion_Reto/datos/` en 
 ALWAYS mantener el banco en exactamente 1.000 puntos y cada clave de datos comprobada con `exigir(...)` (fuente: `construir_banco.py`).
 ALWAYS medir el tiempo en el servidor y mantener la clasificación como orden total sin empates (fuente: docstring de `servidor.py`).
 
+ALWAYS abrir el pull request a `main` solo cuando todo el trabajo esté terminado y el reto esté desplegado y verificado en el hosting elegido (fuente: entrevista Q1). (affirmed 2026-10-24)
+
+ALWAYS fusionar a `main` por pull request revisado por otra persona del semillero (fuente: entrevista Q2). (affirmed 2026-10-24)
+
+ALWAYS desplegar a mano y solo cuando no haya un reto en curso (fuente: entrevista Q6). (affirmed 2026-10-24)
+
+ALWAYS aceptar una sola respuesta por pregunta y participante (fuente: `CLAUDE.md`, «Invariantes que no se rompen»). (affirmed 2026-10-24)
+
+ALWAYS reiniciar el servidor después de regenerar el banco (fuente: `CLAUDE.md`, «Invariantes que no se rompen»). (affirmed 2026-10-24)
+
 ## Corrections
 
 <!-- Project-specific corrections from human feedback. -->
 <!-- Format: NEVER/ALWAYS [behavior] (learned [date]) -->
+- ALWAYS al elegir cómo publicar el reto, evaluar todas las opciones razonables, incluidas las que proponga el equipo (por ejemplo GitHub Pages), y entre las que cumplen todos los requisitos elegir la más parsimoniosa: menos piezas, servicios y cambios de código (fuente: nota del humano en Requirements Analysis, Tradeoff). (learned 2026-10-24) <!-- cid:261024-publicar-reto-nube:requirements-analysis:b8492e53143eb8c77bf3f5d03bc43a0e4447da12a7218f17e45a4cd823968727 -->
+- ALWAYS manejar las dependencias con uv (pyproject.toml declara, uv.lock fija versiones, Python 3.12); la app puede tener dependencias y esto reemplaza en «Tech Stack» la línea «App: solo biblioteca estándar de Python 3.9+»; cada paquete nuevo requiere aprobación del humano; los scripts de datos usan el grupo datos con pandas<3 porque pandas 3 rompe generar_analisis.py (fuente: decisión del humano, 2026-10-25). (learned 2026-10-25) <!-- cid:261024-publicar-reto-nube:requirements-analysis:ccb892a2d2ef34ca50d05696616e8e8621a6229c4111983817d49e7ce536b61f -->
+- ALWAYS tratar el repositorio como público (decisión del humano, 2026-10-25, riesgo aceptado): reemplaza en «Deployment» la regla «El repositorio debe ser privado»; 3_Guia_docente/ y banco_preguntas.json quedan visibles en internet, así que nunca se versionan claves docentes ni datos de participantes. (learned 2026-10-25) <!-- cid:261024-publicar-reto-nube:requirements-analysis:0bcf47213f839a50d767faed53a1d8818e2fe6d63c9c6ea3ced38a517d162859 -->
+- ALWAYS dejar la arquitectura y los patrones de diseño en los ADR de cada intención (aidlc/spaces/default/intents/<intención>/…/decisions.md); las reglas .claude/rules/<lenguaje>-code.md solo fijan convenciones del lenguaje comprobables con herramienta o leyendo el archivo. Reemplaza en «Code Style» el paréntesis «(núcleo funcional con E/S en los bordes, sin abstracción prematura, …)» (fuente: decisión del humano, 2026-10-25). (learned 2026-10-25) <!-- cid:261024-publicar-reto-nube:domain-design:85e55c9776c50b9d1e792ea30c22090ca560e224ec98f03409073426c1d2ae06 -->

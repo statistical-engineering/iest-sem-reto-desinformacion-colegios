@@ -1,6 +1,6 @@
 # =============================================================================
 # Reto «Detectives de la desinformación» - configuración de pre-commit
-# Adaptada del proyecto FDN. Sin linter ni formateador de Python (decisión del equipo).
+# Adaptada del proyecto FDN. Python con ruff (configuración en pyproject.toml, [tool.ruff]).
 # Uso (pre-commit ya instalado en la máquina):
 #   pre-commit install                 # instala los ganchos pre-commit, commit-msg y pre-push
 #   pre-commit run --all-files         # revisa todo el repositorio
@@ -50,6 +50,17 @@ repos:
     # Python: solo sintaxis y puntos de depuración olvidados (no es un linter de estilo).
     - id: check-ast
     - id: debug-statements
+
+# -------------------------
+# PYTHON: FORMATO Y LINT
+# -------------------------
+# Misma versión que el grupo dev de pyproject.toml; las reglas viven en [tool.ruff].
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.17.0
+  hooks:
+    - id: ruff-check
+      args: [--fix]
+    - id: ruff-format
 
 # -------------------------
 # REGLAS DEL RETO

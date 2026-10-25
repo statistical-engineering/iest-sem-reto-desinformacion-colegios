@@ -1,0 +1,289 @@
+{
+  "stage": "domain-design",
+  "upstream_ids": [
+    "FR1.1",
+    "FR1.2",
+    "FR1.3",
+    "FR2.1",
+    "FR2.2",
+    "FR2.3",
+    "FR2.4",
+    "FR3.1",
+    "FR3.2",
+    "FR3.3",
+    "FR4.1",
+    "FR4.2",
+    "FR4.3",
+    "FR5.1",
+    "FR5.2",
+    "FR5.3",
+    "FR5.4",
+    "FR5.5",
+    "FR6.1",
+    "FR6.2",
+    "FR6.3",
+    "FR7.1",
+    "FR7.2",
+    "FR7.3",
+    "FR7.4",
+    "FR7.5",
+    "FR7.6",
+    "FR8.1",
+    "FR8.2",
+    "FR8.3",
+    "FR9.1",
+    "FR9.2",
+    "FR9.3",
+    "FR9.4",
+    "FR9.5",
+    "FR10.1",
+    "FR10.2",
+    "FR10.3",
+    "FR10.4",
+    "FR10.5",
+    "FR11.1",
+    "FR11.2",
+    "FR11.3",
+    "FR11.4",
+    "FR11.5",
+    "FR11.6",
+    "FR11.7"
+  ],
+  "coverage": [
+    {
+      "id": "FR1.1",
+      "status": "OK",
+      "target": "CicloDeSala"
+    },
+    {
+      "id": "FR1.2",
+      "status": "OK",
+      "target": "CicloDeSala"
+    },
+    {
+      "id": "FR1.3",
+      "status": "OK",
+      "target": "Inscripcion"
+    },
+    {
+      "id": "FR2.1",
+      "status": "OK",
+      "target": "Calificacion"
+    },
+    {
+      "id": "FR2.2",
+      "status": "OK",
+      "target": "Calificacion"
+    },
+    {
+      "id": "FR2.3",
+      "status": "OK",
+      "target": "Clasificacion"
+    },
+    {
+      "id": "FR2.4",
+      "status": "OK",
+      "target": "Examen"
+    },
+    {
+      "id": "FR3.1",
+      "status": "OK",
+      "target": "Examen"
+    },
+    {
+      "id": "FR3.2",
+      "status": "OK",
+      "target": "CicloDeSala"
+    },
+    {
+      "id": "FR3.3",
+      "status": "OK",
+      "target": "CicloDeSala"
+    },
+    {
+      "id": "FR4.1",
+      "status": "OK",
+      "target": "ApiHttp"
+    },
+    {
+      "id": "FR4.2",
+      "status": "OK",
+      "target": "ApiHttp"
+    },
+    {
+      "id": "FR4.3",
+      "status": "OK",
+      "target": "Exportacion"
+    },
+    {
+      "id": "FR5.1",
+      "status": "Deferred",
+      "target": "enlace fijo: lo decide el ADR del hosting (NFR Requirements, NFR Design, Infrastructure Design)"
+    },
+    {
+      "id": "FR5.2",
+      "status": "N/A",
+      "target": "proceso de despliegue manual, no es un bloque de código; va en PUBLICAR_EN_INTERNET.md"
+    },
+    {
+      "id": "FR5.3",
+      "status": "N/A",
+      "target": "flujo de ramas del equipo, no es un bloque de código"
+    },
+    {
+      "id": "FR5.4",
+      "status": "OK",
+      "target": "Arranque"
+    },
+    {
+      "id": "FR5.5",
+      "status": "Deferred",
+      "target": "paridad si se reescribe el servidor: depende del ADR del hosting"
+    },
+    {
+      "id": "FR6.1",
+      "status": "OK",
+      "target": "Resultados"
+    },
+    {
+      "id": "FR6.2",
+      "status": "OK",
+      "target": "Banco"
+    },
+    {
+      "id": "FR6.3",
+      "status": "N/A",
+      "target": "comprobaciones nuevas en pruebas/simulacro.py; las fija Build and Test"
+    },
+    {
+      "id": "FR7.1",
+      "status": "OK",
+      "target": "Banco, Calificacion, Clasificacion, CicloDeSala, LimpiezaEntrada, Experimento"
+    },
+    {
+      "id": "FR7.2",
+      "status": "OK",
+      "target": "ApiHttp"
+    },
+    {
+      "id": "FR7.3",
+      "status": "OK",
+      "target": "Persistencia"
+    },
+    {
+      "id": "FR7.4",
+      "status": "OK",
+      "target": "CicloDeSala"
+    },
+    {
+      "id": "FR7.5",
+      "status": "Deferred",
+      "target": "lista priorizada de refactors: Units Generation y Delivery Planning"
+    },
+    {
+      "id": "FR7.6",
+      "status": "N/A",
+      "target": "convención de idioma y dependencias, no es un bloque de código"
+    },
+    {
+      "id": "FR8.1",
+      "status": "N/A",
+      "target": "documentación PUBLICAR_EN_INTERNET.md, se escribe en Code Generation"
+    },
+    {
+      "id": "FR8.2",
+      "status": "N/A",
+      "target": "documentación de cierre del reto, se escribe en Code Generation"
+    },
+    {
+      "id": "FR8.3",
+      "status": "N/A",
+      "target": "corrección de documentación, se escribe en Code Generation"
+    },
+    {
+      "id": "FR9.1",
+      "status": "OK",
+      "target": "Exportacion"
+    },
+    {
+      "id": "FR9.2",
+      "status": "OK",
+      "target": "Exportacion"
+    },
+    {
+      "id": "FR9.3",
+      "status": "N/A",
+      "target": "diccionario de datos en 4_Codigo_y_datos/, es documentación"
+    },
+    {
+      "id": "FR9.4",
+      "status": "N/A",
+      "target": "organización del Drive del semillero, es un proceso fuera del código"
+    },
+    {
+      "id": "FR9.5",
+      "status": "OK",
+      "target": "Acceso"
+    },
+    {
+      "id": "FR10.1",
+      "status": "OK",
+      "target": "LimpiezaEntrada"
+    },
+    {
+      "id": "FR10.2",
+      "status": "OK",
+      "target": "LimpiezaEntrada"
+    },
+    {
+      "id": "FR10.3",
+      "status": "OK",
+      "target": "CatalogoColegios"
+    },
+    {
+      "id": "FR10.4",
+      "status": "OK",
+      "target": "LimpiezaEntrada"
+    },
+    {
+      "id": "FR10.5",
+      "status": "OK",
+      "target": "LimpiezaEntrada"
+    },
+    {
+      "id": "FR11.1",
+      "status": "OK",
+      "target": "Salas"
+    },
+    {
+      "id": "FR11.2",
+      "status": "OK",
+      "target": "Sala"
+    },
+    {
+      "id": "FR11.3",
+      "status": "OK",
+      "target": "AppEstudiante"
+    },
+    {
+      "id": "FR11.4",
+      "status": "OK",
+      "target": "Resultados"
+    },
+    {
+      "id": "FR11.5",
+      "status": "OK",
+      "target": "Acceso"
+    },
+    {
+      "id": "FR11.6",
+      "status": "OK",
+      "target": "Salas"
+    },
+    {
+      "id": "FR11.7",
+      "status": "N/A",
+      "target": "prueba con varias salas y simulacro sin regresión; las fija Build and Test"
+    }
+  ]
+}
