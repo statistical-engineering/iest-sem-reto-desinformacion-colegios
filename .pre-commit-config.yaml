@@ -2,23 +2,15 @@
 # Reto «Detectives de la desinformación» - configuración de pre-commit
 # Adaptada del proyecto FDN. Sin linter ni formateador de Python (decisión del equipo).
 # Uso (pre-commit ya instalado en la máquina):
-#   pre-commit install                 # instala los ganchos pre-commit y commit-msg
+#   pre-commit install                 # instala los ganchos pre-commit, commit-msg y pre-push
 #   pre-commit run --all-files         # revisa todo el repositorio
+# Los mismos ganchos corren en cada PR (.github/workflows/revisar-pr.yml).
 # =============================================================================
 
 default_install_hook_types:
   - pre-commit
   - commit-msg
-
-# Datos originales (fuente única de verdad) y archivos generados por los scripts: nunca se
-# editan a mano, así que ningún gancho los corrige.
-exclude: >-
-  (?x)^(
-    4_Codigo_y_datos/datos_originales/.*
-    |2_Aplicacion_Reto/banco_preguntas\.json
-    |3_Guia_docente/CLAVE_DE_RESPUESTAS\.md
-    |1_Analisis_de_datos/.*
-  )$
+  - pre-push
 
 repos:
 # -------------------------
@@ -27,24 +19,44 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v5.0.0
   hooks:
+    # Archivos que ningún gancho puede modificar: datos originales (fuente única de verdad),
+    # archivos generados por los scripts y registros de AI-DLC (llevan huellas de integridad).
+    # Solo se excluyen de los ganchos que corrigen archivos; los que solo revisan sí los leen.
     - id: trailing-whitespace
       args: [--markdown-linebreak-ext=md]
+      exclude: &no_modificar >-
+        (?x)^(
+          4_Codigo_y_datos/datos_originales/.*
+          |2_Aplicacion_Reto/banco_preguntas\.json
+          |3_Guia_docente/CLAVE_DE_RESPUESTAS\.md
+          |1_Analisis_de_datos/.*
+          |aidlc/.*
+        )$
     - id: end-of-file-fixer
+      exclude: *no_modificar
     - id: mixed-line-ending
+      exclude: *no_modificar
     - id: check-added-large-files
     - id: detect-private-key
     - id: check-yaml
     - id: check-json
     - id: check-merge-conflict
+    # Nombres de archivo que fallan en Windows (docentes y lanzadores .bat).
+    - id: check-illegal-windows-names
+    - id: check-case-conflict
+    # Lanzadores: los .command y los scripts con #! deben ser ejecutables.
+    - id: check-executables-have-shebangs
+    - id: check-shebang-scripts-are-executable
+    # Python: solo sintaxis y puntos de depuración olvidados (no es un linter de estilo).
+    - id: check-ast
+    - id: debug-statements
 
 # -------------------------
-# DATOS DEL RETO Y ARCHIVOS LOCALES
+# REGLAS DEL RETO
 # -------------------------
-# Bloquea archivos que nunca se versionan aunque se agreguen con «git add -f»:
-# base de datos y clave docente del reto, binario de cloudflared, instrucciones locales
-# de Claude y archivos de entorno.
 - repo: local
   hooks:
+    # Bloquea archivos que nunca se versionan aunque se agreguen con «git add -f».
     - id: prohibir-archivos-privados
       name: prohibir datos del reto y archivos locales
       entry: "Archivo privado o local en el commit; quítalo con «git restore --staged» (ver .gitignore)."
@@ -58,22 +70,44 @@ repos:
           |^\.claude/
           |(^|/)\.env(\..+)?$
         )
+    - id: proteger-datos-originales
+      name: datos_originales/ es de solo lectura
+      entry: python .github/scripts/proteger_datos_originales.py
+      language: python
+      pass_filenames: false
+      always_run: true
+    - id: validar-banco
+      name: banco de preguntas válido y de 1.000 puntos
+      entry: python .github/scripts/validar_banco.py
+      language: python
+      files: ^2_Aplicacion_Reto/banco_preguntas\.json$
+      pass_filenames: false
+    # Los .bat se abren en Windows con la página de códigos de la consola: solo ASCII.
+    - id: bat-solo-ascii
+      name: lanzadores .bat solo con caracteres ASCII
+      language: pygrep
+      entry: '[^\x00-\x7F]'
+      files: \.bat$
+    # Tras cambiar el servidor, el banco o las pantallas, el simulacro debe decir «TODO BIEN».
+    - id: simulacro
+      name: simulacro de 40 participantes
+      entry: python 2_Aplicacion_Reto/pruebas/simulacro.py 40
+      language: python
+      files: ^2_Aplicacion_Reto/(servidor\.py|banco_preguntas\.json|web/|pruebas/)
+      pass_filenames: false
+      stages: [pre-push]
 
 # -------------------------
-# MENSAJES DE COMMIT: «tipo: descripción»
-# -------------------------
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v4.0.0
-  hooks:
-    - id: conventional-pre-commit
-      stages: [commit-msg]
-      args: [--verbose]
-
-# -------------------------
-# AUTORÍA: commits y PR son de las personas del equipo
+# MENSAJES DE COMMIT
 # -------------------------
 - repo: local
   hooks:
+    - id: estandar-mensaje-commit
+      name: mensaje de commit con el estándar del equipo
+      entry: python .github/scripts/revisar_mensaje_commit.py
+      language: python
+      stages: [commit-msg]
+    # Autoría: commits y PR son de las personas del equipo.
     - id: prohibir-atribucion-ia
       name: prohibir atribución a la IA en el mensaje de commit
       language: pygrep
