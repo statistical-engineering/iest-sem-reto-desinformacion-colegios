@@ -15,7 +15,8 @@ En internet (PythonAnywhere u otro alojamiento WSGI) se usa `crear_app()`: ver
 wsgi_pythonanywhere.py y «PUBLICAR EN INTERNET/GUIA_PUBLICAR_GRATIS.md».
 
 Reglas que hace cumplir el servidor (no el navegador):
-  * las respuestas correctas nunca salen del servidor hasta publicar resultados;
+  * las respuestas correctas nunca salen del servidor hasta publicar resultados, y los ids de opciones,
+    ítems y partes que ve el navegador son opacos (HMAC por participante);
   * cada pregunta se responde una sola vez;
   * hay UN reloj para todos (todos los colegios a la vez): lo abre, pausa, alarga y
     cierra la organización desde el panel; al vencerse, el reto se cierra solo;
@@ -23,8 +24,10 @@ Reglas que hace cumplir el servidor (no el navegador):
 """
 
 import argparse
+import base64
 import csv
 import hashlib
+import hmac
 import io
 import json
 import os
@@ -112,6 +115,7 @@ def inicializar_config():
         "colegios": "[]",
         "pausas": "[]",
         "extra_seg": "0",
+        "secreto_ids": secrets.token_hex(32),  # fijo: los ids opacos no cambian al reiniciar el servidor
     }
     for k, v in defaults.items():
         if cfg(k) is None:
@@ -128,6 +132,60 @@ def colegios():
         return json.loads(cfg("colegios", "[]") or "[]")
     except json.JSONDecodeError:
         return []
+
+
+# =========================================================================== ids opacos (ADR-006)
+# El navegador nunca ve los ids del banco de opciones, ítems, publicaciones ni partes: ve un HMAC por participante,
+# así que no puede comparar ids entre estudiantes ni deducir nada del banco. Se guarda siempre el id real.
+def espacio_ids(qid, campo):
+    # las publicaciones del Exp. 01 son las mismas en sus tres fases: mismo id opaco en las tres
+    return "m1" if campo in ("items", "publicaciones") and qid.startswith("m1_") else f"{qid}|{campo}"
+
+
+def opaco(p, espacio, real):
+    h = hmac.new(cfg("secreto_ids").encode(), f"{p['semilla']}|{espacio}|{real}".encode(), hashlib.sha256)
+    return "o" + base64.b32encode(h.digest()).decode().lower()[:11]
+
+
+def tabla_ids(p, c):
+    """{espacio: {id real: id opaco}} de una pregunta ya resuelta para este participante."""
+    tabla = {}
+    for campo in ("opciones", "items", "publicaciones", "partes"):
+        espacio = espacio_ids(c["id"], campo)
+        tabla[campo] = {o["id"]: opaco(p, espacio, o["id"]) for o in c.get(campo, [])}
+    for parte in c.get("partes", []):
+        espacio = f"{c['id']}|partes|{parte['id']}"
+        tabla[f"partes|{parte['id']}"] = {o["id"]: opaco(p, espacio, o["id"]) for o in parte["opciones"]}
+    return tabla
+
+
+def traducir(p, c, r, a_real):
+    """Pasa una respuesta de ids opacos a reales (a_real) o al revés. Lo que no reconoce lo deja igual, y
+    validar_respuesta lo rechaza."""
+    tabla = tabla_ids(p, c)
+    if a_real:
+        tabla = {k: {o: real for real, o in v.items()} for k, v in tabla.items()}
+
+    def f(campo, x):
+        return tabla.get(campo, {}).get(x, x) if isinstance(x, str) else x
+
+    t, lista = c["tipo"], "items" if "items" in c else "publicaciones"
+    try:
+        if t == "opcion":
+            return f("opciones", r)
+        if t in ("multiple", "ordenar"):
+            return [f("opciones" if t == "multiple" else "items", x) for x in r]
+        if t in ("clasificar", "compartir", "recordatorio"):
+            return {f(lista, k): v for k, v in r.items()}
+        if t == "construir":  # las opciones de cada parte se buscan con el id real de la parte
+            salida = {}
+            for k, v in r.items():
+                parte = f("partes", k) if a_real else k
+                salida[parte if a_real else f("partes", k)] = f(f"partes|{parte}", v)
+            return salida
+    except (TypeError, AttributeError):
+        pass
+    return r
 
 
 # =========================================================================== reloj común
@@ -243,6 +301,19 @@ def version_publica(p, q):
         pubs = list(c["publicaciones"])
         rng_para(p["semilla"], "m1_posts").shuffle(pubs)
         pub["publicaciones"] = pubs
+    return opacar_publica(p, c, pub)
+
+
+def opacar_publica(p, c, pub):
+    """Cambia los ids del banco por ids opacos en lo que ve el navegador (el orden ya quedó barajado)."""
+    tabla = tabla_ids(p, c)
+    for campo in ("opciones", "items", "publicaciones"):
+        if campo in pub:
+            pub[campo] = [{**o, "id": tabla[campo][o["id"]]} for o in pub[campo]]
+    for parte in pub.get("partes", []):
+        opciones = tabla[f"partes|{parte['id']}"]
+        parte["opciones"] = [{**o, "id": opciones[o["id"]]} for o in parte["opciones"]]
+        parte["id"] = tabla["partes"][parte["id"]]
     return pub
 
 
@@ -508,7 +579,8 @@ def estado_participante(p, firma_cliente=""):
     retro = cfg("retro") == "1" or estado_reto == "resultados"
     respuestas = {}
     for r in filas:
-        item = {"respuesta": json.loads(r["respuesta"])}
+        _, c = resolver(p, PREGUNTAS[r["pregunta_id"]][1])
+        item = {"respuesta": traducir(p, c, json.loads(r["respuesta"]), a_real=False)}
         if retro:
             item.update({"puntos": round(r["puntos"], 2), "max": r["max_puntos"], "fraccion": round(r["fraccion"], 4)})
         respuestas[r["pregunta_id"]] = item
@@ -560,7 +632,8 @@ def estado_participante(p, firma_cliente=""):
         for qid, (m, q) in PREGUNTAS.items():  # noqa: B007
             if visible_para(p, q):
                 _, c = resolver(p, q)
-                datos["revision"][qid] = {"respuesta": c.get("respuesta"), "explicacion": c.get("explicacion", "")}
+                correcta = traducir(p, c, c["respuesta"], a_real=False) if "respuesta" in c else None
+                datos["revision"][qid] = {"respuesta": correcta, "explicacion": c.get("explicacion", "")}
     return datos
 
 
@@ -941,7 +1014,7 @@ def responder(p, d):  # noqa: C901
         raise ErrorAPI("Primero responde la parte anterior de esta misión.")
     var, cuerpo = resolver(p, q)
     try:
-        r = validar_respuesta(cuerpo, d.get("respuesta"))
+        r = validar_respuesta(cuerpo, traducir(p, cuerpo, d.get("respuesta"), a_real=True))
     except (AssertionError, ValueError, TypeError):
         raise ErrorAPI("Respuesta incompleta o con formato no válido.")  # noqa: B904
     frac = fraccion(cuerpo, r)
