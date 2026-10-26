@@ -1,0 +1,46 @@
+{
+  "stage": "functional-design",
+  "unit": "u11-github-pages-corte",
+  "upstream_ids": [
+    "FR1.3",
+    "FR2.4",
+    "FR3.1",
+    "FR4.1",
+    "FR4.2",
+    "FR5.1",
+    "FR5.2",
+    "FR6.2",
+    "FR7.2",
+    "FR7.3",
+    "FR8.0",
+    "FR11.3",
+    "FR12.2",
+    "FR12.2b",
+    "FR12.3",
+    "NFR8"
+  ],
+  "coverage": [
+    {"id": "FR1.3", "status": "OK", "target": "BR3.1, BR3.2, BR3.3, BR3.4, BR1.4"},
+    {"id": "FR2.4", "status": "OK", "target": "BR5.1, BR5.2"},
+    {"id": "FR3.1", "status": "OK", "target": "BR4.1, BR4.2, BR4.3"},
+    {"id": "FR4.1", "status": "OK", "target": "BR6.2, BR1.1, BR4.4, BR8.3 (cambios del navegador listados en decisions.md, ADR-G4)"},
+    {"id": "FR4.2", "status": "OK", "target": "BR8.3 (rutas relativas; la copia sin cambios de web/ va en code-generation)"},
+    {"id": "FR5.1", "status": "OK", "target": "BR7.1"},
+    {"id": "FR5.2", "status": "Deferred", "target": "infrastructure-design (pasos de despliegue en el LEEME y el flujo manual de Pages)"},
+    {"id": "FR6.2", "status": "OK", "target": "BR6.1"},
+    {"id": "FR7.2", "status": "OK", "target": "BR1.1, BR1.2, BR1.3, BR8.2"},
+    {"id": "FR7.3", "status": "Deferred", "target": "nfr-design (ADR-G3: sin capa aparte de base)"},
+    {"id": "FR8.0", "status": "Deferred", "target": "code-generation (LEEME de despliegues/github-pages/)"},
+    {"id": "FR11.3", "status": "OK", "target": "BR3.1, BR8.3"},
+    {"id": "FR12.2", "status": "Deferred", "target": "code-generation (todo el código en despliegues/github-pages/, sin nada de cloudflare/)"},
+    {"id": "FR12.2b", "status": "OK", "target": "decisions.md (ADR-G1 a ADR-G7, antes del código)"},
+    {"id": "FR12.3", "status": "Deferred", "target": "code-generation y build-and-test (prueba común mínima con --url-web)"},
+    {"id": "NFR8", "status": "OK", "target": "BR6.2, BR6.3"}
+  ],
+  "reverse": [
+    {"id": "BR2.1", "status": "N/A", "target": "FR11.5, ADR-003 (lo mínimo de Salas que trae el corte)"},
+    {"id": "BR2.2", "status": "N/A", "target": "FR7.4 parcial, que completa U13"},
+    {"id": "BR2.3", "status": "N/A", "target": "FR10.3 parcial (colegio provisional), que completa U13"},
+    {"id": "BR8.1", "status": "N/A", "target": "contrato C1, hallazgo C-04 (CORS), asignado a U11 en Delivery Planning Q4-A"}
+  ]
+}

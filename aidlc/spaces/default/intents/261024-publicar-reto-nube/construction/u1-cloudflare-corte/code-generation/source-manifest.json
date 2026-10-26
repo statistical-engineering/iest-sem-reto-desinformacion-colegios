@@ -1,0 +1,21 @@
+{
+  "stage": "code-generation",
+  "unit": "u1-cloudflare-corte",
+  "version": 1,
+  "writes": [
+    { "path": "despliegues/cloudflare/.gitignore" },
+    { "path": "despliegues/cloudflare/wrangler.jsonc" },
+    { "path": "despliegues/cloudflare/LEEME.md" },
+    { "path": "despliegues/cloudflare/herramientas/copiar.sh" },
+    { "path": "despliegues/cloudflare/herramientas/cambios_web.patch" },
+    { "path": "despliegues/cloudflare/src/reglas.js" },
+    { "path": "despliegues/cloudflare/src/reto.js" },
+    { "path": "despliegues/cloudflare/src/worker.js" },
+    { "path": "despliegues/cloudflare/src/banco.json" },
+    { "path": "despliegues/cloudflare/src/banco_huella.json" },
+    { "path": "despliegues/cloudflare/pruebas/reglas.test.js" },
+    { "path": "despliegues/cloudflare/web/" },
+    { "path": "despliegues/prueba_comun/src/prueba.py" },
+    { "path": "despliegues/prueba_comun/LEEME.md" }
+  ]
+}

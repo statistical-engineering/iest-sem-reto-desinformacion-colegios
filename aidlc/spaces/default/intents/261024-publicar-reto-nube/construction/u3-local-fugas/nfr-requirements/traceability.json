@@ -1,0 +1,27 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u3-local-fugas",
+  "upstream_ids": [
+    "NFR1", "NFR7", "NFR8", "NFR9", "NFR12",
+    "BR1.1", "BR1.2", "BR1.3", "BR2.1", "BR2.2", "BR2.3", "BR3.1", "BR3.2", "BR4.1", "BR4.2", "BR5.1", "BR5.2"
+  ],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U3-E1"},
+    {"id": "NFR7", "status": "OK", "target": "U3-O1"},
+    {"id": "NFR8", "status": "OK", "target": "U3-S1, U3-S3, U3-S4"},
+    {"id": "NFR9", "status": "OK", "target": "U3-S6 (nada nuevo se registra; la clave docente no cambia)"},
+    {"id": "NFR12", "status": "OK", "target": "tech-stack-decisions.md (U3-M1)"},
+    {"id": "BR1.1", "status": "OK", "target": "U3-S1, U3-R1"},
+    {"id": "BR1.2", "status": "OK", "target": "U3-R1"},
+    {"id": "BR1.3", "status": "OK", "target": "U3-S4"},
+    {"id": "BR2.1", "status": "OK", "target": "U3-P1, U3-S1"},
+    {"id": "BR2.2", "status": "OK", "target": "U3-S4"},
+    {"id": "BR2.3", "status": "OK", "target": "U3-R4"},
+    {"id": "BR3.1", "status": "OK", "target": "U3-P2, U3-S5, U3-R4"},
+    {"id": "BR3.2", "status": "OK", "target": "U3-E2, U3-R2"},
+    {"id": "BR4.1", "status": "OK", "target": "U3-S3"},
+    {"id": "BR4.2", "status": "OK", "target": "U3-S3 (el resumen va con clave)"},
+    {"id": "BR5.1", "status": "OK", "target": "U3-R3, U3-O1"},
+    {"id": "BR5.2", "status": "OK", "target": "U3-R5"}
+  ]
+}

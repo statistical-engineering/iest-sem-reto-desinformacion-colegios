@@ -1,0 +1,26 @@
+{
+  "stage": "functional-design",
+  "unit": "u13-github-pages-salas",
+  "upstream_ids": ["FR1.1", "FR1.2", "FR2.1", "FR2.4", "FR4.1", "FR7.4", "FR10.1", "FR10.2", "FR10.3", "FR10.4", "FR11.1", "FR11.2", "FR11.3", "FR11.5", "FR11.6", "FR11.7", "NFR9", "NFR10.1"],
+  "coverage": [
+    {"id": "FR1.1", "status": "OK", "target": "BR16.3, BR16.4"},
+    {"id": "FR1.2", "status": "OK", "target": "BR16.3, BR18.2, BR19.2"},
+    {"id": "FR2.1", "status": "OK", "target": "BR19.1"},
+    {"id": "FR2.4", "status": "OK", "target": "BR19.1"},
+    {"id": "FR4.1", "status": "OK", "target": "BR19.3, BR20.1 (cambios del panel en functional-spec.md, «Pantallas»)"},
+    {"id": "FR7.4", "status": "OK", "target": "BR16.3, BR16.4"},
+    {"id": "FR10.1", "status": "OK", "target": "BR18.1"},
+    {"id": "FR10.2", "status": "OK", "target": "BR18.1, BR17.1"},
+    {"id": "FR10.3", "status": "OK", "target": "BR17.1, BR17.2, BR17.3, BR17.4, BR17.5, BR18.1"},
+    {"id": "FR10.4", "status": "OK", "target": "BR18.1"},
+    {"id": "FR11.1", "status": "OK", "target": "BR16.2, BR16.4, BR16.5"},
+    {"id": "FR11.2", "status": "OK", "target": "BR16.3, BR18.1, BR18.2 (todo filtrado por sala)"},
+    {"id": "FR11.3", "status": "OK", "target": "BR18.1 (la pantalla del estudiante no cambia)"},
+    {"id": "FR11.5", "status": "OK", "target": "BR16.1, BR16.5, BR20.1"},
+    {"id": "FR11.6", "status": "OK", "target": "BR16.6 (borrar sin tocar otra sala; reiniciar en U14)"},
+    {"id": "FR11.7", "status": "Deferred", "target": "build-and-test (parte de varias salas de la prueba común de U2)"},
+    {"id": "NFR9", "status": "OK", "target": "BR16.1, BR16.5, BR16.6"},
+    {"id": "NFR10.1", "status": "OK", "target": "BR16.6 (borrado de la sala; las copias las agrega U14)"}
+  ],
+  "reverse": []
+}

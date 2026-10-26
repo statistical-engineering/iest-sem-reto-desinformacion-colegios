@@ -1,0 +1,14 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u4-cloudflare-reglas",
+  "upstream_ids": ["U4-S5", "U4-S6", "U4-R1", "U4-R3", "U4-R5", "U4-O1", "U4-O3"],
+  "coverage": [
+    {"id": "U4-S5", "status": "OK", "target": "cicd-pipeline.md (grep en verificar.sh)"},
+    {"id": "U4-S6", "status": "OK", "target": "infrastructure-specification.md (generar_casos.py en despliegues/prueba_comun/)"},
+    {"id": "U4-R1", "status": "OK", "target": "monitoring-design.md (prueba común contra Workers)"},
+    {"id": "U4-R3", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U4-R5", "status": "OK", "target": "cicd-pipeline.md, infrastructure-specification.md"},
+    {"id": "U4-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U4-O3", "status": "OK", "target": "cicd-pipeline.md, monitoring-design.md"}
+  ]
+}

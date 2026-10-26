@@ -1,0 +1,20 @@
+{
+  "stage": "functional-design",
+  "unit": "u3-local-fugas",
+  "upstream_ids": ["FR6.1", "FR6.2", "FR6.3", "FR4.3", "FR9.2", "FR12.1", "NFR8", "NFR12"],
+  "coverage": [
+    {"id": "FR6.1", "status": "OK", "target": "BR4.1, BR4.2"},
+    {"id": "FR6.2", "status": "OK", "target": "BR1.1, BR1.2, BR1.3, BR2.1, BR2.2, BR2.3, BR3.1, BR3.2"},
+    {"id": "FR6.3", "status": "OK", "target": "BR3.1 (simulacro.py sin cambios), BR5.1 (parte de fugas de la prueba común)"},
+    {"id": "FR4.3", "status": "OK", "target": "BR3.2 (CSV y copia sin cambios)"},
+    {"id": "FR9.2", "status": "OK", "target": "BR3.2 (ids del banco en la base y en respuestas.csv)"},
+    {"id": "FR12.1", "status": "OK", "target": "BR5.1 (única excepción aprobada, diff acotado), BR5.2"},
+    {"id": "NFR8", "status": "OK", "target": "BR2.1, BR2.2, BR4.1"},
+    {"id": "NFR12", "status": "Deferred", "target": "nfr-requirements (U3-M1: test_servidor.py con unittest y cobertura con trace)"}
+  ],
+  "reverse": [
+    {"id": "BR1.2", "status": "N/A", "target": "regla de choque heredada de BR6.1 de U1 para que la prueba común reconozca la forma"},
+    {"id": "BR1.3", "status": "N/A", "target": "ámbitos que conservan el orden común de la misión 1 (servidor.py, clave m1_posts)"},
+    {"id": "BR5.2", "status": "N/A", "target": "project.md («Forbidden»: no cambiar código con un reto en curso)"}
+  ]
+}

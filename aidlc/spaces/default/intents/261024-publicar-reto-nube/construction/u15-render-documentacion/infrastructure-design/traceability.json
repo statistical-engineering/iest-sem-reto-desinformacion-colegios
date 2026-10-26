@@ -1,0 +1,14 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u15-render-documentacion",
+  "upstream_ids": ["U15-R2", "U15-R4", "U15-S2", "U15-O1", "U15-O2", "FR5.2", "FR12.2a"],
+  "coverage": [
+    {"id": "U15-R2", "status": "OK", "target": "infrastructure-specification.md (disco y copias de referencia)"},
+    {"id": "U15-R4", "status": "OK", "target": "infrastructure-specification.md (corte en cada despliegue con disco)"},
+    {"id": "U15-S2", "status": "OK", "target": "infrastructure-specification.md (no se crea cuenta ni secreto)"},
+    {"id": "U15-O1", "status": "N/A", "target": "monitoring-design.md: no hay servicio desplegado"},
+    {"id": "U15-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "FR5.2", "status": "N/A", "target": "cicd-pipeline.md: no hay despliegue mientras no se apruebe el costo"},
+    {"id": "FR12.2a", "status": "OK", "target": "infrastructure-specification.md (no se despliega nada)"}
+  ]
+}

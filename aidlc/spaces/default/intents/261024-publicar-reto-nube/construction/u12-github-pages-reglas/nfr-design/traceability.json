@@ -1,0 +1,23 @@
+{
+  "stage": "nfr-design",
+  "unit": "u12-github-pages-reglas",
+  "upstream_ids": ["U12-P1", "U12-P2", "U12-P3", "U12-S1", "U12-S2", "U12-S3", "U12-S4", "U12-S5", "U12-E1", "U12-E2", "U12-R1", "U12-R2", "U12-R3", "U12-R4", "U12-O1", "U12-O2"],
+  "coverage": [
+    {"id": "U12-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U12-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U12-P3", "status": "OK", "target": "performance-design.md"},
+    {"id": "U12-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U12-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U12-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U12-S4", "status": "OK", "target": "security-design.md"},
+    {"id": "U12-S5", "status": "OK", "target": "security-design.md"},
+    {"id": "U12-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U12-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U12-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U12-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U12-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U12-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U12-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U12-O2", "status": "OK", "target": "observability-design.md"}
+  ]
+}

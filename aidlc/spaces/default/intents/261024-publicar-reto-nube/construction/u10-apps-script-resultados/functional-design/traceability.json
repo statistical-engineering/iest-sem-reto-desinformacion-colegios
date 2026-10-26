@@ -1,0 +1,98 @@
+{
+  "stage": "functional-design",
+  "unit": "u10-apps-script-resultados",
+  "upstream_ids": [
+    "FR1.1",
+    "FR3.2",
+    "FR4.1",
+    "FR4.3",
+    "FR6.1",
+    "FR9.1",
+    "FR9.2",
+    "FR9.3",
+    "FR9.4",
+    "FR9.5",
+    "FR11.2",
+    "FR11.4",
+    "FR11.6",
+    "NFR8",
+    "NFR10.1"
+  ],
+  "coverage": [
+    {
+      "id": "FR1.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR3.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR4.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR4.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR6.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR9.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR9.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR9.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR9.4",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR9.5",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR11.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR11.4",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR11.6",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "NFR8",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "NFR10.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    }
+  ]
+}

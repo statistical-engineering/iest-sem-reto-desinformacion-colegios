@@ -1,0 +1,15 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u16-cloudflare-containers-documentacion",
+  "upstream_ids": ["U16-R1", "U16-R2", "U16-R4", "U16-S2", "U16-O1", "U16-O2", "FR5.2", "FR12.2a"],
+  "coverage": [
+    {"id": "U16-R1", "status": "OK", "target": "infrastructure-specification.md (disco efímero, almacén fuera del contenedor)"},
+    {"id": "U16-R2", "status": "OK", "target": "infrastructure-specification.md (alternativas que cambian la aplicación)"},
+    {"id": "U16-R4", "status": "OK", "target": "infrastructure-specification.md (ningún despliegue conserva el disco)"},
+    {"id": "U16-S2", "status": "OK", "target": "infrastructure-specification.md (no se activa el plan ni se crea secreto)"},
+    {"id": "U16-O1", "status": "N/A", "target": "monitoring-design.md: no hay servicio desplegado"},
+    {"id": "U16-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "FR5.2", "status": "N/A", "target": "cicd-pipeline.md: no hay despliegue mientras no se apruebe el costo"},
+    {"id": "FR12.2a", "status": "OK", "target": "infrastructure-specification.md (no se despliega nada)"}
+  ]
+}

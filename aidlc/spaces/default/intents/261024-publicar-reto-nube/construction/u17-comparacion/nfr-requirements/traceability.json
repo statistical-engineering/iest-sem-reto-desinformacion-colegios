@@ -1,0 +1,20 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u17-comparacion",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8", "NFR9", "NFR10", "NFR10.1", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U17-E1"},
+    {"id": "NFR2", "status": "OK", "target": "U17-P1"},
+    {"id": "NFR3", "status": "OK", "target": "U17-P2"},
+    {"id": "NFR4", "status": "OK", "target": "U17-R1, U17-R5"},
+    {"id": "NFR5", "status": "OK", "target": "U17-P3, U17-P4"},
+    {"id": "NFR6", "status": "OK", "target": "U17-E2, U17-E3, U17-E4"},
+    {"id": "NFR7", "status": "OK", "target": "U17-O2, U17-O4"},
+    {"id": "NFR8", "status": "OK", "target": "U17-S1, U17-S2"},
+    {"id": "NFR9", "status": "OK", "target": "U17-S3, U17-S4"},
+    {"id": "NFR10", "status": "OK", "target": "U17-S5, U17-S6"},
+    {"id": "NFR10.1", "status": "OK", "target": "U17-S5"},
+    {"id": "NFR11", "status": "OK", "target": "U17-R2"},
+    {"id": "NFR12", "status": "OK", "target": "U17-O3"}
+  ]
+}

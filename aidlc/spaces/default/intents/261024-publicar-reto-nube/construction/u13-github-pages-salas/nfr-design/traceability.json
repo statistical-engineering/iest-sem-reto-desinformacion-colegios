@@ -1,0 +1,27 @@
+{
+  "stage": "nfr-design",
+  "unit": "u13-github-pages-salas",
+  "upstream_ids": ["U13-P1", "U13-P2", "U13-P3", "U13-S1", "U13-S2", "U13-S3", "U13-S4", "U13-S5", "U13-S6", "U13-S7", "U13-E1", "U13-E2", "U13-E3", "U13-R1", "U13-R2", "U13-R3", "U13-R4", "U13-R5", "U13-O1", "U13-O2"],
+  "coverage": [
+    {"id": "U13-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U13-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U13-P3", "status": "OK", "target": "performance-design.md"},
+    {"id": "U13-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S4", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S5", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S6", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-S7", "status": "OK", "target": "security-design.md"},
+    {"id": "U13-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U13-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U13-E3", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U13-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U13-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U13-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U13-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U13-R5", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U13-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U13-O2", "status": "OK", "target": "observability-design.md"}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "stage": "nfr-design",
+  "unit": "u15-render-documentacion",
+  "upstream_ids": ["U15-P1", "U15-P2", "U15-S1", "U15-S2", "U15-S3", "U15-E1", "U15-E2", "U15-E3", "U15-R1", "U15-R2", "U15-R3", "U15-R4", "U15-R5", "U15-O1", "U15-O2"],
+  "coverage": [
+    {"id": "U15-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U15-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U15-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U15-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U15-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U15-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U15-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U15-E3", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U15-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U15-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U15-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U15-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U15-R5", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U15-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U15-O2", "status": "OK", "target": "observability-design.md"}
+  ]
+}

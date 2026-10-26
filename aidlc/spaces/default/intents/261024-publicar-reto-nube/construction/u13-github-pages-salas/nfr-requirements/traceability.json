@@ -1,0 +1,16 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u13-github-pages-salas",
+  "upstream_ids": ["NFR1", "NFR2", "NFR4", "NFR6", "NFR9", "NFR10", "NFR10.1", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U13-E1"},
+    {"id": "NFR2", "status": "OK", "target": "U13-P1, U13-P2, U13-P3"},
+    {"id": "NFR4", "status": "OK", "target": "U13-R1, U13-R5"},
+    {"id": "NFR6", "status": "OK", "target": "U13-E2, U13-E3"},
+    {"id": "NFR9", "status": "OK", "target": "U13-S1, U13-S2, U13-S3, U13-S6, U13-S7"},
+    {"id": "NFR10", "status": "OK", "target": "U13-S5, U13-O1"},
+    {"id": "NFR10.1", "status": "OK", "target": "U13-S4"},
+    {"id": "NFR11", "status": "OK", "target": "U13-R1, U13-R2"},
+    {"id": "NFR12", "status": "OK", "target": "tech-stack-decisions.md (pruebas de servicio con unittest)"}
+  ]
+}

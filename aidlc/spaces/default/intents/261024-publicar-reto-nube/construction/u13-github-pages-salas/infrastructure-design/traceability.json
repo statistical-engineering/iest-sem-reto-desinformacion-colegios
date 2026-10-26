@@ -1,0 +1,12 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u13-github-pages-salas",
+  "upstream_ids": ["U13-R5", "U13-O1", "U13-O2", "U13-S4", "FR5.2"],
+  "coverage": [
+    {"id": "U13-R5", "status": "OK", "target": "infrastructure-specification.md (migración al arrancar)"},
+    {"id": "U13-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U13-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U13-S4", "status": "OK", "target": "monitoring-design.md (guía de cierre usa /api/admin/salas)"},
+    {"id": "FR5.2", "status": "OK", "target": "infrastructure-specification.md y cicd-pipeline.md"}
+  ]
+}

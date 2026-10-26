@@ -7,9 +7,14 @@ de Practices Discovery, en `aidlc/spaces/default/intents/261024-publicar-reto-nu
 ## Intent analysis
 
 **Qué se busca.** Que el reto «Detectives de la desinformación» se pueda jugar desde un **enlace fijo
-en internet** que **no dependa del computador del docente**, **sin costo** (Q5-A), y que el servidor
-quede **refactorizado** con una arquitectura validada: núcleo puro separado de la E/S y patrones
-justificados por `.claude/rules/python-code.md` (pedido inicial, puntos 4 y 5).
+en internet** que **no dependa del computador del docente**, **sin costo** (Q5-A), con una arquitectura
+validada y patrones elegidos en los ADR comparando alternativas (pedido inicial, puntos 4 y 5).
+
+**Cómo se elige el hosting** (decisión del humano, 2026-10-25, en la revisión de Domain Design). La
+versión local (`2_Aplicacion_Reto/`) queda **congelada**: no se refactoriza ni recibe funciones
+nuevas, y sigue siendo la línea base y el respaldo. Cada opción de hosting se construye y se despliega
+**por separado**, en su propia carpeta, y al final se comparan todas con la misma prueba. Gana la más
+simple que pase todo (FR12).
 
 **Por qué.** Hoy hay tres modos (`aidlc/spaces/default/codekb/Reto_Desinformacion_Colegios/business-overview.md`,
 «Contexto de despliegue actual»): red local y túnel temporal dependen del computador del docente;
@@ -20,9 +25,10 @@ dominio, SQL, reloj y HTTP mezclados (`aidlc/spaces/default/codekb/Reto_Desinfor
 que obligan a una sola instancia con disco local (`aidlc/spaces/default/codekb/Reto_Desinformacion_Colegios/architecture.md`,
 «Dónde vive cada pieza de estado»).
 
-**Tipo de cambio.** Migración de despliegue + refactor interno con dos correcciones de confidencialidad, más tres
-funcionalidades nuevas pedidas en esta etapa: datos organizados (FR9), entrada limpia (FR10) y varias
-salas en paralelo (FR11).
+**Tipo de cambio.** Cuatro versiones nuevas en la nube, una por opción de hosting (FR12), construidas
+al lado de la versión local sin tocarla. Cada una lleva las dos correcciones de confidencialidad (FR6)
+y las tres funcionalidades nuevas pedidas en esta etapa: datos organizados (FR9), entrada limpia (FR10)
+y varias salas en paralelo (FR11).
 Alcance: todo el sistema (servidor, despliegue, guía de publicación). Complejidad: estándar a alta por
 el riesgo de integración (cambiar de hosting y de estructura a la vez), que es la razón del corte
 delgado primero (`team-practices.md`, «Walking Skeleton»).
@@ -33,8 +39,10 @@ de «resultados» (Q7-A).
 
 ## Functional requirements
 
-Los requisitos FR1-FR4 fijan la **conducta que se conserva**; se verifican con
-`python3 pruebas/simulacro.py 40` («TODO BIEN») sobre la versión nueva, sin debilitarlo.
+Los requisitos FR1-FR4 fijan la **conducta que se conserva**. Cada versión de la nube los cumple, y se
+verifican con la prueba común de FR12.3, que repite las comprobaciones de `pruebas/simulacro.py 40`
+contra la URL desplegada sin debilitar ninguna. Desde FR5 hasta FR11, todo requisito aplica a cada
+versión de la nube y no a la versión local, que no cambia (FR12.1).
 
 ### FR1. Conservar el flujo del reto
 
@@ -77,12 +85,15 @@ Los requisitos FR1-FR4 fijan la **conducta que se conserva**; se verifican con
   que exija el frontend se lista en el contrato de la API con su motivo y su archivo de `web/js/`.
 - **FR4.2** Las páginas `/`, `/admin` y `/tablero` y sus estáticos se sirven sin cambios visibles.
 - **FR4.3** Se mantienen las exportaciones CSV de resultados y respuestas y la copia de seguridad al
-  reiniciar.
+  reiniciar. Esa copia es una **copia completa de los datos que se puede volver a abrir**: `reto.db` en
+  las opciones con SQLite, y en las demás el formato que fije su ADR (por ejemplo, un volcado SQL de D1
+  o una copia de la hoja de cálculo).
 
 ### FR5. Publicación con enlace fijo
 
-- **FR5.1** El reto queda accesible desde un enlace HTTPS fijo que no cambia entre retos ni depende de
-  que el computador del docente esté encendido.
+- **FR5.1** Cada versión de la nube queda accesible desde su propio enlace HTTPS fijo, que no cambia
+  entre retos ni depende de que el computador del docente esté encendido. Al final, el docente usa solo
+  el enlace de la opción ganadora (FR12.5).
 - **FR5.2** El despliegue es manual: lo lanza una persona del semillero, nunca con un reto en curso, y
   volver atrás es redesplegar la versión anterior (Practices Discovery Q6; `team-practices.md`,
   «Deployment»).
@@ -94,12 +105,11 @@ Los requisitos FR1-FR4 fijan la **conducta que se conserva**; se verifican con
   despliega desde `develop`. Cuando la versión final está desplegada y verificada desde `develop`, un PR
   revisado la lleva a `main`, y el despliegue definitivo sale de `main`. Mientras tanto no se hace ningún
   push a `main`.
-- **FR5.5** Si la opción elegida exige reescribir el servidor en otro lenguaje o runtime, la versión de
-  la nube debe pasar las mismas comprobaciones del simulacro (incluidas las de FR6.3) corriendo contra
-  la URL desplegada, y dar los mismos puntos y la misma clasificación que `servidor.py` para las mismas
-  respuestas.
-- **FR5.4** Los modos actuales de red local, túnel temporal y modo prueba siguen funcionando para quien
-  no tenga internet estable, salvo que el ADR justifique retirarlos.
+- **FR5.4** Los modos actuales de red local, túnel temporal y modo prueba siguen funcionando igual que
+  hoy, porque `2_Aplicacion_Reto/` no cambia (FR12.1).
+- **FR5.5** Una versión de la nube que reescriba el servidor en otro lenguaje o runtime pasa la prueba
+  común (FR12.3), incluidas las comprobaciones de FR6.3, y da los mismos puntos y la misma clasificación
+  que `servidor.py` para las mismas respuestas.
 
 Criterios de aceptación:
 
@@ -132,8 +142,9 @@ Then el primer paso de la guía le pide abrir el panel y confirmar que el estado
   `banco_preguntas.json` ni el script que lo genera (archivo generado y fuera de alcance), y sin
   cambiar lo que el estudiante ve. La base de datos y `respuestas.csv` siguen guardando los
   identificadores del banco (el servidor traduce al recibir), para que FR4.3 no cambie.
-- **FR6.3** El simulacro gana una comprobación por cada fuga, que falla con el código de hoy y pasa con
-  el corregido. Las 29 comprobaciones existentes se conservan sin debilitarse.
+- **FR6.3** La prueba común (FR12.3) tiene una comprobación por cada fuga: falla con el código de hoy
+  y pasa con el corregido. `simulacro.py` no cambia (FR12.1), y sus 29 comprobaciones se conservan sin
+  debilitarse.
 
 ```gherkin
 Given un reto en «cerrado» con respuestas del Exp. 01
@@ -155,29 +166,38 @@ And respuestas.csv guarda los identificadores del banco
 
 ### FR7. Refactor con arquitectura validada
 
-- **FR7.1** La lógica de dominio (calificación, bono, clasificación, reloj y vencimiento, experimento,
-  versión pública del examen, transiciones de estado, validación del banco al cargarlo) queda en
-  funciones puras que reciben datos (incluido `ahora`) y devuelven datos, sin SQL, HTTP, `time.time()`
-  ni variables de entorno (`.claude/rules/python-code.md`, «Diseño y patrones»).
-- **FR7.2** Las rutas HTTP se despachan con una tabla de (método, ruta) a función, con el nivel de
-  acceso (público, token, docente) como dato de la ruta, en vez de cadenas de `if`.
-- **FR7.3** Se crea un puerto de persistencia solo si la opción elegida en el ADR implica una segunda
-  implementación real (por ejemplo SQLite local y otra base en la nube). Si no, no se crea la
-  abstracción.
-- **FR7.4** Las transiciones de estado del reto se validan con una tabla de transiciones permitidas.
-  Las transiciones que el panel ofrece hoy siguen permitidas; las que el panel nunca ofrece se rechazan
-  (hoy el servidor acepta cualquiera, `architecture.md`, «Flujo de estados del reto»). Motivo: pasar de
-  `resultados` a `abierto` reabriría las respuestas después de mostrar la revisión con la clave
-  (`code-quality-assessment.md`, hallazgo S5), así que es una corrección de fuga, no un cambio visible.
-  La tabla exacta se fija en el diseño a partir de los botones de `web/js/` del panel.
+El título se mantiene, pero cambia a quién aplica: estos requisitos son para el código de cada versión
+de la nube. La versión local no se refactoriza (FR12.1).
+
+- **FR7.1** La forma de separar las reglas del reto (calificación, bono, clasificación, reloj y
+  vencimiento, experimento, versión pública del examen, transiciones de estado, validación del banco)
+  del acceso a la base, la red y el reloj la decide un ADR. Ese ADR compara al menos dos alternativas,
+  cada una con su costo, y explica por qué elige una. Se cumple si cada regla de esa lista tiene
+  pruebas unitarias que corren sin servidor ni base (NFR12). Antes este punto exigía «funciones puras
+  sin SQL, HTTP ni `time.time()`»: venía del pedido inicial y no de una necesidad del problema
+  (decisión del humano, 2026-10-25), así que pasa a ser una opción más dentro del ADR.
+- **FR7.2** Cada ruta HTTP tiene su nivel de acceso (público, token, clave de sala o clave del
+  semillero), y una ruta sin nivel declarado no responde. Cómo se despachan las rutas (por ejemplo, una
+  tabla en vez de cadenas de `if`) lo decide el ADR con la misma comparación que FR7.1.
+- **FR7.3** El ADR también decide si se crea una capa aparte para la base de datos. Solo se justifica
+  si hay al menos dos implementaciones reales.
+- **FR7.4** El servidor rechaza las transiciones de estado del reto que el panel nunca ofrece. Las que
+  el panel ofrece hoy siguen permitidas. Hoy el servidor acepta cualquiera (`architecture.md`, «Flujo
+  de estados del reto»). Motivo: pasar de `resultados` a `abierto` reabriría las respuestas después de
+  mostrar la revisión con la clave (`code-quality-assessment.md`, hallazgo S5), así que es una
+  corrección de fuga y no un cambio visible. La lista exacta sale de los botones del panel en `web/js/`,
+  y cómo se valida lo decide el diseño.
 - **FR7.5** Se entrega una lista priorizada de refactors, cada uno con su riesgo y la prueba que lo
   cubre (pedido inicial, punto 5).
-- **FR7.6** Código, identificadores y docstrings en español. La app puede tener dependencias, manejadas
-  con uv (`pyproject.toml` + `uv.lock`); cada paquete nuevo requiere aprobación del humano (decisión del
-  humano, 2026-10-25, que reemplaza «sin dependencias nuevas en la app»).
+- **FR7.6** Código, identificadores y docstrings en español, en cualquier lenguaje. Las versiones en
+  Python manejan sus dependencias con uv (`pyproject.toml` + `uv.lock`). Cada paquete nuevo, en
+  cualquier lenguaje, requiere aprobación del humano (decisión del humano, 2026-10-25, que reemplaza
+  «sin dependencias nuevas en la app»).
 
 ### FR8. Documentación para el despliegue
 
+- **FR8.0** Mientras se comparan, cada carpeta de opción tiene su propio `LEEME.md` con los pasos para
+  desplegarla. `PUBLICAR_EN_INTERNET.md` se reescribe solo para la opción ganadora (FR12.5).
 - **FR8.1** `PUBLICAR_EN_INTERNET.md` describe los pasos del nuevo despliegue para la persona del
   semillero que lo crea (Q6-A), como pasos numerados que no exigen escribir código, y lo que el docente
   hace el día del reto: abrir el enlace fijo y usar el panel con su clave. Pasa si alguien del
@@ -199,7 +219,9 @@ cada archivo, ni un diccionario de las columnas.
   `AAAA-MM-DD_<sala>_reto.zip`, que contiene:
   - `participantes.csv`, `respuestas.csv`, `eventos.csv` y `colegios.csv` (la lista de FR10.3), uno
     por tabla de la base;
-  - `reto.db`, una copia consistente de la base (`VACUUM INTO`, como hoy en «Reiniciar»);
+  - la copia completa de los datos de la sala que define FR4.3. En las opciones con SQLite es
+    `reto.db`, hecha con `VACUUM INTO` como hoy en «Reiniciar», o armada solo con las filas de la sala;
+    en las demás es el formato de su ADR;
   - `metadatos.json`, con la fecha y hora de inicio y fin del reto, la sala, el nombre del evento, la
     duración, el número de participantes, la versión (huella) del banco y la versión de la app.
 
@@ -217,9 +239,9 @@ cada archivo, ni un diccionario de las columnas.
   carpeta por año y en ella un `.zip` por reto, sin cambiarle el nombre, así quedan ordenados por fecha.
 
 - **FR9.5 Solo el docente descarga** (decisión del humano, 2026-10-25). El paquete se sirve solo por una
-  ruta `/api/admin/*`, con la misma clave docente de los CSV de hoy. La clave viaja en la cabecera
-  `X-Clave-Admin` (NFR9). Sin clave o con una clave incorrecta, la respuesta es 403 y no trae datos.
-  El paquete nunca lleva la clave docente. `participantes.csv` tampoco trae el `token` de sesión de cada
+  ruta `/api/admin/*`. Lo descarga quien tenga la clave de esa sala o la clave del semillero (NFR9). La
+  clave viaja en la cabecera `X-Clave-Admin`. Sin clave o con una clave incorrecta, la respuesta es 403 y no trae datos.
+  El paquete nunca lleva ninguna clave. `participantes.csv` tampoco trae el `token` de sesión de cada
   participante.
 
 ```gherkin
@@ -232,7 +254,7 @@ Then el servidor responde 403 y no entrega ningún dato
 Given un reto en «resultados» con 40 participantes
 When el docente descarga el paquete del semillero
 Then el .zip se llama con la fecha y la sala del reto
-And trae participantes.csv con 40 filas, respuestas.csv, eventos.csv, reto.db y metadatos.json
+And trae participantes.csv con 40 filas, respuestas.csv, eventos.csv, la copia completa de los datos de la sala y metadatos.json
 And metadatos.json trae la huella del banco y la versión de la app con que se jugó
 And cada columna del paquete aparece en el diccionario de datos
 ```
@@ -260,20 +282,23 @@ lista cerrada.
   El texto se guarda como lo escribió la persona después de esa limpieza: no se cambian mayúsculas ni
   tildes, porque el tablero lo muestra (conducta visible).
 - **FR10.3 Colegio de una lista cerrada** (decisión del humano, 2026-10-25, excepción aprobada a «no
-  cambiar la conducta visible»). En «inscripción», antes de abrir el reto, el docente carga en el panel
-  la lista de colegios que participan en su sala; una sala puede mezclar estudiantes de
-  varios colegios (decisión del humano, 2026-10-25). En la pantalla de inscripción, el campo «Colegio» deja de ser
+  cambiar la conducta visible»). El semillero mantiene un catálogo único de colegios con su clave. En
+  «inscripción», antes de abrir el reto, el docente elige con la clave de su sala los colegios de ese
+  catálogo que participan; si falta uno el día del reto, lo agrega a su sala como «provisional» y el
+  semillero después lo confirma o lo une con uno existente (ADR-002, Domain Design). Una sala puede
+  mezclar estudiantes de varios colegios (decisión del humano, 2026-10-25). En la pantalla de inscripción, el campo «Colegio» deja de ser
   texto libre y pasa a ser una lista para elegir. El servidor guarda el identificador del colegio, y
-  rechaza cualquier valor que no esté en la lista. El nombre del colegio se muestra igual que lo escribió
-  el docente. El control de nombre repetido compara el identificador del colegio en lugar del texto
+  rechaza cualquier valor que no esté en la lista. El nombre del colegio se muestra igual que está
+  escrito en el catálogo. El control de nombre repetido compara el identificador del colegio en lugar del texto
   (excepción aprobada «repetido por clave»). Cómo se carga la lista (pegar un nombre por línea, subir un
   CSV) y qué pasa si falta un colegio el día del reto se fija en el diseño.
 - **FR10.4 Integrantes como lista.** El servidor normaliza los integrantes así: los separa por comas,
   limpia cada nombre con FR10.2, quita los vacíos y los vuelve a unir con «, ». El paquete de FR9 los
   trae además contados (`n_integrantes`).
-- **FR10.5 Las reglas viven en el núcleo puro.** La normalización y la validación son funciones puras,
-  sin E/S, probadas con `unittest`. Cada regla tiene un caso válido y al menos dos inválidos (NFR12,
-  `phases/construction.md`, «Testing Standards»).
+- **FR10.5 Las reglas se prueban solas.** La normalización y la validación tienen pruebas unitarias que
+  corren sin servidor ni base. En Python se escriben con `unittest`; en otro lenguaje, el runner de
+  pruebas se elige en el ADR de esa opción y requiere aprobación. Cada regla tiene un caso válido y al
+  menos dos inválidos (NFR12, `phases/construction.md`, «Testing Standards»).
 
 ```gherkin
 Given el formulario de inscripción
@@ -324,9 +349,9 @@ que diga cada punto de abajo.
   y lo descarga quien tenga la clave de esa sala o la del semillero. «Reiniciar» y el borrado de
   NFR10.1 se aplican a una sala sin tocar las demás.
 - **FR11.7 Sin regresión.** Un reto con una sola sala se comporta como hoy para el estudiante y el
-  tablero. `simulacro.py 40` sigue terminando en «TODO BIEN» con una sala. Se agrega una prueba con
+  tablero, y la prueba común (FR12.3) termina en «TODO BIEN» con una sala. Se agrega una prueba con
   varias salas a la vez que verifica que no se mezclan las clasificaciones, los relojes ni las
-  respuestas. Esa prueba es nueva; `simulacro.py` no se debilita.
+  respuestas. Esa prueba es nueva; ninguna comprobación existente se debilita.
 
 ```gherkin
 Given dos salas abiertas a la vez, «KQMT» en un colegio y «PRWX» en otro
@@ -336,12 +361,105 @@ And el tablero de «PRWX» no muestra a nadie de «KQMT»
 And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 ```
 
+### FR12. Un despliegue por opción y comparación al final (decisión del humano, 2026-10-25)
+
+- **FR12.1 La versión local no cambia.** Ningún commit de esta intención modifica `2_Aplicacion_Reto/`,
+  incluidos `servidor.py`, `web/`, los lanzadores y `pruebas/simulacro.py`. Se comprueba con
+  `git diff --stat c87c80d HEAD -- 2_Aplicacion_Reto/`, que debe salir vacío. `c87c80d` es el último
+  commit de `develop` antes de esta decisión, ya con el formato de ruff aplicado. El comando mira solo
+  commits: el cambio pendiente, solo de fin de línea, en `INICIAR_RETO_INTERNET.bat` queda sin
+  commitear y fuera de esta intención. La única excepción posible es la de OQ9, si el humano la aprueba.
+- **FR12.2 Una carpeta por opción.** Cada opción vive en su propia carpeta bajo `despliegues/`, en
+  `develop` (estructura ya creada, ver `despliegues/LEEME.md`). Son cinco opciones, las cuatro del
+  pedido inicial (punto 3) más GitHub Pages, que pidió el humano en esta etapa:
+
+| Opción | Carpeta | Del pedido |
+|---|---|---|
+| Cloudflare Pages + Workers + D1 + un Durable Object por sala | `cloudflare/` | a |
+| Cloudflare Containers con el `Dockerfile` actual | `cloudflare-containers/` | b |
+| Google Apps Script + Google Sheets | `apps-script/` | c |
+| Render con Docker y disco persistente (línea base) | `render/` | d |
+| GitHub Pages para las pantallas, con la API en otro servicio | `github-pages/` | pedido en esta etapa |
+
+  Ninguna carpeta depende de otra. Las pantallas de `web/` se pueden reutilizar copiándolas, sin cambiar
+  lo que ve el estudiante (FR4.2). Cloudflare Containers volvió a la lista porque estaba en el pedido
+  inicial y se había quitado sin motivo. Si el humano la descarta, se borra su carpeta y se anota aquí
+  por qué.
+- **FR12.2a Costo durante la comparación.** Ninguna opción genera cargos sin que el humano apruebe antes
+  el monto y un tope. Render con disco es de pago según `render.yaml` («plan de pago más barato (lo
+  necesario para tener disco)»). Mientras ese pago no se apruebe, Render entra en la tabla solo con
+  datos de la documentación oficial y marcado «no cumple NFR6», sin desplegarse. Lo mismo vale para
+  cualquier otra opción cuyo plan gratuito no alcance.
+- **FR12.2b Qué se aprueba antes de construir.** Cada opción tiene su propio ADR, aprobado por el humano
+  antes de escribir su código, con lenguaje, runtime, dependencias con versión exacta, herramientas de
+  prueba y la forma de su copia de datos (FR4.3). Ese ADR cuenta como la aprobación de sus
+  dependencias. El ADR final de FR12.5 es aparte y solo elige.
+- **FR12.3 La misma prueba para todas.** Una prueba común, nueva y fuera de `2_Aplicacion_Reto/`
+  porque esa carpeta no cambia, corre contra la URL de cada versión desplegada. Tiene dos partes:
+  - **Parte base:** las mismas comprobaciones de las 29 de `simulacro.py 40`, sin debilitar ninguna.
+  - **Parte nueva:** las comprobaciones de las fugas (FR6.3) y de varias salas (FR11.7), la medición de
+    NFR2 y NFR3, un reinicio a mitad de la prueba (NFR4) y el arranque en frío (NFR5).
+
+  Contra la versión local se espera esto: la parte base da «TODO BIEN», igual que `simulacro.py`, y así
+  se valida la prueba común. Las comprobaciones de fugas fallan mientras OQ9 no se apruebe, y pasan si
+  se aprueba y se corrigen. Las de varias salas no aplican, porque la versión local tiene una sola sala.
+  Contra cada versión de la nube, las dos partes tienen que dar «TODO BIEN».
+- **FR12.4 Tabla de comparación.** Al final, una tabla (`despliegues/COMPARACION.md`) pone las cinco
+  opciones lado a lado con lo que midió la prueba común. Las filas son:
+  - si pasa la prueba («TODO BIEN»);
+  - la latencia p95 al responder y del tablero;
+  - si sobrevive al reinicio;
+  - el arranque en frío;
+  - el consumo frente a la cuota gratuita, con la URL oficial;
+  - el costo en US$;
+  - las piezas, servicios y líneas de código;
+  - los pasos que sigue la persona del semillero para desplegar.
+- **FR12.5 Qué es «pasa todo».** Una opción pasa todo cuando cumple cada NFR según la tabla de abajo.
+
+| NFR | Cómo se da por cumplido en cada opción |
+|---|---|
+| NFR1 Carga | Prueba común con 10 salas de tamaños desiguales que suman 40 participantes |
+| NFR2, NFR3 Rapidez | Prueba común: p95 medido contra la URL |
+| NFR4 Persistencia | Prueba común: reinicio a mitad de la prueba, sin perder datos |
+| NFR5 Arranque en frío | Prueba común: primera petición tras dormir |
+| NFR6 Costo | Documentación oficial citada con URL y consumo medido en la prueba ≤ 50 % de la cuota |
+| NFR7 Operación | Alguien del semillero que no la construyó la despliega solo con su `LEEME.md` |
+| NFR8 Confidencialidad | Prueba común: comprobaciones de fugas (FR6.3) |
+| NFR9 Claves | Prueba común: 403 con clave ausente, incorrecta o de otra sala; revisión del código en el PR |
+| NFR10, NFR10.1 Datos personales | Se sigue la guía de cierre y se comprueba que el proveedor no queda con filas ni archivos de participantes |
+| NFR11 Orden total y tiempo | Prueba común: mismos puntos y misma clasificación que la versión local con las mismas respuestas |
+| NFR12 Mantenibilidad | Cobertura medida con la herramienta del ADR de la opción |
+
+- **FR12.6 Cómo se elige.** Entre las opciones que pasan todo, gana la más simple, comparando en este
+  orden y pasando al siguiente criterio solo si hay empate (`project.md`, «Corrections»):
+  1. menos servicios externos;
+  2. menos piezas propias que desplegar;
+  3. menos líneas de código.
+
+  Si persiste el empate, decide el humano con la tabla. El humano aprueba la elección en un ADR. Ese ADR
+  nombra también la **alternativa de respaldo**: la segunda opción que pasa todo, que conserva su
+  carpeta, su ADR y su fila en la tabla. Las carpetas de las demás opciones se borran en un commit
+  propio, después de esa aprobación. Si ninguna opción pasa todo, se aplica OQ2.
+
+```gherkin
+Given las versiones desplegadas, cada una con su enlace
+When se corre la prueba común contra cada enlace
+Then cada versión obtiene su fila en la tabla de comparación con los mismos criterios
+And git diff --stat c87c80d HEAD -- 2_Aplicacion_Reto/ sale vacío
+And gana la versión que pasa todo según FR12.5 y queda primera en el orden de FR12.6
+And la segunda que pasa todo conserva su carpeta como respaldo
+```
+
 ## Non-functional requirements
+
+Cada versión de la nube se mide contra estos requisitos con la prueba común (FR12.3). La versión local
+no se vuelve a medir: queda como línea base.
 
 - **NFR1 Carga.** Puede haber varios retos en paralelo en lugares distintos, más de cinco salas a la
   vez (FR11). Contando a todas las personas de todas las salas, el máximo sigue siendo 40 al mismo
-  tiempo, cada una en su computador; lo normal son unas 25 (Q1, Q9-A; decisión del humano,
-  2026-10-25). Las salas son de tamaños distintos (por ejemplo, 5 personas en un colegio y 10 en otro).
+  tiempo, cada una en su computador; lo normal son unas 25 (Q1). Q9-A decía «un solo reto a la vez» y
+  queda reemplazada en ese punto por la decisión del humano del 2026-10-25, registrada en esta etapa al
+  agregar FR11; de Q9-A solo se conserva el máximo de 40 personas. Las salas son de tamaños distintos (por ejemplo, 5 personas en un colegio y 10 en otro).
   El diseño se prueba con 10 salas abiertas a la vez, de tamaños desiguales (de 1 a 10 personas), que
   suman 40 participantes durante 90 minutos. El 10 es una propuesta, no salió de tus respuestas; se confirma en el ADR. Cada sala abre
   su propio tablero, y el ADR suma esas peticiones al consumo de NFR6.
@@ -369,11 +487,17 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 - **NFR8 Confidencialidad de respuestas.** Ninguna respuesta correcta, veredicto ni dato del que se
   pueda deducir la clave llega al navegador antes de `resultados` (`project.md`, «Forbidden»; FR6). El
   banco con respuestas nunca se sirve como archivo estático.
-- **NFR9 Clave docente.** Las rutas `/api/admin/*` exigen la clave docente comparada en tiempo
-  constante; la clave se configura en el hosting como secreto, nunca en el repositorio ni en el
-  registro (`project.md`, «Forbidden»). La clave solo viaja en la cabecera `X-Clave-Admin`, no en la URL
-  (`?clave=`), para que no quede en los registros del hosting, salvo que el contrato de la API muestre
-  que `web/js/` la necesita. La guía pide una clave de al menos 12 caracteres.
+- **NFR9 Claves.** Hay dos tipos de clave, y las dos se comparan en tiempo constante, nunca se
+  escriben en el repositorio ni en el registro (`project.md`, «Forbidden») y solo viajan en la cabecera
+  `X-Clave-Admin`, nunca en la URL (`?clave=`):
+
+| Clave | Quién la tiene | Dónde vive | Largo mínimo | Qué abre |
+|---|---|---|---|---|
+| Del semillero | Personas del semillero | Secreto del hosting | 12 caracteres | Crear, cerrar y listar salas; cualquier ruta `/api/admin/*` de cualquier sala |
+| De sala | El docente de esa sala | La genera el servidor al crear la sala (ADR-003) y guarda solo su huella | 12 caracteres | Las rutas `/api/admin/*` de su sala y ninguna otra |
+
+  Con una clave ausente, incorrecta o de otra sala, la respuesta es 403 y no trae datos. Qué clave
+  acepta cada ruta de admin queda listado en el contrato de la API.
 - **NFR10 Datos personales.** Los datos de menores (nombre, colegio, grado, integrantes, respuestas)
   pueden quedar en servidores del proveedor fuera de Colombia si el acceso docente va con clave y los
   datos se borran al terminar el reto (Q8-A). La otra condición de Q8-A, «repositorio privado», ya no se
@@ -381,7 +505,7 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
   repositorio nunca contiene datos de participantes.
 - **NFR10.1 Respaldo antes de borrar** (decisión del humano, 2026-10-25). Al terminar cada reto, antes de
   borrar nada en la nube, se descarga un respaldo completo y **con nombres** (los CSV de resultados y de
-  respuestas y una copia de la base de datos) a un lugar privado del semillero, fuera del repositorio
+  respuestas y la copia completa de los datos de FR4.3) a un lugar privado del semillero, fuera del repositorio
   (el Drive del semillero con acceso restringido, FR9.4). Solo después se borran del proveedor los datos y las
   copias de seguridad que guarda «Reiniciar»; al final no queda en el proveedor ningún archivo ni fila
   con datos de participantes. La guía indica cada paso y quién lo hace.
@@ -389,25 +513,30 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 ```gherkin
 Given un reto en «resultados»
 When la persona del semillero sigue la guía de cierre
-Then descarga los CSV y la copia de la base al lugar privado del semillero
+Then descarga los CSV y la copia completa de los datos al lugar privado del semillero
 And comprueba que el respaldo abre y tiene una fila por participante
 And solo entonces borra los datos de la nube
 And el proveedor ya no tiene archivos ni filas con datos de participantes
 ```
 - **NFR11 Orden total y tiempo del servidor.** La clasificación nunca empata y todo tiempo se mide con
   el reloj del servidor también en el hosting nuevo (`project.md`, «Mandated»).
-- **NFR12 Mantenibilidad.** 80 % de cobertura de líneas del código nuevo o tocado, medido en local con
-  `trace` de la biblioteca estándar; pruebas nuevas con `unittest`; complejidad ciclomática ≤ 10 por
-  función revisada a mano (`team-practices.md`, «Testing Posture» y «Code Style»).
+- **NFR12 Mantenibilidad.** El código nuevo tiene un 80 % de cobertura de líneas.
+  - En Python se mide con `trace` de la biblioteca estándar, las pruebas usan `unittest` y ruff revisa
+    la complejidad ciclomática ≤ 10 (ADR-008).
+  - En otro lenguaje, la herramienta de cobertura y el límite de complejidad los fija el ADR de esa
+    opción, y cada herramienta requiere aprobación.
+
+  Fuente: `team-practices.md`, «Testing Posture».
 
 ## Constraints
 
-- **Tecnología de la app.** Python con dependencias manejadas por uv (`pyproject.toml` + `uv.lock`, Python
-  3.12) y SQLite; HTML/CSS/JS sin frameworks ni build. Cada dependencia nueva requiere aprobación
-  (decisión del humano, 2026-10-25). Si la opción elegida
-  exige otro lenguaje o runtime en la nube (por ejemplo JavaScript en Workers o Apps Script), el ADR
-  debe decirlo y tu aprobación del ADR cuenta como esa aprobación.
-- **Sin código de producción hasta aprobar el ADR** (pedido inicial).
+- **Tecnología.** La versión local sigue en Python con SQLite y no cambia. Cada versión de la nube usa
+  el lenguaje, el runtime y la base que apruebe su ADR (FR12.2b): las de Python manejan sus dependencias
+  con uv (`pyproject.toml` + `uv.lock`, Python 3.12), y SQLite es obligatorio solo en las opciones que
+  lo usan. Las pantallas siguen en HTML/CSS/JS sin frameworks ni build. Cada dependencia nueva requiere
+  aprobación (decisión del humano, 2026-10-25), y el ADR de cada opción cuenta como esa aprobación.
+- **Sin código de producción de una opción hasta aprobar su ADR** (pedido inicial, aplicado a cada
+  opción por FR12.2b). La estructura de carpetas y los `LEEME.md` no son código de producción.
 - **Repositorio público** (decisión del humano, 2026-10-25, riesgo aceptado). `3_Guia_docente/` y
   `banco_preguntas.json` contienen todas las respuestas y quedan visibles en internet. La regla
   «el repositorio debe ser privado» deja de aplicar. Lo que el servidor protege (FR6, NFR8) sigue igual:
@@ -421,13 +550,22 @@ And el proveedor ya no tiene archivos ni filas con datos de participantes
   PR a `develop` (despliegues de prueba), tantas veces como haga falta → cuando `develop` tiene la
   versión final desplegada y verificada, un PR final revisado de `develop` a `main` (FR5.3). Ningún push a
   `main` hasta entonces.
-- **Sin CI.** Las pruebas corren en local antes del PR; es una excepción explícita tuya
-  (`team-practices.md`, «Testing Posture»).
-- **Prueba de aceptación.** `python3 pruebas/simulacro.py 40` desde `2_Aplicacion_Reto/` termina en
-  «TODO BIEN» tras cada cambio del servidor; nunca se debilita.
-- **Corte delgado primero.** Una versión mínima (inscribirse y responder una pregunta) desplegada en el
-  hosting elegido y verificada con el simulacro y `GET /api/publico` antes de migrar el resto
-  (`team-practices.md`, «Walking Skeleton»).
+- **Solo la CI aprobada.** La única CI es la revisión de PR, `.github/workflows/revisar-pr.yml`
+  (`team.md`, «Corrections»). Corre los ganchos de pre-commit y el simulacro, y revisa el tamaño del PR.
+  Las demás pruebas corren en local antes del PR.
+- **Máximo 400 líneas de código por PR** (`team.md`, «Corrections»). Solo quedan exentos los PR
+  `style:` que dejan igual el árbol sintáctico (ADR-008). Cada opción se construye en varios PR
+  pequeños a `develop`.
+- **Prueba de aceptación.** En la versión local, `python3 pruebas/simulacro.py 40` desde
+  `2_Aplicacion_Reto/` sigue terminando en «TODO BIEN» y nunca se debilita. En cada versión de la nube,
+  la prueba común (FR12.3) termina en «TODO BIEN» tras cada cambio de su servidor.
+- **Corte delgado primero, en cada opción.** Antes de construir todo, cada opción despliega una versión
+  mínima que deja inscribirse y responder una pregunta, y se verifica con la parte correspondiente de la
+  prueba común y con `GET /api/publico`. Para esta intención, esto reemplaza el criterio de
+  `team-practices.md` («Walking Skeleton»), que medía el corte con `simulacro.py` en la versión local:
+  esa versión ya no cambia, así que no prueba lo que se despliega. El humano aprueba **un punto de
+  control por opción**, después de su corte delgado. Propuesta, no salió de tus respuestas: una opción
+  que no pasa su corte delgado se registra en la tabla con el motivo y no se sigue construyendo.
 
 ## Assumptions
 
@@ -453,24 +591,33 @@ And el proveedor ya no tiene archivos ni filas con datos de participantes
   Excepciones aprobadas por el humano el 2026-10-25: la lista cerrada de colegios, el mensaje de
   colegio obligatorio y el control de repetido por colegio (FR10.1, FR10.3), además de la descarga del
   paquete del semillero en el panel (FR9.1).
-- Configurar CI en la nube y adoptar linter o formateador (Practices Discovery Q5/Q7).
+- Cualquier CI distinta de la revisión de PR ya aprobada (`.github/workflows/revisar-pr.yml`). Ruff ya
+  se adoptó (ADR-008), así que deja de estar fuera de alcance.
+- Cualquier cambio en `2_Aplicacion_Reto/` (FR12.1), salvo lo que se apruebe en OQ9.
 - Entorno de ensayo en la nube aparte (Practices Discovery Q6).
 - Reemplazar el sondeo (polling) por WebSockets o SSE, salvo que el ADR lo exija para cumplir NFR2-NFR3.
 
 ## Open questions
 
 - **OQ1.** ¿Qué opción de hosting cumple a la vez US$ 0 (NFR6), persistencia sin pérdidas (NFR4), una
-  sola instancia coherente para reloj y clasificación y las latencias de NFR2-NFR3? Se responde en el ADR
-  con la tabla comparativa y las URL oficiales. Además de las cuatro alternativas del pedido, la tabla
-  incluye GitHub Pages para servir `web/` (pedido del humano en esta etapa), combinado con un backend en
-  otro servicio, porque Pages solo sirve archivos estáticos. El ADR verifica en la documentación
-  oficial: con GitHub Free, Pages exige repositorio público, y el repositorio queda público por
-  decisión del humano (ver «Constraints»). Entre las opciones que cumplen todos los requisitos se elige la más parsimoniosa: la
-  que tenga menos piezas, servicios y cambios de código.
+  sola instancia coherente para reloj y clasificación y las latencias de NFR2-NFR3? Ya no se responde
+  solo con documentación: se responde desplegando las cinco opciones de FR12.2 y midiéndolas con la
+  prueba común (FR12). Las opciones de pago no se despliegan sin aprobación (FR12.2a). Los límites y
+  cuotas se siguen citando con su URL oficial. Para GitHub Pages, el ADR verifica en la documentación
+  oficial que con GitHub Free exige repositorio público; el repositorio queda público por decisión del
+  humano (ver «Constraints»). La elección sigue FR12.5 y FR12.6.
 - **OQ2.** Si ninguna opción gratuita cumple todo, ¿qué se relaja? Se te preguntará en el diseño, no se
   decide aquí.
-- **OQ3.** ¿Cómo se mide NFR2-NFR3 contra el servicio desplegado, dado que `simulacro.py` levanta su
-  propio servidor local? Se define en el diseño (por ejemplo, un modo del simulacro contra una URL).
+- **OQ3.** ¿Cómo se mide NFR2-NFR3 contra el servicio desplegado? Queda resuelta en parte por FR12.3:
+  una prueba común nueva que apunta a una URL. El diseño fija cómo reemplaza las comprobaciones que hoy
+  abren la base directamente (`simulacro.py` lee y cambia `config.abierto_en`). Cualquier mecanismo de
+  prueba que mueva el reloj queda apagado en un despliegue real, o protegido con la clave del semillero.
+  Si no se puede cumplir ninguna de las dos cosas, se descarta y la prueba espera el tiempo real, porque
+  una ruta pública para mover el reloj rompería FR3.1 y NFR8.
+- **OQ9.** La versión local tiene hoy las fugas de FR6: el veredicto en «cerrado» y los identificadores
+  del banco. Al congelarla, las conserva, aunque `project.md` («Forbidden») prohíbe enviar respuestas
+  al navegador antes de «resultados». ¿Se permite corregir solo esas fugas en `2_Aplicacion_Reto/`, con
+  el simulacro en «TODO BIEN», como única excepción a FR12.1? Lo decide el humano.
 - **OQ4.** Sobre qué módulos exactos se mide el 80 % de NFR12 y con qué comando de `trace`.
 - **OQ5.** El tablero `/tablero` muestra en internet nombres y colegios de menores (A2). Q8-A aceptó
   guardar los datos en la nube, pero no mostrarlos en una página pública. Decisión del humano en la

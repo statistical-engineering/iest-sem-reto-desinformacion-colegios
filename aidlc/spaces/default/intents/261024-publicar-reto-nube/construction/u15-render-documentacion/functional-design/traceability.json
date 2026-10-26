@@ -1,0 +1,16 @@
+{
+  "stage": "functional-design",
+  "unit": "u15-render-documentacion",
+  "upstream_ids": ["FR12.2a", "FR12.4", "FR12.5", "NFR4", "NFR5", "NFR6"],
+  "coverage": [
+    {"id": "FR12.2a", "status": "OK", "target": "BR15.2, BR15.3"},
+    {"id": "FR12.4", "status": "OK", "target": "BR15.1, functional-spec.md («Columna Render, fila por fila»)"},
+    {"id": "FR12.5", "status": "OK", "target": "functional-spec.md («Veredicto de la columna»: no pasa todo)"},
+    {"id": "NFR4", "status": "OK", "target": "BR15.4 (cifras R4, R5, R7, R10)"},
+    {"id": "NFR5", "status": "OK", "target": "BR15.4 (cifras R1, R2)"},
+    {"id": "NFR6", "status": "OK", "target": "BR15.3, BR15.5 (cifras R3, R11, R12, R13, R14)"}
+  ],
+  "reverse": [
+    {"id": "BR15.6", "status": "N/A", "target": "project.md («Forbidden»): sin claves ni respuestas en archivos versionados"}
+  ]
+}

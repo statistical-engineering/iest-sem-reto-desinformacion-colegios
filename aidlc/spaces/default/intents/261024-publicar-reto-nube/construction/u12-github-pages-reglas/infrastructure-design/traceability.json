@@ -1,0 +1,12 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u12-github-pages-reglas",
+  "upstream_ids": ["U12-O1", "U12-O2", "U12-R1", "U12-S3", "FR5.2"],
+  "coverage": [
+    {"id": "U12-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U12-O2", "status": "OK", "target": "monitoring-design.md y cicd-pipeline.md"},
+    {"id": "U12-R1", "status": "OK", "target": "monitoring-design.md (prueba común de U2 tras desplegar)"},
+    {"id": "U12-S3", "status": "OK", "target": "infrastructure-specification.md (copia de datos por copiar.sh)"},
+    {"id": "FR5.2", "status": "OK", "target": "infrastructure-specification.md y cicd-pipeline.md"}
+  ]
+}

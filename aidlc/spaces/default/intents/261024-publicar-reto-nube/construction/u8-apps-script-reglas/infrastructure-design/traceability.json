@@ -1,0 +1,26 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u8-apps-script-reglas",
+  "upstream_ids": [
+    "FR5.2",
+    "NFR6",
+    "NFR7"
+  ],
+  "coverage": [
+    {
+      "id": "FR5.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "NFR6",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "NFR7",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "stage": "nfr-design",
+  "unit": "u17-comparacion",
+  "upstream_ids": ["U17-P1", "U17-P2", "U17-P3", "U17-P4", "U17-S1", "U17-S2", "U17-S3", "U17-S4", "U17-S5", "U17-S6", "U17-E1", "U17-E2", "U17-E3", "U17-E4", "U17-R1", "U17-R2", "U17-R3", "U17-R4", "U17-R5", "U17-O1", "U17-O2", "U17-O3", "U17-O4"],
+  "coverage": [
+    {"id": "U17-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U17-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U17-P3", "status": "OK", "target": "performance-design.md"},
+    {"id": "U17-P4", "status": "OK", "target": "performance-design.md"},
+    {"id": "U17-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-S4", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-S5", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-S6", "status": "OK", "target": "security-design.md"},
+    {"id": "U17-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U17-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U17-E3", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U17-E4", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U17-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U17-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U17-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U17-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U17-R5", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U17-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U17-O2", "status": "OK", "target": "observability-design.md"},
+    {"id": "U17-O3", "status": "OK", "target": "observability-design.md"},
+    {"id": "U17-O4", "status": "OK", "target": "observability-design.md"}
+  ]
+}

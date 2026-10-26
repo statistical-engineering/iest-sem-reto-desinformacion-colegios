@@ -1,0 +1,36 @@
+{
+  "stage": "nfr-design",
+  "unit": "u3-local-fugas",
+  "upstream_ids": [
+    "U3-P1", "U3-P2", "U3-P3",
+    "U3-S1", "U3-S2", "U3-S3", "U3-S4", "U3-S5", "U3-S6", "U3-S7",
+    "U3-E1", "U3-E2", "U3-E3",
+    "U3-R1", "U3-R2", "U3-R3", "U3-R4", "U3-R5",
+    "U3-O1", "U3-O2", "U3-O3",
+    "U3-M1"
+  ],
+  "coverage": [
+    {"id": "U3-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U3-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U3-P3", "status": "OK", "target": "performance-design.md"},
+    {"id": "U3-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S4", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S5", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S6", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-S7", "status": "OK", "target": "security-design.md"},
+    {"id": "U3-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U3-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U3-E3", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U3-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U3-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U3-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U3-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U3-R5", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U3-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U3-O2", "status": "OK", "target": "observability-design.md"},
+    {"id": "U3-O3", "status": "OK", "target": "observability-design.md"},
+    {"id": "U3-M1", "status": "OK", "target": "logical-components.md (seis funciones puras probadas con unittest, ADR-L3)"}
+  ]
+}

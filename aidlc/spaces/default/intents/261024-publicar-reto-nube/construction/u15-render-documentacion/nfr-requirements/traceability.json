@@ -1,0 +1,20 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u15-render-documentacion",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8", "NFR9", "NFR10", "NFR10.1", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U15-E1"},
+    {"id": "NFR2", "status": "N/A", "target": "U15-P1: no se mide porque Render no se despliega (FR12.2a)"},
+    {"id": "NFR3", "status": "N/A", "target": "U15-P1: no se mide porque Render no se despliega (FR12.2a)"},
+    {"id": "NFR4", "status": "OK", "target": "U15-R1, U15-R2, U15-R4"},
+    {"id": "NFR5", "status": "OK", "target": "U15-R3, U15-P2"},
+    {"id": "NFR6", "status": "OK", "target": "U15-E2, U15-E3"},
+    {"id": "NFR7", "status": "N/A", "target": "U15-O1: no hay despliegue que operar"},
+    {"id": "NFR8", "status": "OK", "target": "U15-S1"},
+    {"id": "NFR9", "status": "OK", "target": "U15-S1, U15-S2"},
+    {"id": "NFR10", "status": "N/A", "target": "U15-S3: no hay datos en Render"},
+    {"id": "NFR10.1", "status": "N/A", "target": "U15-S3: no hay datos en Render"},
+    {"id": "NFR11", "status": "N/A", "target": "U15-R5: no hay código desplegado"},
+    {"id": "NFR12", "status": "N/A", "target": "tech-stack-decisions.md: no hay código, no hay cobertura"}
+  ]
+}

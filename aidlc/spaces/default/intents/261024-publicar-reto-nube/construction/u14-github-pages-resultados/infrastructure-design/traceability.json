@@ -1,0 +1,14 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u14-github-pages-resultados",
+  "upstream_ids": ["U14-E2", "U14-O1", "U14-O2", "U14-O3", "U14-R3", "U14-S6", "FR5.2"],
+  "coverage": [
+    {"id": "U14-E2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U14-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U14-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U14-O3", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U14-R3", "status": "OK", "target": "infrastructure-specification.md (prueba común completa tras desplegar)"},
+    {"id": "U14-S6", "status": "OK", "target": "infrastructure-specification.md (ensayo de la guía de cierre)"},
+    {"id": "FR5.2", "status": "OK", "target": "infrastructure-specification.md y cicd-pipeline.md"}
+  ]
+}

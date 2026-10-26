@@ -1,0 +1,15 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u3-local-fugas",
+  "upstream_ids": ["U3-P1", "U3-R2", "U3-R3", "U3-R5", "U3-O1", "U3-O2", "U3-O3", "U3-M1"],
+  "coverage": [
+    {"id": "U3-P1", "status": "OK", "target": "monitoring-design.md (timeit anotado en el PR)"},
+    {"id": "U3-R2", "status": "OK", "target": "infrastructure-specification.md («Volver atrás»)"},
+    {"id": "U3-R3", "status": "OK", "target": "cicd-pipeline.md (simulacro y prueba común antes del push)"},
+    {"id": "U3-R5", "status": "OK", "target": "infrastructure-specification.md («Cómo llega al docente», «Volver atrás»)"},
+    {"id": "U3-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U3-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U3-O3", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U3-M1", "status": "OK", "target": "cicd-pipeline.md (unittest y trace antes de cada push)"}
+  ]
+}

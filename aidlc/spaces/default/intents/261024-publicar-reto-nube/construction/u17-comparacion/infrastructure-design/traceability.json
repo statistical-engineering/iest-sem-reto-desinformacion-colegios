@@ -1,0 +1,15 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u17-comparacion",
+  "upstream_ids": ["U17-R3", "U17-R5", "U17-O1", "U17-O4", "FR5.2", "FR8.2", "FR12.1", "FR12.6"],
+  "coverage": [
+    {"id": "U17-R3", "status": "OK", "target": "monitoring-design.md (reabrir el ADR si cambia una medición)"},
+    {"id": "U17-R5", "status": "OK", "target": "infrastructure-specification.md (comando de vuelta atrás tomado de la opción)"},
+    {"id": "U17-O1", "status": "OK", "target": "monitoring-design.md (casillas con su JSON o URL)"},
+    {"id": "U17-O4", "status": "OK", "target": "infrastructure-specification.md (chequeo de salud y panel del proveedor)"},
+    {"id": "FR5.2", "status": "N/A", "target": "cicd-pipeline.md: U17 no despliega; el despliegue a mano es de la ganadora"},
+    {"id": "FR8.2", "status": "OK", "target": "infrastructure-specification.md (datos para prueba de humo y vuelta atrás)"},
+    {"id": "FR12.1", "status": "OK", "target": "cicd-pipeline.md (git diff vacío antes de cada push)"},
+    {"id": "FR12.6", "status": "OK", "target": "cicd-pipeline.md (orden de los commits y borrado tras la aprobación)"}
+  ]
+}

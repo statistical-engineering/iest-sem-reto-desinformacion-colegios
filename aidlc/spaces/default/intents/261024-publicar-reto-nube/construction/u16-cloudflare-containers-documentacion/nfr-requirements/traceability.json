@@ -1,0 +1,20 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u16-cloudflare-containers-documentacion",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8", "NFR9", "NFR10", "NFR10.1", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U16-E1"},
+    {"id": "NFR2", "status": "N/A", "target": "U16-P1: no se mide porque la opción no se despliega (FR12.2a)"},
+    {"id": "NFR3", "status": "N/A", "target": "U16-P1: no se mide porque la opción no se despliega (FR12.2a)"},
+    {"id": "NFR4", "status": "OK", "target": "U16-R1, U16-R2, U16-R4"},
+    {"id": "NFR5", "status": "OK", "target": "U16-R3, U16-P2"},
+    {"id": "NFR6", "status": "OK", "target": "U16-E2, U16-E3, U16-E4"},
+    {"id": "NFR7", "status": "N/A", "target": "U16-O1: no hay despliegue que operar"},
+    {"id": "NFR8", "status": "OK", "target": "U16-S1"},
+    {"id": "NFR9", "status": "OK", "target": "U16-S1, U16-S2"},
+    {"id": "NFR10", "status": "N/A", "target": "U16-S3: no hay datos en Containers"},
+    {"id": "NFR10.1", "status": "N/A", "target": "U16-S3: no hay datos en Containers"},
+    {"id": "NFR11", "status": "N/A", "target": "U16-R5: no hay código desplegado"},
+    {"id": "NFR12", "status": "N/A", "target": "tech-stack-decisions.md: no hay código, no hay cobertura"}
+  ]
+}

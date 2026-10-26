@@ -1,0 +1,104 @@
+{
+  "stage": "functional-design",
+  "unit": "u7-apps-script-corte",
+  "upstream_ids": [
+    "FR1.3",
+    "FR2.4",
+    "FR3.1",
+    "FR4.1",
+    "FR4.2",
+    "FR5.1",
+    "FR5.2",
+    "FR6.2",
+    "FR7.2",
+    "FR7.3",
+    "FR8.0",
+    "FR11.3",
+    "FR12.2",
+    "FR12.2b",
+    "FR12.3",
+    "NFR8"
+  ],
+  "coverage": [
+    {
+      "id": "FR1.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR2.4",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR3.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR4.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR4.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR5.1",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR5.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR6.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR7.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR7.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR8.0",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR11.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR12.2",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR12.2b",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "FR12.3",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    },
+    {
+      "id": "NFR8",
+      "status": "N/A",
+      "target": "no se construye: Apps Script queda «no pasa» por contrato (review-01.md, C-01: no lee cabeceras ni fija códigos de estado; Delivery Planning Q2-A aprobó saltar U7 a U10)"
+    }
+  ]
+}

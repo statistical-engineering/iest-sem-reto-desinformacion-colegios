@@ -1,0 +1,21 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u11-github-pages-corte",
+  "upstream_ids": ["U11-R1", "U11-R3", "U11-R5", "U11-S3", "U11-S4", "U11-S6", "U11-S11", "U11-O1", "U11-O2", "U11-O3", "U11-O4", "U11-E2", "U11-E5", "FR5.2"],
+  "coverage": [
+    {"id": "U11-R1", "status": "OK", "target": "infrastructure-specification.md (datos fuera del clon)"},
+    {"id": "U11-R3", "status": "OK", "target": "infrastructure-specification.md (abrir el enlace antes del reto)"},
+    {"id": "U11-R5", "status": "OK", "target": "infrastructure-specification.md y monitoring-design.md (prórroga mensual)"},
+    {"id": "U11-S3", "status": "OK", "target": "infrastructure-specification.md (el flujo sube solo web/)"},
+    {"id": "U11-S4", "status": "OK", "target": "infrastructure-specification.md (secretos fuera del clon)"},
+    {"id": "U11-S6", "status": "OK", "target": "infrastructure-specification.md (RETO_ORIGENES)"},
+    {"id": "U11-S11", "status": "OK", "target": "infrastructure-specification.md"},
+    {"id": "U11-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U11-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U11-O3", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U11-O4", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U11-E2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U11-E5", "status": "OK", "target": "infrastructure-specification.md (flujo manual)"},
+    {"id": "FR5.2", "status": "OK", "target": "infrastructure-specification.md y cicd-pipeline.md"}
+  ]
+}

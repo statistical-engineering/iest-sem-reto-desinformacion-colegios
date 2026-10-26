@@ -1,0 +1,17 @@
+{
+  "stage": "functional-design",
+  "unit": "u16-cloudflare-containers-documentacion",
+  "upstream_ids": ["FR12.2", "FR12.2a", "FR12.4", "FR12.5", "NFR4", "NFR5", "NFR6"],
+  "coverage": [
+    {"id": "FR12.2", "status": "OK", "target": "BR16.4 (opción b «con el Dockerfile actual»: no cumple NFR4)"},
+    {"id": "FR12.2a", "status": "OK", "target": "BR16.2, BR16.3"},
+    {"id": "FR12.4", "status": "OK", "target": "BR16.1, functional-spec.md («Columna Cloudflare Containers, fila por fila»)"},
+    {"id": "FR12.5", "status": "OK", "target": "functional-spec.md («Veredicto de la columna»: no pasa todo)"},
+    {"id": "NFR4", "status": "OK", "target": "BR16.4 (cifras C6, C7, C9)"},
+    {"id": "NFR5", "status": "OK", "target": "BR16.5 (cifras C8, C10)"},
+    {"id": "NFR6", "status": "OK", "target": "BR16.3, BR16.6 (cifras C1 a C5, C11)"}
+  ],
+  "reverse": [
+    {"id": "BR16.7", "status": "N/A", "target": "project.md («Forbidden»): sin claves ni respuestas en archivos versionados"}
+  ]
+}

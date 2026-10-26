@@ -1,0 +1,16 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u12-github-pages-reglas",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR6", "NFR8", "NFR10", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U12-E1"},
+    {"id": "NFR2", "status": "OK", "target": "U12-P1, U12-P3"},
+    {"id": "NFR3", "status": "OK", "target": "U12-P2"},
+    {"id": "NFR4", "status": "OK", "target": "U12-R2"},
+    {"id": "NFR6", "status": "OK", "target": "U12-E2"},
+    {"id": "NFR8", "status": "OK", "target": "U12-S1, U12-S2, U12-S3"},
+    {"id": "NFR10", "status": "OK", "target": "U12-S5"},
+    {"id": "NFR11", "status": "OK", "target": "U12-R1, U12-R3"},
+    {"id": "NFR12", "status": "OK", "target": "U12-O2, tech-stack-decisions.md"}
+  ]
+}

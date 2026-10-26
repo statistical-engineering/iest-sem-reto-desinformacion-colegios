@@ -1,119 +1,248 @@
 # Decisiones de diseño del dominio
 
-Registro de decisiones de arquitectura (ADR) de Domain Design. Cada una sale de una respuesta tuya en
-`domain-design-questions.md`. La decisión del hosting no está aquí: va en el ADR de NFR Design.
+Registro de decisiones de arquitectura (ADR) de Domain Design. Cada ADR compara al menos tres
+alternativas con su costo y fue aprobado por el humano el 2026-10-25. Valen para cada versión de la nube
+(FR12.2); la versión local (`2_Aplicacion_Reto/`) no cambia. Lo propio de cada plataforma va en el ADR de
+cada opción (FR12.2b).
 
-## ADR-001: Partir `servidor.py` en pocos módulos por capa
+## ADR-001: Cómo se separan las reglas del reto en cada versión
 
-- **Context** — `servidor.py` tiene 913 líneas que mezclan reglas, SQL, reloj y HTTP
-  (`codekb/.../code-structure.md`, «Mapa de secciones de `servidor.py`»). Con varias salas (FR11), el
-  paquete de datos (FR9) y la limpieza de entrada (FR10), el archivo crece. FR7.1 pide separar el núcleo
-  puro de la E/S. Cada PR tiene un máximo de 400 líneas (`team.md`, «Corrections»).
-- **Decision** — Q1-A. Se arma un núcleo puro (`nucleo/`, un módulo por decisión: banco, calificación,
-  clasificación, ciclo de sala, limpieza, experimento). Los servicios (salas, catálogo, acceso,
-  inscripción, examen, resultados), la persistencia, la exportación, la API HTTP y el arranque van
-  aparte. Los 20 componentes de `components.md` son bloques lógicos; Units Generation decide cómo se
-  agrupan en archivos y PR.
-- **Consequences** — A favor: el núcleo se prueba con `unittest` sin servidor ni base (NFR12), y cada
-  módulo cabe en un PR. En contra: hay que mover código en varios PR y `simulacro.py`, que hoy importa
-  `servidor` como módulo, tiene que seguir funcionando (FR11.7). Ese cuidado se planifica en Units
-  Generation.
-- **Alternatives Rejected** — Un archivo por componente (Q1-B): unos 20 archivos para un servidor
-  pequeño, con más importaciones cruzadas. Un solo `servidor.py` ordenado (Q1-C): no cumple FR7.1.
+**Estado:** aprobado por el humano (2026-10-25). Reemplaza la versión
+anterior («Partir `servidor.py` en pocos módulos por capa», Q1-A). Esa versión daba por hecho el núcleo
+puro de FR7.1, y FR7.1 se reescribió porque venía del pedido inicial y no de una necesidad del problema.
+
+- **Context** — Cada versión de la nube (FR12.2) da los mismos resultados que la versión local con las
+  mismas respuestas: puntos, bono, desempates, vencimiento, limpieza de la inscripción y transiciones de
+  estado (NFR11, FR5.5). Además, tiene pruebas de esas reglas que corren sin servidor ni base (FR7.1,
+  FR10.5). Son dos lenguajes:
+  - Python: Render, Cloudflare Containers y, probablemente, la API de GitHub Pages.
+  - JavaScript: Workers y Apps Script.
+
+  Varias reglas dependen de la hora (ADR-004), así que las pruebas tienen que poder fijarla. En
+  `servidor.py` hay 9 funciones que ya son reglas puras: `fraccion`, `validar_respuesta`,
+  `version_publica`, `examen_publico`, `variante_de`, `resolver`, `rng_para`, `a_numero` y `puesto_de`.
+  Otras 6 mezclan regla con SQL o con la hora: `clasificacion`, `experimento`, `finalizar`,
+  `vencer_tiempos`, `estado_participante` y la validación de `registrar`.
+
+| | A. Reglas que reciben datos y la hora, y devuelven datos | B. Reglas junto a la base, probadas con una base de prueba | C. Copiar el servidor de hoy y probar solo por HTTP |
+|---|---|---|---|
+| Cómo es | Un módulo `reglas` por versión. La base y la red quedan alrededor y le pasan los datos y `ahora` | Cada servicio hace consulta + regla, como hoy. Las pruebas usan una base de prueba y un reloj falso | Python: `servidor.py` copiado tal cual. JS: reescrito directo. Solo la prueba común lo verifica |
+| Costo de construir | Separar las 6 funciones mezcladas. Las 9 puras se copian | Bajo en Python. Alto en Apps Script: Sheets no tiene base de prueba y hay que simular la hoja | El más bajo |
+| Costo de probar | Bajo: «estos datos y esta hora dan este resultado», igual en los dos lenguajes | Medio o alto: una base de prueba por plataforma, y cada desempate exige insertar filas | Alto: cada prueba exige desplegar, y el vencimiento exige esperar o abrir una ruta para mover el reloj (OQ3) |
+| ¿Cumple FR7.1 y FR10.5? | Sí | Sí, con base de prueba | No |
+
+- **Decision** — A, aplicada solo a las reglas de la lista. Es la única de las tres cuyo costo de
+  prueba no depende del almacenamiento de cada plataforma: B se encarece justo en Apps Script, y C deja
+  sin pruebas unitarias las reglas que más fallan (tiempo y desempates). Lo demás (catálogo, salas,
+  exportación y panel) va directo contra la base de cada plataforma, sin capas extra.
+- **Consequences** — A favor: los mismos casos de prueba de las reglas se escriben en Python y en JS.
+  Si dos versiones difieren, la diferencia aparece en las pruebas y no el día del reto. En contra: cada
+  carpeta lleva su propia copia de `reglas`, porque ninguna carpeta depende de otra (FR12.2). Durante la
+  comparación puede haber hasta cinco copias; al final quedan dos, la ganadora y la de respaldo (FR12.6).
+- **Alternatives Rejected** — B: su costo de prueba crece con cada plataforma, sobre todo con Sheets.
+  C: no cumple FR7.1 ni FR10.5 y empuja a abrir una ruta para mover el reloj.
+- **No decide** — Cómo se despachan las rutas ni si hay una capa de base de datos (FR7.2 y FR7.3).
+  Eso va en el ADR de cada opción (FR12.2b), porque depende de la plataforma.
 
 ## ADR-002: Catálogo único de colegios del semillero
 
-- **Context** — La lista cerrada de colegios (FR10.3) existe para que los datos lleguen limpios. Si cada
-  sala escribe su propia lista, el mismo colegio puede quedar con nombres distintos entre retos, y unir
-  los datos de varios años exige limpiar a mano (FR9).
-- **Decision** — Q2-A. El componente CatalogoColegios mantiene una lista única con un `id_colegio`
-  estable. La clave general del semillero agrega o corrige colegios; un nombre que, normalizado, ya
-  existe se rechaza como duplicado. Cada sala elige del catálogo los colegios que participan, y el
-  participante guarda el `id_colegio`.
-- **Consequences** — A favor: el mismo colegio tiene el mismo identificador en todos los retos y años,
-  así que los paquetes de datos se unen sin limpieza. En contra: antes del reto alguien del semillero
-  tiene que tener el colegio en el catálogo. Qué pasa si el día del reto falta uno sigue abierto (OQ7) y
-  se decide en Functional Design.
-- **Alternatives Rejected** — Lista propia de cada sala (Q2-B): vuelve a ensuciar los datos entre
-  retos. Catálogo con altas desde la sala (Q2-C): cada docente podría crear duplicados con otra
-  ortografía.
+**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+(Q2-A) con la comparación de costos y resuelve el hallazgo R-06 de la primera revisión: quién elige los
+colegios de cada sala y qué pasa si falta uno el día del reto (OQ7).
+
+- **Context** — La lista cerrada de colegios (FR10.3) existe para que los datos lleguen limpios: que
+  «IE San José» y «colegio san jose» no queden como dos colegios. Los paquetes de varios años se unen
+  por el colegio (FR9.2). Aplica igual en las cinco versiones.
+
+| | A. Un catálogo único del semillero | B. Una lista propia en cada sala | C. Un catálogo único al que cualquier docente agrega |
+|---|---|---|---|
+| Cómo es | El semillero mantiene la lista con un `id_colegio` fijo. Cada docente elige de ahí los colegios de su sala | Cada docente escribe la lista de su sala antes del reto | Un catálogo, pero el docente agrega colegios nuevos con su clave de sala |
+| Costo de construir | Medio: el catálogo, más una pantalla del semillero y la elección en la sala | Bajo: un campo de texto por sala | Medio: igual que A, sin el paso del semillero |
+| Costo en los datos | Ninguno: el mismo colegio tiene el mismo id siempre | Alto: el mismo colegio sale con nombres distintos entre retos y hay que limpiar a mano | Medio: cada docente puede crear un duplicado con otra ortografía |
+| Si falta un colegio el día del reto | Ver la decisión | Lo escribe el docente | Lo agrega el docente |
+
+- **Decision** — A, con una salida para el día del reto:
+  - el semillero, con su clave, agrega y corrige colegios del catálogo, y un nombre que ya existe
+    (normalizado) se rechaza;
+  - el docente, con la clave de su sala, elige del catálogo los colegios de su sala;
+  - si falta un colegio el día del reto, el docente lo agrega a su sala marcado **«provisional»**. El
+    semillero después lo confirma o lo une con uno que ya existía, y el paquete de datos lleva el
+    `id_colegio` definitivo.
+
+  A gana porque es la única de las tres que no ensucia los datos entre retos, y unir los datos de varios
+  años es el motivo de FR10.3. La salida «provisional» evita que el reto dependa de que alguien del
+  semillero esté disponible ese día.
+- **Consequences** — A favor: el mismo colegio tiene el mismo id en todos los retos y años. En contra:
+  hay una pantalla más para el semillero y un paso para unir provisionales. FR10.3 decía «el docente
+  carga la lista»: hay que ajustar esa frase en los requisitos para que diga esto.
+- **Alternatives Rejected** — B: vuelve a ensuciar los datos, que es justo lo que FR10.3 quiere evitar.
+  C: los duplicados entran sin que nadie los revise.
 
 ## ADR-003: Clave de sala generada por el servidor y regenerable
 
-- **Context** — Cada sala tiene su clave docente y la clave general del semillero crea las salas
-  (FR11.5). NFR9 pide comparar en tiempo constante, que la clave viaje solo en la cabecera
-  `X-Clave-Admin` y que tenga al menos 12 caracteres.
-- **Decision** — Q3-C. Al crear la sala, el servidor genera una clave larga y aleatoria, la muestra una
-  sola vez y guarda solo su huella (`clave_huella` en Sala). Con la clave general, el semillero puede
-  regenerarla, y desde ese momento la anterior deja de servir. Acceso verifica toda clave y una clave de
-  sala nunca abre otra sala.
-- **Consequences** — A favor: no hay claves débiles escritas a mano, y una clave filtrada o perdida se
-  reemplaza sin tocar la sala ni sus datos. Como solo se guarda la huella, el paquete de datos tampoco
-  puede filtrar la clave (FR9.5). En contra: el docente no puede recuperar una clave perdida, solo
-  pedir una nueva. Cómo se calcula la huella se fija en Functional Design.
-- **Alternatives Rejected** — Generada y mostrada una vez, sin regenerar (Q3-A): una clave perdida
-  deja la sala sin dueño. Escrita por el semillero (Q3-B): claves más fáciles de adivinar.
+**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+(Q3-C) con la comparación de costos y con los dos tipos de clave de NFR9.
+
+- **Context** — Hay dos claves (NFR9): la del semillero, que es un secreto del hosting, y la de cada
+  sala, que tiene el docente. Las dos tienen al menos 12 caracteres, se comparan en tiempo constante y
+  viajan solo en la cabecera `X-Clave-Admin`. Una clave de sala nunca abre otra sala (FR11.5). Aplica
+  igual en las cinco versiones.
+
+| | A. Generada por el servidor y regenerable | B. Generada por el servidor, sin regenerar | C. Escrita por el semillero al crear la sala |
+|---|---|---|---|
+| Cómo es | Al crear la sala, el servidor genera una clave aleatoria, la muestra una vez y guarda solo su huella. El semillero puede pedir una nueva | Igual que A, pero no se puede cambiar | El semillero inventa la clave y el servidor guarda su huella |
+| Costo de construir | Bajo: generar, guardar la huella y una acción «regenerar» | El más bajo | Bajo, pero hay que validar que la clave sea fuerte |
+| Riesgo | Bajo: una clave perdida o filtrada se reemplaza sin tocar la sala | Alto: una clave perdida deja la sala sin dueño a mitad del reto | Medio: las claves escritas a mano son más fáciles de adivinar |
+
+- **Decision** — A. Es la única de las tres que resuelve una clave perdida o filtrada sin perder la sala
+  ni sus datos, y cuesta casi lo mismo que B. Al regenerar, la clave anterior deja de servir en ese
+  momento. Como solo se guarda la huella, ni la base ni el paquete de datos pueden filtrar la clave
+  (FR9.5).
+- **Consequences** — A favor: no hay claves débiles ni claves guardadas en texto plano. En contra: una
+  clave perdida no se recupera, se pide otra al semillero. Los estudiantes nunca usan esta clave: usan
+  el código de sala y su código personal, como hoy. El semillero entrega la clave al docente por un
+  canal privado, y la guía del docente pide no compartirla en grupos ni proyectarla. Cómo se calcula la huella se fija en el ADR
+  de cada opción.
+- **Alternatives Rejected** — B: una clave perdida deja la sala sin dueño. C: las claves escritas a mano
+  son más fáciles de adivinar.
 
 ## ADR-004: El tiempo vence al consultar, sin hilo vigilante
 
+**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+(Q4-A, Q7-A) con la comparación de costos en las cinco plataformas, y resuelve los hallazgos R-01 (quién
+entrega al cerrar la sala) y R-09 (que una entrega no pase dos veces).
+
 - **Context** — Hoy un hilo `vigilante` revisa cada 3 s los intentos vencidos (`servidor.py`,
-  `vigilante`). Con varias salas, y en hostings que duermen la instancia o no permiten hilos, ese hilo
-  no sirve. `finalizar` ya pone la hora de entrega en el vencimiento exacto,
-  `fin = min(ahora, inicio + duración)`, y el bono se mide con la última respuesta.
-- **Decision** — Q4-A y Q7-A. CicloDeSala decide con la hora del servidor, que recibe como argumento,
-  si un intento venció y cuál es su hora de entrega. Examen y Resultados aplican el vencimiento antes de
-  responder cualquier petición que toque esa sala. FR3.2 se reescribió para decir eso: toda consulta ve
-  como entregados los intentos vencidos, con la hora de entrega igual al vencimiento.
-- **Consequences** — A favor: funciona en cualquier hosting; el reloj se prueba sin esperar; puntos,
-  bono, clasificación y CSV salen iguales que hoy. En contra: la fila en la base se escribe cuando
-  alguien consulta, no a los 3 s. Nadie lo nota desde fuera, porque toda lectura aplica primero el
-  vencimiento; las vistas que leen la base sin pasar por el servicio deben hacer lo mismo.
-- **Alternatives Rejected** — Mantener el hilo (Q4-B): limita los hostings posibles. Hilo más
-  temporizador del hosting (Q4-C): dos caminos para la misma regla sin ganar nada que se vea.
+  `vigilante`), y `finalizar` pone la hora de entrega en `fin = min(ahora, inicio + duración)`. Al
+  cerrar la sala, `cambiar_estado` entrega los intentos en curso con la hora del cierre y el motivo
+  `cierre`, y pasa a `no_inicio` a quien nunca empezó. La hora de entrega es el 4.º criterio de desempate
+  (FR2.3), así que tiene que salir exacta.
 
-## ADR-005: El dominio exige la sala en cada dato; la forma del almacén la decide el ADR
+| | A. Vence al consultar | B. Un hilo que revisa cada pocos segundos (como hoy) | C. Un temporizador de cada plataforma |
+|---|---|---|---|
+| Cómo es | Antes de responder cualquier petición de una sala, se entregan los intentos que ya vencieron, con su hora exacta | Un proceso aparte revisa todo cada 3 s | Una alarma programada (por ejemplo la del Durable Object o un activador de Apps Script) entrega a su hora |
+| ¿Funciona en las cinco? | Sí: no necesita nada de la plataforma | No: Workers y Apps Script no tienen hilos, y una instancia dormida no revisa nada | Sí, pero con un mecanismo distinto en cada una, cada uno con sus propios límites (por verificar en la documentación oficial) |
+| Costo de construir | Bajo: una regla de las «calculadoras» de ADR-001, llamada en cada lectura | Bajo en Python; imposible en JS | Alto: cinco mecanismos distintos |
+| Costo de probar | Bajo: se prueba con una hora fija, sin esperar | Alto: hay que esperar o mover el reloj | Alto: hay que simular la alarma de cada plataforma |
 
-- **Context** — Cada sala se descarga, se reinicia y se borra sin tocar las demás (FR11.6, NFR10.1). La
-  forma natural del almacén depende del hosting, que todavía no se elige: un almacén por sala en
-  Cloudflare, una base con columna de sala en Render.
-- **Decision** — Q5-C. Cada Participante pertenece a una Sala, y su Intento, sus Respuestas y sus
-  Eventos cuelgan de él. Toda operación de Persistencia recibe la sala. El ADR del hosting elige entre
-  una base con columna de sala y un almacén por sala. El puerto de persistencia se crea solo si ese ADR
-  trae una segunda implementación real (FR7.3).
-- **Consequences** — A favor: no se fija una decisión de infraestructura antes de tener la evidencia de
-  cuotas y latencias (NFR6). En contra: Functional Design no puede cerrar el esquema físico hasta el
-  ADR. Se acepta, porque el ADR llega antes de Code Generation.
-- **Alternatives Rejected** — Una base con columna de sala fijada desde ya (Q5-A) y un almacén por sala
-  fijado desde ya (Q5-B): las dos atan el dominio a un hosting antes de evaluarlo.
+- **Decision** — A. Es la única que funciona igual en las cinco plataformas sin un mecanismo propio de
+  cada una, y se prueba sin esperar. Reglas exactas:
+  - la hora de entrega es la menor entre ahora, el vencimiento (`inicio + duración`) y el cierre de la
+    sala, y el motivo es `tiempo` o `cierre`, según cuál llegó primero;
+  - al cerrar la sala, quien nunca empezó pasa a `no_inicio`;
+  - un solo componente, **Examen**, es dueño de escribir la entrega. Salas al cerrar, y Resultados y
+    Exportación antes de leer, le piden a Examen que aplique la regla (R-01);
+  - entregar es idempotente: un intento pasa de `en_curso` a `finalizado` una sola vez, dentro de una
+    transacción, aunque dos lecturas lleguen a la vez (R-09). El mecanismo de cada plataforma va en su
+    ADR.
+- **Consequences** — A favor: puntos, bono, clasificación y CSV salen iguales que hoy, y el reloj se
+  prueba con una hora fija. En contra: la fila de la base se escribe cuando alguien consulta, no a los
+  3 s. Desde fuera no se nota, porque toda lectura aplica la regla antes.
+- **Alternatives Rejected** — B: no existe en Workers ni en Apps Script, y no revisa nada si la
+  instancia se duerme. C: cinco mecanismos distintos para la misma regla, más difíciles de probar.
+
+## ADR-005: Cada dato lleva su sala, y cada petición dice de qué sala es
+
+**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+(Q5-C) con la comparación de costos y resuelve los hallazgos R-03 (cómo indica su sala cada petición) y
+R-05 (que la copia de una sala no lleve datos de otras).
+
+- **Context** — Con un solo enlace hay varias salas a la vez (FR11.1). Cada sala se descarga, se
+  reinicia y se borra sin tocar las demás (FR11.6, NFR10.1), y una clave de sala no abre otra (FR11.5).
+  La forma del almacén cambia en cada opción: una tabla con columna `sala` en SQLite, un Durable Object
+  por sala en Workers, una hoja por sala en Sheets.
+
+| | A. Un solo servicio; cada dato lleva su sala | B. Un despliegue aparte por cada sala | C. Fijar ya la misma forma de almacén en las cinco opciones |
+|---|---|---|---|
+| Cómo es | Participante, Respuesta y Evento llevan la sala (Intento ya no existe, ADR-007). Cada opción guarda eso como le quede mejor | Cada reto tiene su propio servicio y su propio enlace; el código no sabe de salas | Por ejemplo, «una tabla con columna `sala`» en todas |
+| Costo de construir | Medio: separar por sala en cada consulta | Bajo en código, alto en operación: el semillero despliega y configura un servicio por reto | Alto: Workers y Sheets no tienen tablas SQL; habría que forzar la forma |
+| Costo de operar | Bajo: un enlace y un despliegue | Alto: n enlaces, n despliegues y n veces la cuota | Igual que A |
+| ¿Cumple lo pedido? | Sí | No: va contra «un servidor, varias salas» (FR11.1) | Sí, pero ata el dominio a una plataforma |
+
+- **Decision** — A. Es la única que cumple FR11.1 sin atar las cinco opciones a una sola forma de
+  almacén. Cómo guarda cada opción la sala va en su ADR (FR12.2b). Cómo dice cada petición de qué sala es:
+
+| Quién pide | Cómo se sabe la sala |
+|---|---|
+| Tablero (público) | El enlace del tablero lleva el código: `/tablero?sala=KQMT`, y pide `/api/publico?sala=KQMT` |
+| Estudiante al inscribirse | El código de sala que escribe, como hoy |
+| Estudiante ya inscrito | Su sesión: la sala sale de su inscripción |
+| Estudiante que vuelve con su código personal | El código personal es único en todo el servicio, no solo en la sala, así que la pantalla no cambia (FR11.3) |
+| Docente | La clave de sala empieza con el código de la sala, por ejemplo `KQMT-…`. El servidor separa el código, busca la sala y compara el resto con la huella en tiempo constante. El docente sigue pegando una sola cadena |
+| Semillero | Su clave abre todas las salas, así que cada acción dice la sala explícitamente |
+
+  La copia de datos de una sala (FR4.3, FR9.1) lleva **solo las filas de esa sala**, cualquiera sea la
+  forma del almacén. Con una base compartida no se usa `VACUUM INTO` de la base entera, porque copiaría
+  las demás salas (R-05).
+- **Consequences** — A favor: un solo enlace y un solo despliegue para todos los colegios, y cada sala
+  queda aislada. En contra: el enlace del tablero cambia (lleva `?sala=`). Ese es un cambio visible, ya
+  aprobado como parte de «tablero por sala» (FR11.4), y va en el contrato de la API. Las pantallas no
+  cambian.
+- **Alternatives Rejected** — B: multiplica enlaces, despliegues y cuota, y contradice FR11.1. C: obliga
+  a forzar tablas SQL donde la plataforma no las tiene.
 
 ## ADR-006: Ids opacos derivados de la semilla del participante
 
-- **Context** — Hoy los identificadores de opciones, ítems y partes siguen el orden en que se escribió
-  el banco, y de ahí se puede deducir la respuesta (FR6.2). La base y los CSV deben seguir usando los
-  ids del banco (FR9.2).
-- **Decision** — Q6-A. Banco deriva los ids opacos con una función pura a partir de la semilla secreta
-  del participante y del id de la pregunta, y traduce de vuelta al calificar. No se guarda ninguna tabla
-  nueva.
-- **Consequences** — A favor: no hay datos nuevos que respaldar ni borrar, y la traducción se prueba
-  sin base. Para el navegador cada participante ve ids distintos. En contra: la semilla tiene que seguir
-  siendo secreta. Hoy ya lo es, porque nunca sale al navegador. La función tiene que ser estable entre
-  versiones de la app mientras haya un reto en curso; como no se despliega con un reto en curso
-  (`project.md`, «Forbidden»), eso ya está cubierto.
-- **Alternatives Rejected** — Ids al azar guardados en la base (Q6-B): una tabla más que respaldar y
-  borrar, sin una ventaja que se vea.
+**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+(Q6-A) con la comparación de costos en los dos lenguajes.
 
-## ADR-007: Intento separado de Participante
+- **Context** — Hoy los identificadores de opciones, ítems y partes que recibe el navegador siguen el
+  orden en que se escribió el banco, y de ahí se puede deducir la respuesta (FR6.2). La base y los CSV
+  siguen guardando los ids del banco (FR6.2, FR9.2), así que el servidor traduce al recibir.
 
-- **Context** — Hoy la tabla `participantes` mezcla quién es la persona (nombre, colegio, grado) con lo
-  que pasa en el reto (inicio, entrega, puntos, bono). Si dos componentes escriben la misma entidad, no
-  queda claro quién es su dueño.
-- **Decision** — Inscripcion es dueña de Participante y Examen es dueño de Intento, con identificador
-  `participante_id`. Es una decisión lógica: si la base sigue con una tabla o pasa a dos se decide en
-  Functional Design, sin cambiar las claves JSON ni las columnas de los CSV de hoy (FR4.3).
-- **Consequences** — A favor: cada bloque escribe solo lo suyo y la limpieza de entrada no se mezcla
-  con el cálculo de puntos. En contra: las vistas tienen que juntar las dos para mostrar el ranking.
-- **Alternatives Rejected** — Un solo dueño, Inscripcion, para todo: Examen tendría que escribir datos
-  ajenos, que es el olor de diseño que esta etapa pide evitar.
+| | A. Ids calculados a partir de la semilla del participante | B. Ids al azar guardados en la base | C. Solo barajar el orden, sin cambiar los ids |
+|---|---|---|---|
+| Cómo es | Una función (HMAC con la semilla secreta, el id de la pregunta y el de la opción) da el id que ve el navegador, y la misma función traduce de vuelta | Al inscribirse se sortea un id por opción y se guarda la tabla de equivalencias | Se envían las opciones en otro orden, con los mismos ids del banco |
+| Costo de construir | Bajo: una función en las «calculadoras» de ADR-001. Python y JS traen HMAC (`hmac` en Python, Web Crypto en Workers, `Utilities` en Apps Script) | Medio: una tabla más, que hay que respaldar y borrar al cerrar (NFR10.1) | El más bajo |
+| ¿Cierra la fuga? | Sí | Sí | No: los ids siguen diciendo la posición en el banco |
+
+- **Decision** — A. Cierra la fuga igual que B, pero sin datos nuevos que guardar, respaldar ni borrar,
+  y se prueba sin base. Cada participante ve ids distintos para la misma pregunta.
+- **Consequences** — A favor: nada nuevo en la base ni en el paquete de datos. En contra: la semilla
+  tiene que seguir siendo secreta; hoy ya lo es, porque nunca sale al navegador. La función tiene que
+  ser la misma mientras haya un reto en curso, y eso ya lo cubre la regla de no desplegar con un reto en
+  curso (`project.md`, «Forbidden»). No hace falta que dé lo mismo entre versiones distintas, porque
+  cada versión es independiente.
+- **Alternatives Rejected** — B: una tabla más con datos de cada participante, sin ventaja visible. C:
+  no cumple FR6.2.
+
+## ADR-007: Un solo Participante, con un dueño por cada grupo de datos
+
+**Estado:** aprobado por el humano (2026-10-25). Cambia la versión anterior
+(«Intento separado de Participante»), que fue una decisión del arquitecto y no una respuesta del humano.
+Con la comparación de costos en cinco versiones, gana la alternativa más simple. Resuelve el hallazgo
+R-02: quién es dueño del estado del participante y de cada acción del docente.
+
+- **Context** — Hoy la tabla `participantes` guarda quién es la persona (nombre, colegio, grado,
+  integrantes) y lo que pasa en el reto (estado, inicio, entrega, puntos, bono). El docente tiene cuatro
+  acciones sobre un participante (`accion_participante` en `servidor.py`): `descalificar`, `reactivar`,
+  `finalizar` y `eliminar`. `eliminar` solo vale si el participante nunca empezó (`registrado` o
+  `no_inicio`). El problema es que no quede claro quién puede cambiar cada dato.
+
+| | A. Dos entidades: Participante (quién es) e Intento (qué pasa en el reto) | B. Una entidad, con un dueño por cada grupo de datos | C. Una entidad sin dueños, como hoy |
+|---|---|---|---|
+| Cómo es | Inscripción es dueña de Participante y Examen de Intento | Participante es una sola entidad. Inscripción escribe los datos de la persona; Examen escribe el estado y los datos del reto | Cualquier función escribe cualquier campo |
+| Costo de construir | Alto en cinco versiones: dos entidades, uniones en cada vista y borrado en cascada entre dos dueños | Bajo: una entidad, como hoy, más la regla de quién escribe qué | El más bajo |
+| Costo en los datos | Los CSV tienen que juntar las dos para quedar iguales a hoy (FR4.3) | Ninguno: los CSV salen como hoy | Ninguno |
+| ¿Queda claro el dueño? | Sí | Sí | No |
+
+- **Decision** — B. Deja tan claro como A quién escribe cada dato, sin dos entidades que unir en cinco
+  versiones ni CSV que rearmar. Con las «calculadoras» de ADR-001, la limpieza de la inscripción ya no se
+  mezcla con el cálculo de puntos. Dueños:
+
+| Dato o acción | Dueño |
+|---|---|
+| Nombre, colegio, grado, integrantes; crear el participante | Inscripción |
+| `eliminar` (solo si está en `registrado` o `no_inicio`): borra al participante y sus eventos | Inscripción |
+| Estado (`registrado`, `en_curso`, `finalizado`, `no_inicio`, `descalificado`), inicio, entrega, puntos y bono | Examen |
+| `finalizar`, `descalificar` y `reactivar` | Examen |
+| Entregar por vencimiento o por cierre de la sala | Examen (ADR-004) |
+
+- **Consequences** — A favor: una sola entidad en las cinco versiones, CSV iguales a hoy y un dueño
+  claro por cada dato. En contra: los dos dueños comparten la misma fila. La regla «solo Examen cambia el
+  estado» se revisa en el PR, y la cubren las pruebas de las acciones del docente.
+- **Alternatives Rejected** — A: duplica entidades, uniones y borrados en cinco versiones sin cambiar
+  nada visible. C: deja el problema como está.
 
 ## ADR-008: Adoptar ruff como formateador y linter de Python (reabre Q5-D)
 

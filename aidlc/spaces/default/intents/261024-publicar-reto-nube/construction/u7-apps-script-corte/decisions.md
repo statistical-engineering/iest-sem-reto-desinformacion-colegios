@@ -1,0 +1,18 @@
+# ADR de la opción Apps Script (U7)
+
+**Estado:** no se escribe un ADR de construcción, porque la opción no se construye. Escrito el 2026-10-25 por el asistente con la potestad que dio el humano.
+
+**Esta unidad no se construye.** La opción Apps Script queda «no pasa» **por contrato**, no por mérito (`inception/contract-design/reviews/review-01.md`, hallazgo C-01: «Apps Script no puede cumplir ese contrato. La guía oficial (developers.google.com/apps-script/guides/web, «Request parameters») enumera los campos de `e` en `doGet`/`doPost`: `queryString`, `parameter`, `pathInfo`, `postData`…, y ninguno es una cabecera. Así no se leen ni `X-Clave-Admin` ni `Authorization: Bearer`. Según la guía de ContentService, la salida se redirige a `script.googleusercontent.com`, y esa guía no ofrece cómo fijar el código de estado ni cabeceras como `Cache-Control`. Además, una cabecera propia obliga al navegador a una consulta previa `OPTIONS` (CORS) que Apps Script no contesta»). El contrato C1 exige la clave solo por `X-Clave-Admin` y los códigos 400, 401, 403, 404, 413 y 503 (`contract-summary.md`, «Reglas comunes»; `project.md`, «Corrections»: NEVER aceptar la clave en la URL en la nube). El humano aprobó saltar U7 a U10 en Delivery Planning (`inception/delivery-planning/delivery-planning-questions.md`, Q2-A: «Queda como «no pasa» por contrato, con esa evidencia en la tabla de comparación (FR12.6). Se saltan U7 a U10 con tu aprobación»), y `bolt-plan.md` lo repite («Apps Script (U7 a U10) no se construye (Q2-A)»).
+
+## Decisión
+
+No se elige lenguaje, runner, almacén, despacho de rutas, mecanismo de «no cruzarse» ni huella de la clave para Apps Script (lo que FR12.2b pedía antes del código), porque ninguna de esas decisiones puede hacer que la plataforma lea `X-Clave-Admin` o responda 403. Las tres preguntas de `despliegues/apps-script/LEEME.md` («Pendiente de decidir en el ADR») quedan sin responder a propósito.
+
+## Alternatives Rejected
+
+- Delivery Planning Q2-B (construir U7 como prueba corta): la evidencia ya está en la documentación oficial citada en C-01; desplegar para confirmarla gastaría trabajo sin cambiar el resultado.
+- Delivery Planning Q2-C (perfil de contrato propio): ver «Si el humano cambiara de opinión».
+
+**Qué anota U17.** En `despliegues/COMPARACION.md`, columna «Apps Script»: fila «Pasa el corte delgado» = «no pasa (por contrato: C-01, no lee cabeceras ni fija códigos de estado)»; fila «Pasa la prueba común» = «no pasa»; las filas de latencia, reinicio, arranque en frío y consumo = «no medido»; «Costo en US$» = «US$ 0 según https://developers.google.com/apps-script/guides/services/quotas (plan gratuito), citado sin desplegar»; «Piezas y servicios», «Líneas de código» y «Pasos para desplegar» = «no construido». La carpeta `despliegues/apps-script/` se borra solo después de que el humano apruebe el ADR final (FR12.6). La unidad saltada ya no detiene a U17 (`unit-of-work-dependency.md`, «Si se abandona una opción»).
+
+**Si el humano cambiara de opinión.** La única forma de construirla sería un perfil de contrato propio (clave y token en el cuerpo JSON, código de estado dentro del JSON, sin `OPTIONS`), con cambios en `web/js/` y en la prueba común solo para esa opción (Delivery Planning Q2-C, rechazada). Eso rompería NFR9 (la clave viajaría en el cuerpo de un POST que Apps Script redirige) y el contrato único de Q1-A; por eso se descartó.

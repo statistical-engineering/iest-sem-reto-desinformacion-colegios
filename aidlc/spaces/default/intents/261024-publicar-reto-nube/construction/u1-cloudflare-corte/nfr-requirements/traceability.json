@@ -1,0 +1,74 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u1-cloudflare-corte",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR8",
+    "NFR9",
+    "NFR10",
+    "NFR11",
+    "NFR12"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "U1-E1"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "U1-P1, U1-P4"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "U1-P2"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "U1-R1, U1-R2"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "U1-R3"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "U1-E2, U1-E3, U1-R4"
+    },
+    {
+      "id": "NFR8",
+      "status": "OK",
+      "target": "U1-S1, U1-S2, U1-S3"
+    },
+    {
+      "id": "NFR9",
+      "status": "OK",
+      "target": "U1-S4, U1-S5"
+    },
+    {
+      "id": "NFR10",
+      "status": "OK",
+      "target": "U1-S6"
+    },
+    {
+      "id": "NFR11",
+      "status": "OK",
+      "target": "U1-R2"
+    },
+    {
+      "id": "NFR12",
+      "status": "OK",
+      "target": "tech-stack-decisions.md (cobertura con node:test)"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u11-github-pages-corte",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8", "NFR9", "NFR10", "NFR11", "NFR12"],
+  "coverage": [
+    {"id": "NFR1", "status": "OK", "target": "U11-E1, U11-E4, U11-P3"},
+    {"id": "NFR2", "status": "OK", "target": "U11-P1, U11-P3, U11-P4, U11-P5"},
+    {"id": "NFR3", "status": "OK", "target": "U11-P2, U11-P6"},
+    {"id": "NFR4", "status": "OK", "target": "U11-R1, U11-R2"},
+    {"id": "NFR5", "status": "OK", "target": "U11-R3"},
+    {"id": "NFR6", "status": "OK", "target": "U11-E2, U11-E3, U11-E4, U11-E5, U11-R4, U11-R5"},
+    {"id": "NFR7", "status": "OK", "target": "U11-R5 (prórroga mensual en la guía)"},
+    {"id": "NFR8", "status": "OK", "target": "U11-S1, U11-S2, U11-S3"},
+    {"id": "NFR9", "status": "OK", "target": "U11-S4, U11-S5, U11-S6, U11-S7"},
+    {"id": "NFR10", "status": "OK", "target": "U11-S7, U11-S11"},
+    {"id": "NFR11", "status": "OK", "target": "U11-R2"},
+    {"id": "NFR12", "status": "OK", "target": "tech-stack-decisions.md (unittest y trace, piso 80 %)"}
+  ]
+}

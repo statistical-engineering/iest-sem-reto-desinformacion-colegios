@@ -1,0 +1,15 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u1-cloudflare-corte",
+  "upstream_ids": ["U1-R1", "U1-R3", "U1-S4", "U1-O1", "U1-O2", "U1-O3", "U1-E2", "FR5.2"],
+  "coverage": [
+    {"id": "U1-R1", "status": "OK", "target": "infrastructure-specification.md"},
+    {"id": "U1-R3", "status": "OK", "target": "infrastructure-specification.md"},
+    {"id": "U1-S4", "status": "OK", "target": "infrastructure-specification.md"},
+    {"id": "U1-O1", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U1-O2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U1-O3", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U1-E2", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "FR5.2", "status": "OK", "target": "infrastructure-specification.md"}
+  ]
+}

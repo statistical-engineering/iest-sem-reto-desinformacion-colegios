@@ -1,0 +1,25 @@
+{
+  "stage": "functional-design",
+  "unit": "u14-github-pages-resultados",
+  "upstream_ids": ["FR1.1", "FR3.2", "FR4.1", "FR4.3", "FR6.1", "FR9.1", "FR9.2", "FR9.3", "FR9.4", "FR9.5", "FR11.2", "FR11.4", "FR11.6", "NFR8", "NFR10.1"],
+  "coverage": [
+    {"id": "FR1.1", "status": "OK", "target": "BR24.1 (Reiniciar con copia y BORRAR)"},
+    {"id": "FR3.2", "status": "OK", "target": "BR22.1, BR23.1, BR23.2 (hora de entrega antes de leer)"},
+    {"id": "FR4.1", "status": "OK", "target": "BR22.2, BR22.3, BR25.2 (cambios del panel y del tablero en functional-spec.md, «Pantallas»)"},
+    {"id": "FR4.3", "status": "OK", "target": "BR23.1, BR23.5"},
+    {"id": "FR6.1", "status": "OK", "target": "BR22.1"},
+    {"id": "FR9.1", "status": "OK", "target": "BR23.2, BR23.4, BR23.5"},
+    {"id": "FR9.2", "status": "OK", "target": "BR23.3"},
+    {"id": "FR9.3", "status": "OK", "target": "BR23.6"},
+    {"id": "FR9.4", "status": "Deferred", "target": "U17 (guía de cierre para la ganadora, FR8.2); el paquete de BR23.2 es lo que se guarda en el Drive"},
+    {"id": "FR9.5", "status": "OK", "target": "BR23.2, BR23.5 (solo /api/admin/* y sin claves)"},
+    {"id": "FR11.2", "status": "OK", "target": "BR22.1, BR22.3 (todo de una sola sala)"},
+    {"id": "FR11.4", "status": "OK", "target": "BR22.1, BR22.4"},
+    {"id": "FR11.6", "status": "OK", "target": "BR23.2, BR24.1, BR24.3"},
+    {"id": "NFR8", "status": "OK", "target": "BR22.1, BR22.2"},
+    {"id": "NFR10.1", "status": "OK", "target": "BR24.3"}
+  ],
+  "reverse": [
+    {"id": "BR25.1", "status": "N/A", "target": "ADR-G4 de U11 (descargas entre dominios), hallazgo C-04"}
+  ]
+}

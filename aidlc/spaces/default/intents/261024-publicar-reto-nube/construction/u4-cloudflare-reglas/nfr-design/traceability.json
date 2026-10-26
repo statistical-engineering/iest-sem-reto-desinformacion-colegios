@@ -1,0 +1,28 @@
+{
+  "stage": "nfr-design",
+  "unit": "u4-cloudflare-reglas",
+  "upstream_ids": ["U4-P1", "U4-P2", "U4-P3", "U4-P4", "U4-S1", "U4-S2", "U4-S3", "U4-S4", "U4-S5", "U4-S6", "U4-E1", "U4-E2", "U4-E3", "U4-R1", "U4-R2", "U4-R3", "U4-R4", "U4-R5", "U4-O1", "U4-O2", "U4-O3"],
+  "coverage": [
+    {"id": "U4-P1", "status": "OK", "target": "performance-design.md"},
+    {"id": "U4-P2", "status": "OK", "target": "performance-design.md"},
+    {"id": "U4-P3", "status": "OK", "target": "performance-design.md"},
+    {"id": "U4-P4", "status": "OK", "target": "performance-design.md"},
+    {"id": "U4-S1", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-S2", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-S3", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-S4", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-S5", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-S6", "status": "OK", "target": "security-design.md"},
+    {"id": "U4-E1", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U4-E2", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U4-E3", "status": "OK", "target": "scalability-design.md"},
+    {"id": "U4-R1", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U4-R2", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U4-R3", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U4-R4", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U4-R5", "status": "OK", "target": "reliability-design.md"},
+    {"id": "U4-O1", "status": "OK", "target": "observability-design.md"},
+    {"id": "U4-O2", "status": "OK", "target": "observability-design.md"},
+    {"id": "U4-O3", "status": "OK", "target": "observability-design.md"}
+  ]
+}

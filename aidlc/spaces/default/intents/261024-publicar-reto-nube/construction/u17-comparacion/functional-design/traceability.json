@@ -1,0 +1,24 @@
+{
+  "stage": "functional-design",
+  "unit": "u17-comparacion",
+  "upstream_ids": ["FR8.0", "FR8.1", "FR8.2", "FR8.3", "FR12.2", "FR12.2a", "FR12.4", "FR12.5", "FR12.6", "NFR5", "NFR6", "NFR7", "NFR10.1"],
+  "coverage": [
+    {"id": "FR8.0", "status": "OK", "target": "functional-spec.md («Forma de PUBLICAR_EN_INTERNET.md»: se reescribe solo para la ganadora, sección 2 toma los pasos de su LEEME)"},
+    {"id": "FR8.1", "status": "OK", "target": "BR17.10, functional-spec.md (secciones 2 y 5)"},
+    {"id": "FR8.2", "status": "OK", "target": "BR17.10, functional-spec.md (secciones 4, 6 y 7)"},
+    {"id": "FR8.3", "status": "OK", "target": "BR17.10, functional-spec.md (sección 8)"},
+    {"id": "FR12.2", "status": "OK", "target": "BR17.9 (borrado de carpetas descartadas con motivo)"},
+    {"id": "FR12.2a", "status": "OK", "target": "BR17.3 (Render y Cloudflare Containers con cifras documentadas, sin desplegar)"},
+    {"id": "FR12.4", "status": "OK", "target": "BR17.1, BR17.3, BR17.4, BR17.5, BR17.6, functional-spec.md («Forma de COMPARACION.md»)"},
+    {"id": "FR12.5", "status": "OK", "target": "BR17.2, flujo F4"},
+    {"id": "FR12.6", "status": "OK", "target": "BR17.7, BR17.9, flujos F5, F6 y F8, ADR-C3"},
+    {"id": "NFR5", "status": "OK", "target": "functional-spec.md (sección 4 de la guía: abrir el enlace unos minutos antes)"},
+    {"id": "NFR6", "status": "OK", "target": "BR17.2 (fila NFR6), functional-spec.md (sección 0 de la guía)"},
+    {"id": "NFR7", "status": "OK", "target": "BR17.2 (fila NFR7), BR17.10"},
+    {"id": "NFR10.1", "status": "OK", "target": "BR17.2 (fila NFR10.1), functional-spec.md (sección 6 de la guía)"}
+  ],
+  "reverse": [
+    {"id": "BR17.8", "status": "N/A", "target": "unit-of-work.md («U17», «Notas»): la tabla nunca se llena a medias"},
+    {"id": "BR17.11", "status": "N/A", "target": "project.md («Forbidden») y contrato C3: sin claves ni respuestas"}
+  ]
+}
