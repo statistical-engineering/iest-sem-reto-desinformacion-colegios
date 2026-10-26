@@ -43,8 +43,9 @@ navegador del estudiante
 - **Pages redirige en vez de llamar a la API por CORS.** Así no se cambia ninguna pantalla ni el
   servidor, las cookies y el token quedan en un solo dominio, y si el servidor cambia de dirección
   solo se edita una línea (`destino.js`).
-- **Las respuestas no salen del servidor.** `banco_preguntas.json` está solo en PythonAnywhere, que es
-  quien califica. Los archivos de la rama `gh-pages` no las tienen.
+- **Las respuestas no llegan al navegador.** En PythonAnywhere el banco solo lo lee el servidor, que es
+  quien califica, y la rama `gh-pages` no lo tiene. Pero el banco y las guías con respuestas siguen
+  públicos en este repositorio (ver [Pendiente](#pendiente)).
 - **Costo: US$ 0.** PythonAnywhere gratis no pide tarjeta; la condición es renovar cada mes (ver
   [Mantenimiento](#mantenimiento)).
 
@@ -148,11 +149,12 @@ sin mostrarla, que ya no fuera la de ejemplo y que tuviera al menos 10 caractere
 ```bash
 W=/var/www/angels16384_pythonanywhere_com_wsgi.py
 grep -c 'CAMBIA-ESTA-CLAVE' $W        # debe dar 0
-python3.12 -c "import re; m = re.search(r'^CLAVE = \"(.*)\"', open('$W').read(), re.M); print(len(m.group(1).strip()))"
+python3.12 -c "import re; m = re.search(r'^CLAVE\s*=\s*[\"\x27](.*?)[\"\x27]', open('$W').read(), re.M); print(len(m.group(1).strip()) if m else 'AVISO: no se encontro la linea CLAVE = ...')"
 ```
 
-El segundo comando lee solo la línea `CLAVE = "..."` e imprime cuántos caracteres tiene (debe dar 10 o
-más), sin ejecutar el archivo y sin mostrar la clave.
+El segundo comando lee solo la línea `CLAVE = "..."` (con comillas dobles o simples, con o sin espacios
+alrededor del `=`) e imprime cuántos caracteres tiene: debe dar 10 o más. Si no encuentra la línea, imprime
+un aviso. No ejecuta el archivo ni muestra la clave.
 
 > No se recarga la web app antes de cambiar la clave: si arranca con la de ejemplo, cualquiera que la
 > conozca entra al panel.
@@ -222,8 +224,9 @@ Si `git push` responde que la rama remota tiene cambios nuevos, primero `git pul
    Quitarlas o volver privado el repositorio es una decisión del equipo; aun así quedan en el historial.
 3. **Llevar a `develop` la versión del servidor que corre en PythonAnywhere** (`crear_app()`, varios
    colegios, reloj común), para que este repositorio y lo publicado coincidan.
-4. **Llenar la columna «GitHub Pages» de `despliegues/COMPARACION.md`** con la prueba común
-   (`despliegues/prueba_comun/`) contra el enlace de PythonAnywhere.
+4. **Llenar la columna «PythonAnywhere» de `despliegues/COMPARACION.md`** con la prueba común
+   (`despliegues/prueba_comun/`) contra el enlace de PythonAnywhere. Es una opción aparte de «GitHub
+   Pages»: Pages solo redirige, y lo que se mide (latencia, reinicios, cuota) es el servidor.
 
 ## Mantenimiento
 
@@ -267,7 +270,8 @@ No hacerlo con un reto en curso.
    tar -tf reto_para_internet.zip
    ```
 
-   El segundo comando lista lo que quedó adentro: deben salir los 10 archivos de la lista de arriba.
+   El segundo comando lista lo que quedó adentro: 13 líneas, los 10 archivos de la lista de arriba más
+   las carpetas `2_Aplicacion_Reto/web/`, `web/css/` y `web/js/`.
 3. Subirlo en **Files**, reemplazando el anterior.
 4. En la consola **Bash**: `unzip -o ~/reto_para_internet.zip -d ~/reto`.
 5. Revisar que el WSGI conserve la clave (el `unzip` no lo toca, vive en `/var/www/`) y pulsar **Reload**.
