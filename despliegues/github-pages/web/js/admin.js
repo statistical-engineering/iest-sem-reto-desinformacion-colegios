@@ -1,11 +1,13 @@
-/* Panel docente. La clave se guarda solo en esta pestaña (sessionStorage). */
+/* Panel docente. La clave se guarda solo en esta pestaña (sessionStorage).
+   Con la clave de una sala se maneja solo esa sala. Con la del semillero se ven todas las salas: se crean, se
+   les cambia la clave, se borran, y se entra al panel de cualquiera (las peticiones llevan ?sala=). */
 (function () {
   "use strict";
   const app = document.getElementById("app");
-  const A = { clave: null, datos: null, filtroGrado: "", filtroColegio: "", busqueda: "", montado: false, pausaHasta: 0, recibido: 0 };
+  const A = { clave: null, rol: null, sala: null, datos: null, filtroGrado: "", filtroColegio: "", busqueda: "", montado: false, pausaHasta: 0, recibido: 0 };
   const PASOS = [
     ["inscripcion", "Inscripción", "Los estudiantes se inscriben y esperan"],
-    ["abierto", "Reto abierto", "Corre el reloj común de todos los colegios"],
+    ["abierto", "Reto abierto", "Corre el reloj de esta sala"],
     ["cerrado", "Cerrado", "Se entregan todos los intentos"],
     ["resultados", "Resultados", "Podio y revisión de respuestas"],
   ];
@@ -28,10 +30,12 @@
   const mmss = (s) => (s == null ? "—" : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`);
   const ses = { get: (k) => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* nada */ } } };
 
-  async function api(ruta, datos) {
+  // la sala va en la URL; la clave, siempre en la cabecera (nunca en la URL)
+  const conSala = (ruta) => (A.sala ? ruta + (ruta.includes("?") ? "&" : "?") + "sala=" + encodeURIComponent(A.sala) : ruta);
+  async function api(ruta, datos, sinSala) {
     const op = { headers: { "Content-Type": "application/json", "X-Clave-Admin": A.clave || "" } };
     if (datos !== undefined) { op.method = "POST"; op.body = JSON.stringify(datos); }
-    const r = await fetch(ruta, op);
+    const r = await fetch(sinSala ? ruta : conSala(ruta), op);
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw Object.assign(new Error(j.error || "Error " + r.status), { codigo: r.status });
     return j;
@@ -61,12 +65,11 @@
     const f = h("form", { class: "tarjeta", id: "login", onsubmit: async (ev) => {
       ev.preventDefault();
       A.clave = f.clave.value.trim().toUpperCase();
-      try { await api("/api/admin/login", {}); ses.set("reto_clave", A.clave); refrescar(); }
-      catch (e) { login(e.message); }
+      try { await entrar(); refrescar(); } catch (e) { login(e.message); }
     } },
       h("div", { class: "antetitulo", text: "Acceso docente" }),
       h("h2", { style: "font-size:32px;margin-bottom:12px", text: "Panel del reto" }),
-      h("p", { class: "nota", text: "La clave la tiene quien administra el reto (en internet está en el archivo WSGI del alojamiento; en un computador local, en la ventana negra y en datos/clave_docente.txt). No la compartas con estudiantes." }),
+      h("p", { class: "nota", text: "Escribe la clave de tu sala (empieza con el código de la sala, por ejemplo KQMT-…): te la entrega el semillero. Con la clave del semillero ves todas las salas. No la compartas con estudiantes." }),
       h("label", { class: "campo" }, h("span", { text: "Clave docente" }), h("input", { class: "entrada codigo", name: "clave", autocomplete: "off", required: true })),
       h("button", { class: "boton grande", type: "submit" }, "Entrar"),
       msg ? h("div", { class: "aviso", text: msg }) : null);
@@ -74,19 +77,82 @@
     f.clave.focus();
   }
 
+  async function entrar() {
+    const r = await api("/api/admin/login", {}, true);
+    A.rol = r.rol;
+    A.sala = r.rol === "sala" ? r.sala : ses.get("reto_sala") || null;
+    ses.set("reto_clave", A.clave);
+  }
+  function irASala(codigo) {
+    A.sala = codigo; ses.set("reto_sala", codigo || ""); A.montado = false; A.datos = null;
+    A.filtroColegio = ""; A.busqueda = "";
+    refrescar();
+  }
+
+  // ---------------------------------------------------------------- salas (solo semillero)
+  async function pintarSalas(nueva) {
+    A.montado = false;
+    const { salas } = await api("/api/admin/salas", undefined, true);
+    const evento = h("input", { class: "entrada", placeholder: "Nombre del colegio o del evento", maxlength: 80 });
+    const crear = h("button", { class: "boton" }, "＋ Crear sala");
+    crear.onclick = async () => {
+      crear.disabled = true;
+      try { pintarSalas(await api("/api/admin/salas/crear", { evento: evento.value.trim() }, true)); }
+      catch (e) { alert(e.message); crear.disabled = false; }
+    };
+    const enSala = async (codigo, ruta, datos) => {
+      A.sala = codigo;
+      try { return await api(ruta, datos); } finally { A.sala = null; }
+    };
+    const fila = (s) => {
+      const acciones = h("div", { class: "acciones-fila" });
+      const abrir = h("button", { type: "button" }, "Abrir panel");
+      abrir.onclick = () => irASala(s.sala);
+      const clave = h("button", { type: "button", title: "La clave anterior deja de servir" }, "Nueva clave");
+      confirmarDoble(clave, "¿Cambiar la clave?", async () => pintarSalas(await enSala(s.sala, "/api/admin/salas/clave", {})));
+      acciones.append(abrir, clave);
+      if (s.estado === "cerrado" || s.estado === "resultados") {
+        const borrar = h("button", { type: "button" }, "Borrar");
+        borrar.onclick = async () => {
+          if (prompt(`Para borrar la sala ${s.sala} con todos sus datos y copias, escribe BORRAR`) !== "BORRAR") return;
+          try { await enSala(s.sala, "/api/admin/salas/borrar", { confirmar: "BORRAR" }); } catch (e) { alert(e.message); }
+          pintarSalas();
+        };
+        acciones.append(borrar);
+      }
+      const paso = PASOS.find((x) => x[0] === s.estado);
+      return h("tr", {}, h("td", { class: "maquina", text: s.sala }), h("td", { text: s.evento }),
+        h("td", { text: paso ? paso[1] : s.estado }), h("td", { class: "n", text: s.inscritos }), h("td", {}, acciones));
+    };
+    app.replaceChildren(
+      h("div", { class: "antetitulo", text: "Semillero · todas las salas" }),
+      h("h2", { style: "font-size:30px;margin-bottom:8px", text: "Salas del reto" }),
+      h("p", { class: "nota", text: "Crea una sala por colegio. Cada sala tiene su código, su clave de docente, su reloj, su tablero y su podio. Entrega a cada docente el código y la clave de su sala." }),
+      nueva ? h("div", { class: "aviso", style: "margin:12px 0" }, `Sala ${nueva.sala} · clave del docente: `, h("b", { class: "maquina", text: nueva.clave }),
+        " · Anótala y entrégasela al docente: no se vuelve a mostrar.") : "",
+      h("div", { class: "controles", style: "margin:16px 0" }, evento, crear),
+      h("div", { class: "tabla-wrap" }, h("table", { class: "participantes" },
+        h("thead", {}, h("tr", {}, ...["Sala", "Evento", "Estado", "Inscritos", ""].map((x) => h("th", { text: x })))),
+        h("tbody", {}, ...salas.map(fila),
+          salas.length ? null : h("tr", {}, h("td", { colspan: 5, class: "nota", style: "text-align:center;padding:24px", text: "Aún no hay salas." }))))));
+  }
+
   // ---------------------------------------------------------------- panel
   async function refrescar() {
     try {
+      if (!A.rol) await entrar();
+      if (A.rol === "semillero" && !A.sala) return await pintarSalas();
       A.datos = await api("/api/admin/resumen");
       A.recibido = performance.now();
       if (!A.montado) montar();
       actualizar();
     } catch (e) {
       if (e.codigo === 403) return login("Clave incorrecta.");
+      if (e.codigo === 404 && A.rol === "semillero") return irASala(null); // la sala ya no existe
     }
   }
   setInterval(() => { if (A.clave && A.montado && Date.now() > A.pausaHasta) refrescar(); }, 3000);
-  // reloj común en vivo (entre refrescos se descuenta localmente)
+  // reloj de la sala en vivo (entre refrescos se descuenta localmente)
   setInterval(() => {
     const el = document.getElementById("reloj-adm");
     if (!el || !A.datos || !A.datos.reloj || A.datos.reloj.restante_seg == null) return;
@@ -98,8 +164,9 @@
 
   function montar() {
     A.montado = true;
-    app.replaceChildren(
-      h("div", { class: "antetitulo", text: "Control del reto" }),
+    const volver = A.rol === "semillero" ? h("button", { class: "boton chico claro", style: "margin-bottom:12px", onclick: () => irASala(null) }, "← Todas las salas") : null;
+    app.replaceChildren(volver || "",
+      h("div", { class: "antetitulo", text: `Control del reto · sala ${A.sala}` }),
       h("div", { class: "pasos", id: "pasos" }),
       h("div", { class: "controles", id: "controles" }),
       h("div", { class: "rejilla-adm" },
@@ -122,21 +189,21 @@
       h("div", { class: "peligro-zona", id: "peligro" }));
     const descargar = (ruta, nombre) => async (ev) => {
       ev.preventDefault();
-      const r = await fetch(ruta, { headers: { "X-Clave-Admin": A.clave } });
+      const r = await fetch(conSala(ruta), { headers: { "X-Clave-Admin": A.clave } });
       const blob = await r.blob();
       const a = h("a", { href: URL.createObjectURL(blob), download: nombre });
       document.body.append(a); a.click(); a.remove();
     };
-    document.getElementById("exp-res").onclick = descargar("/api/admin/resultados.csv", "resultados_reto.csv");
-    document.getElementById("exp-resp").onclick = descargar("/api/admin/respuestas.csv", "respuestas_detalle.csv");
+    document.getElementById("exp-res").onclick = descargar("/api/admin/resultados.csv", `resultados_reto_${A.sala}.csv`);
+    document.getElementById("exp-resp").onclick = descargar("/api/admin/respuestas.csv", `respuestas_detalle_${A.sala}.csv`);
     const reset = h("input", { class: "entrada", placeholder: "Escribe BORRAR", style: "max-width:220px" });
-    const bReset = h("button", { class: "boton peligro" }, "Reiniciar todo el reto");
+    const bReset = h("button", { class: "boton peligro" }, "Reiniciar esta sala");
     bReset.onclick = async () => {
-      try { const r = await api("/api/admin/reiniciar", { confirmar: reset.value.trim() }); alert("Reto reiniciado. Copia de seguridad: datos/" + r.copia); reset.value = ""; refrescar(); }
+      try { const r = await api("/api/admin/reiniciar", { confirmar: reset.value.trim() }); alert("Sala reiniciada. Copia de seguridad: datos/copias/" + r.copia); reset.value = ""; refrescar(); }
       catch (e) { alert(e.message); }
     };
     document.getElementById("peligro").append(h("b", { text: "Zona de peligro. " }),
-      h("span", { class: "nota", text: "Borra inscripciones y respuestas de TODOS los colegios para hacer un reto nuevo. Antes se guarda una copia automática de la base de datos en el servidor." }),
+      h("span", { class: "nota", text: "Borra las inscripciones y respuestas de ESTA sala para hacer un reto nuevo; las demás salas no se tocan. Antes se guarda en el servidor una copia automática de los datos de la sala." }),
       h("div", { class: "controles", style: "margin-top:10px" }, reset, bReset));
   }
 
@@ -160,13 +227,13 @@
         return b;
       };
       ctrl.append(
-        h("div", { class: "reloj-caja" }, h("small", { text: "Reloj común · todos los colegios" }), h("div", { id: "reloj-adm", class: "reloj-adm", text: "--:--" })),
+        h("div", { class: "reloj-caja" }, h("small", { text: "Reloj de la sala " + c.sala }), h("div", { id: "reloj-adm", class: "reloj-adm", text: "--:--" })),
         r.pausado ? boton("▶ Reanudar", { accion: "reanudar" }, "grande")
-          : confirmarDoble(h("button", { class: "boton grande claro" }, "⏸ Pausar"), "¿Pausar a TODOS? Toca otra vez", reloj({ accion: "pausar" })),
+          : confirmarDoble(h("button", { class: "boton grande claro" }, "⏸ Pausar"), "¿Pausar la sala? Toca otra vez", reloj({ accion: "pausar" })),
         boton("+5 min", { accion: "sumar", minutos: 5 }, "claro"), boton("+1 min", { accion: "sumar", minutos: 1 }, "claro"),
         boton("−1 min", { accion: "sumar", minutos: -1 }, "claro"), boton("−5 min", { accion: "sumar", minutos: -5 }, "claro"),
-        confirmarDoble(h("button", { class: "boton grande peligro" }, "■ Cerrar el reto"), "Se entregará a TODOS. ¿Seguro?", cambiar("cerrado")),
-        h("span", { class: "nota", style: "flex-basis:100%", text: `Duración ${num(r.duracion_seg / 60, 1)} min${Number(c.extra_seg) ? ` (incluye ${num(Number(c.extra_seg) / 60, 0)} min de ajuste)` : ""} · corridos ${mmss(r.transcurrido_seg)}. En pausa nadie puede enviar respuestas y el reloj no avanza. Al llegar a cero, el reto se cierra solo para todos.` }));
+        confirmarDoble(h("button", { class: "boton grande peligro" }, "■ Cerrar el reto"), "Se entregará a toda la sala. ¿Seguro?", cambiar("cerrado")),
+        h("span", { class: "nota", style: "flex-basis:100%", text: `Duración ${num(r.duracion_seg / 60, 1)} min${Number(c.extra_seg) ? ` (incluye ${num(Number(c.extra_seg) / 60, 0)} min de ajuste)` : ""} · corridos ${mmss(r.transcurrido_seg)}. En pausa nadie puede enviar respuestas y el reloj no avanza. Al llegar a cero, el reto se cierra solo para toda la sala.` }));
     }
     if (estado === "cerrado")
       ctrl.append(confirmarDoble(h("button", { class: "boton grande" }, "🏆 Publicar resultados"), "¿Publicar podio? Toca otra vez", cambiar("resultados")),
@@ -181,10 +248,12 @@
       h("h3", { style: "font-size:20px;margin-bottom:8px", text: "Cómo entran los estudiantes" }),
       h("p", { class: "nota", style: "margin:0 0 6px", text: enLinea ? "Desde cualquier celular o computador con internet, en cualquier colegio, abren:" : "Con el celular o computador conectado a la MISMA red wifi, abren:" }), ...urls,
       h("p", { style: "margin:14px 0 4px" }, "Código de sala: ", h("span", { class: "url", style: "font-size:24px", text: c.sala })),
-      h("p", { class: "nota", style: "margin:10px 0 0" }, "Proyecta el tablero: ", h("a", { href: "/tablero", target: "_blank", rel: "noopener", text: d.urls[0] + "/tablero" })),
+      h("p", { class: "nota", style: "margin:6px 0 0" }, "Enlace con la sala ya puesta: ", h("span", { class: "url", text: `${d.urls[0]}/?sala=${c.sala}` })),
+      h("p", { class: "nota", style: "margin:10px 0 0" }, "Proyecta el tablero: ", h("a", { href: "/tablero?sala=" + encodeURIComponent(c.sala), target: "_blank", rel: "noopener", text: `${d.urls[0]}/tablero?sala=${c.sala}` })),
       h("p", { class: "nota", style: "margin:6px 0 0", text: `Banco de preguntas v${d.banco.version}: ${d.banco.preguntas} preguntas, ${d.banco.puntos_totales} puntos + bono hasta ${d.banco.bono_max}.` }),
       porColegio.length ? h("div", { style: "margin-top:12px" }, h("b", { text: "Inscritos por colegio" }),
-        ...porColegio.map((x) => h("div", { class: "exp-fila" }, h("span", { text: x.colegio }), h("b", { text: x.n })))) : null);
+        ...porColegio.map((x) => h("div", { class: "exp-fila" }, h("span", { text: x.colegio }), h("b", { text: x.n })))) : "");
+    document.getElementById("ir-tablero").href = "/tablero?sala=" + encodeURIComponent(c.sala);
     const fCol = document.getElementById("f-colegio");
     const opciones = ["", ...new Set([...(d.colegios || []), ...porColegio.map((x) => x.colegio)])];
     if (fCol.options.length !== opciones.length) fCol.replaceChildren(...opciones.map((o) => h("option", { value: o }, o || "Todos los colegios")));
@@ -211,13 +280,12 @@
       h("h3", { style: "font-size:20px;margin-bottom:4px", text: "Configuración" }),
       interruptor("modo_sorpresa", "Modo sorpresa", "El tablero oculta la clasificación hasta publicar resultados."),
       interruptor("retro", "Retroalimentación inmediata", "El estudiante ve si acertó cada pregunta al enviarla (sin la explicación)."),
-      filaCfg("sala", "Código de sala", "text"),
       filaCfg("evento", "Nombre del evento", "text"),
       filaCfg("duracion_min", "Duración (minutos) · solo antes de abrir", "number"),
       filaColegios());
   }
   function filaColegios() {
-    const ta = h("textarea", { class: "entrada", id: "cfg-colegios", rows: 5, placeholder: "Un colegio por línea. Si la dejas vacía, cada estudiante escribe el nombre de su colegio." });
+    const ta = h("textarea", { class: "entrada", id: "cfg-colegios", rows: 5, placeholder: "Un colegio por línea (al menos uno): los estudiantes solo pueden elegir de esta lista." });
     const b = h("button", { class: "boton chico", type: "button" }, "Guardar lista");
     b.onclick = async () => {
       try { await api("/api/admin/config", { colegios: ta.value }); ta.dataset.editando = ""; } catch (e) { alert(e.message); }
@@ -248,7 +316,7 @@
     const c = A.datos.config;
     document.getElementById("cfg-modo_sorpresa").checked = c.modo_sorpresa === "1";
     document.getElementById("cfg-retro").checked = c.retro === "1";
-    for (const k of ["sala", "evento", "duracion_min"]) {
+    for (const k of ["evento", "duracion_min"]) {
       const inp = document.getElementById("cfg-" + k);
       if (!inp.dataset.editando && document.activeElement !== inp) inp.value = c[k];
     }
@@ -316,6 +384,6 @@
     if (!filas.length) cuerpo.append(h("tr", {}, h("td", { colspan: 13, class: "nota", style: "text-align:center;padding:24px", text: "Aún no hay participantes." })));
   }
 
-  A.clave = ses.get("reto_clave");
+  A.clave = ses.get("reto_clave"); // el rol y la sala se vuelven a pedir al servidor en refrescar()
   if (A.clave) refrescar(); else login();
 })();

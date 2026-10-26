@@ -138,15 +138,30 @@
     const est = S.datos.participante.estado;
     if (est === "registrado" || (est === "finalizado" && S.datos.reto.estado !== "resultados")) cargar(false);
   }, 4000);
-  // durante el reto: cada 10 s sincroniza el reloj común (pausas, minutos extra, cierre de la organización)
+  // durante el reto: cada 10 s sincroniza el reloj de la sala (pausas, minutos extra, cierre del docente)
   setInterval(() => { if (S.token && S.datos && S.datos.participante.estado === "en_curso") cargar(false); }, 10000);
 
   // ---------------------------------------------------------------- ingreso
-  let COLEGIOS = null; // lista que define la organización (si está vacía, se escribe el colegio)
+  // el colegio se elige de la lista de la sala: se pide a /api/colegios?sala= al escribir el código de sala
+  const SALA_URL = (new URLSearchParams(location.search).get("sala") || "").toUpperCase();
+  function listaColegios(entradaSala, lista) {
+    let espera = null;
+    const llenar = (texto, colegios) => {
+      lista.replaceChildren(h("option", { value: "" }, texto), ...colegios.map((c) => h("option", { value: c.id_colegio }, c.nombre)));
+      lista.disabled = !colegios.length;
+    };
+    const buscar = async () => {
+      const codigo = entradaSala.value.trim().toUpperCase();
+      if (codigo.length < 3) return llenar("Escribe primero el código de sala", []);
+      try {
+        const r = await api("/api/colegios?sala=" + encodeURIComponent(codigo));
+        llenar(r.colegios.length ? "Elige tu colegio…" : "Tu docente aún no agrega colegios a la sala", r.colegios);
+      } catch (e) { llenar("No encontramos esa sala: revisa el código", []); }
+    };
+    entradaSala.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(buscar, 350); });
+    buscar();
+  }
   async function ingreso(pestana = "nuevo") {
-    if (COLEGIOS === null) {
-      try { COLEGIOS = (await api("/api/publico")).colegios || []; } catch (e) { COLEGIOS = []; }
-    }
     const msg = h("div");
     const tabs = h("div", { class: "pestanas", role: "tablist" },
       h("button", { role: "tab", "aria-selected": String(pestana === "nuevo"), onclick: () => ingreso("nuevo") }, "Inscribirme"),
@@ -166,18 +181,17 @@
       } },
         h("label", { class: "campo" }, h("span", {}, "Nombre completo ", h("small", {}, "(o nombre del equipo)")),
           h("input", { class: "entrada", name: "nombre", required: true, maxlength: 60, autocomplete: "name" })),
-        h("label", { class: "campo" }, h("span", { text: "Colegio" }), COLEGIOS.length
-          ? h("select", { class: "entrada", name: "colegio", required: true },
-              h("option", { value: "" }, "Elige tu colegio…"), ...COLEGIOS.map((c) => h("option", { value: c }, c)))
-          : h("input", { class: "entrada", name: "colegio", required: true, maxlength: 80 })),
+        h("label", { class: "campo" }, h("span", {}, "Código de sala ", h("small", {}, "(te lo da tu docente)")),
+          h("input", { class: "entrada codigo", name: "sala", required: true, maxlength: 8, autocomplete: "off", autocapitalize: "characters", value: SALA_URL })),
+        h("label", { class: "campo" }, h("span", { text: "Colegio" }),
+          h("select", { class: "entrada", name: "colegio", required: true, disabled: true })),
         h("div", { class: "campo" }, h("span", { text: "Grado" }),
           h("div", { class: "segmentado", role: "radiogroup", "aria-label": "Grado" },
             ...["9", "10", "11"].map((g) => h("label", {}, h("input", { type: "radio", name: "grado", value: g, required: true }), h("span", { text: g + ".°" }))))),
         h("label", { class: "campo" }, h("span", {}, "Integrantes ", h("small", {}, "(solo si participan en equipo)")),
           h("input", { class: "entrada", name: "integrantes", maxlength: 200, placeholder: "Nombres separados por comas" })),
-        h("label", { class: "campo" }, h("span", {}, "Código de sala ", h("small", {}, "(te lo da tu docente)")),
-          h("input", { class: "entrada codigo", name: "sala", required: true, maxlength: 8, autocomplete: "off", autocapitalize: "characters" })),
         h("button", { class: "boton grande", type: "submit" }, "Inscribirme"), msg);
+      listaColegios(form.querySelector("[name=sala]"), form.querySelector("[name=colegio]"));
     } else {
       form = h("form", { onsubmit: async (ev) => {
         ev.preventDefault();
@@ -197,7 +211,7 @@
         h("h1", { class: "titular" }, "¿Lo ", h("span", { class: "resaltar" }, "compartirías"), "?"),
         h("p", { class: "bajada", text: "Vas a investigar desinformación real que circuló en Colombia, con los datos de Colombiacheck, el DANE y un estudio científico hecho en 16 países. Siete expedientes, un reloj y un podio." }),
         h("hr", { class: "regla" }),
-        h("p", { class: "nota", text: "Pide a tu docente el código de sala. Si participan en equipo, inscríbanse una sola vez con el nombre del equipo. Participan varios colegios a la vez y hay un solo ranking." })),
+        h("p", { class: "nota", text: "Pide a tu docente el código de sala. Si participan en equipo, inscríbanse una sola vez con el nombre del equipo. Cada sala tiene su propio reloj y su propio podio." })),
       h("div", { class: "tarjeta" }, tabs, form)));
     const primero = form.querySelector("input"); if (primero && window.innerWidth > 900) primero.focus({ preventScroll: true });
   }
@@ -216,7 +230,7 @@
     const d = S.datos, abierto = d.reto.estado === "abierto";
     const mins = Math.round(d.reto.duracion_min);
     const reglas = [
-      `El reto dura ${mins} minutos y el reloj es EL MISMO para todos los colegios: arranca cuando la organización abre el reto, no cuando pulses «Comenzar». Si se acaba, tu reto se entrega solo con lo que hayas respondido.`,
+      `El reto dura ${mins} minutos y el reloj es EL MISMO para toda tu sala: arranca cuando tu docente abre el reto, no cuando pulses «Comenzar». Si se acaba, tu reto se entrega solo con lo que hayas respondido.`,
       `Hay ${d.reto.n_misiones} expedientes y ${num(d.reto.puntos_totales)} puntos. Puedes hacerlos en el orden que quieras. Los «Casos» del Laboratorio de análisis son los que más puntos dan: traen varios gráficos y piden conclusiones.`,
       "Cada pregunta se responde una sola vez: al confirmar el envío, queda bloqueada.",
       "Estimar, ordenar, clasificar y marcar varias dan puntaje parcial: acercarse también cuenta.",
@@ -228,13 +242,13 @@
       h("div", {},
         h("div", { class: "antetitulo", text: "Sala de espera" }),
         h("h1", { class: "titular" }, "Hola, ", h("span", { class: "resaltar", text: d.participante.nombre.split(" ")[0] })),
-        h("p", { class: "bajada", text: abierto ? "El reto ya empezó y el reloj común está corriendo: pulsa «Comenzar» cuanto antes." : "Estás inscrito. El reto empieza para todos los colegios a la vez, cuando la organización lo abra." }),
+        h("p", { class: "bajada", text: abierto ? "El reto ya empezó y el reloj de tu sala está corriendo: pulsa «Comenzar» cuanto antes." : "Estás inscrito. El reto empieza para toda tu sala a la vez, cuando tu docente lo abra." }),
         h("div", { style: "margin-top:26px" }, abierto
           ? h("button", { class: "boton grande", onclick: async (ev) => {
               ev.target.disabled = true;
               try { await api("/api/comenzar", {}); S.vista = "mapa"; await cargar(); } catch (e) { alert(e.message); ev.target.disabled = false; }
             } }, "Comenzar el reto →")
-          : h("p", { class: "nota" }, h("span", { class: "espera-pulso" }), "Esperando a que la organización abra el reto…"))),
+          : h("p", { class: "nota" }, h("span", { class: "espera-pulso" }), "Esperando a que tu docente abra el reto…"))),
       h("div", { class: "tarjeta" }, h("h3", { style: "font-size:22px;margin-bottom:8px", text: "Reglas del reto" }), h("ol", { class: "reglas" }, ...reglas.map((r) => h("li", { text: r }))))));
   }
 

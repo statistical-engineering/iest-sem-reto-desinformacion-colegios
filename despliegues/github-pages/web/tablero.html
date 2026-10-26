@@ -132,10 +132,18 @@
   const num = (v, d = 0) => Number(v).toLocaleString("es-CO", { minimumFractionDigits: d, maximumFractionDigits: d });
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ahora = () => Date.now() / 1000 + T.desfase;
+  // cada sala tiene su tablero: /tablero?sala=KQMT (el panel docente abre este enlace)
+  const SALA = (new URLSearchParams(location.search).get("sala") || "").trim().toUpperCase();
+  if (!SALA) {
+    const codigo = (prompt("Código de la sala que quieres proyectar:") || "").trim().toUpperCase();
+    if (codigo) location.search = "?sala=" + encodeURIComponent(codigo);
+  }
 
   async function sondear() {
+    if (!SALA) { escena.innerHTML = '<p class="sub">Abre el tablero desde el panel docente, o agrega <b>?sala=CÓDIGO</b> al enlace.</p>'; return; }
     try {
-      const r = await fetch("/api/publico", { cache: "no-store" });
+      const r = await fetch("/api/publico?sala=" + encodeURIComponent(SALA), { cache: "no-store" });
+      if (r.status === 404) { escena.innerHTML = `<p class="sub">No existe una sala con el código <b>${esc(SALA)}</b>.</p>`; return; }
       const d = await r.json();
       T.desfase = d.servidor_ahora - Date.now() / 1000;
       const antes = T.d;
@@ -161,7 +169,7 @@
       r.textContent = `${mm}:${String(ss).padStart(2, "0")}`;
       r.className = "reloj-grande" + (rl.pausado ? "" : rest <= 120 ? " critico" : rest <= 600 ? " alerta" : "");
       const et = document.getElementById("reloj-etiqueta");
-      if (et) et.textContent = rl.pausado ? "⏸ Reto en pausa" : "Tiempo restante · todos los colegios";
+      if (et) et.textContent = rl.pausado ? "⏸ Reto en pausa" : "Tiempo restante · sala " + T.d.sala;
     }
     if (T.d && T.d.estado === "resultados" && !T.pausa && Date.now() - T.ultimoCambio > duracionDiapo()) cambiarDiapo(1);
   }, 250);
@@ -199,7 +207,7 @@
       : `<div class="sobre"><div><span class="sello">Confidencial</span><h2>La clasificación se revela al final</h2><p class="sub">Piensa despacio: el bono de tiempo es pequeño y acertar vale mucho más.</p></div></div>`;
     escena.innerHTML = `<div class="dos ${cls(animar)}">
       <div>
-        <div class="ante" id="reloj-etiqueta">Tiempo restante · todos los colegios</div>
+        <div class="ante" id="reloj-etiqueta">Tiempo restante · sala ${esc(d.sala)}</div>
         <div class="reloj-grande" id="reloj">--:--</div>
         <div class="chips">
           <div class="chip"><b>${d.conteo.en_curso}</b><span>investigando</span></div>
@@ -314,8 +322,9 @@
   }
   function multitud() {
     const x = T.d.experimento, m = x.multitud;
-    const posts = x.por_publicacion.map((p) => `<div><span class="m ${p.multitud_acierta ? "ok" : "no"}">${p.multitud_acierta ? "✓" : "✗"}</span>
-      <span style="flex:1">${esc(p.texto)} <i style="color:var(--tinta-3)">(${p.verdad === "V" ? "verdadera" : "falsa"})</i></span>
+    // la verdad de cada publicación llega solo con los resultados publicados (antes, el servidor no la manda)
+    const posts = x.por_publicacion.map((p) => `<div>${p.verdad == null ? "" : `<span class="m ${p.multitud_acierta ? "ok" : "no"}">${p.multitud_acierta ? "✓" : "✗"}</span>`}
+      <span style="flex:1">${esc(p.texto)}${p.verdad == null ? "" : ` <i style="color:var(--tinta-3)">(${p.verdad === "V" ? "verdadera" : "falsa"})</i>`}</span>
       <span class="v">${num(p.pct_cree_verdadera, 0)} %</span></div>`).join("");
     escena.innerHTML = `<div class="entra">
       <div class="ante">El experimento de la clase · 3</div><h2>La sabiduría de la multitud</h2>
