@@ -838,32 +838,61 @@ def registrar(d):
 
 
 class Freno:
-    """Cuenta intentos fallidos por IP (claves o códigos adivinados) y bloquea un rato a quien abusa.
-    No usa sleep: en alojamientos con un solo proceso, dormir frenaría a todos los demás."""
+    """Cuenta intentos fallidos (claves o códigos adivinados) por quien los hace, una IP o un navegador, y bloquea
+    un rato a quien abusa. No usa sleep: en alojamientos con un solo proceso, dormir frenaría a todos los demás."""
 
-    def __init__(self, maximo, ventana):
-        self.maximo, self.ventana, self.fallos = maximo, ventana, {}
+    def __init__(self, maximo, ventana, mensaje="Demasiados intentos fallidos."):
+        self.maximo, self.ventana, self.mensaje, self.fallos = maximo, ventana, mensaje, {}
 
-    def revisar(self, ip):
+    def revisar(self, quien):
         ahora = time.time()
-        recientes = [t for t in self.fallos.get(ip, []) if ahora - t < self.ventana]
-        self.fallos[ip] = recientes
+        recientes = [t for t in self.fallos.get(quien, []) if ahora - t < self.ventana]
+        self.fallos[quien] = recientes
         if len(recientes) >= self.maximo:
-            raise ErrorAPI(
-                f"Demasiados intentos fallidos. Espera {int(self.ventana - (ahora - recientes[0])) + 1} "
-                "segundos e intenta de nuevo.",
-                429,
-            )
+            espera = int(self.ventana - (ahora - recientes[0])) + 1
+            raise ErrorAPI(f"{self.mensaje} Espera {espera} segundos e intenta de nuevo.", 429)
 
-    def fallo(self, ip):
-        self.fallos.setdefault(ip, []).append(time.time())
+    def fallo(self, quien):
+        self.fallos.setdefault(quien, []).append(time.time())
         if len(self.fallos) > 5000:  # no crecer sin límite
             self.fallos.clear()
 
 
 # Los estudiantes de un colegio suelen salir a internet por la MISMA IP: los límites son generosos.
 FRENO_CODIGOS = Freno(40, 60)
+# Clave del panel. En un colegio todos comparten la IP, así que el bloqueo corto es por NAVEGADOR (cookie
+# reto_nav): un estudiante que falla la clave se bloquea solo a sí mismo. El de la red entera frena a quien borra
+# la cookie para seguir probando, pero no detiene a un navegador donde el docente ya entró (NAVEGADORES_DOCENTES).
 FRENO_ADMIN = Freno(8, 300)
+FRENO_ADMIN_RED = Freno(
+    40,
+    300,
+    "Demasiados intentos fallidos desde esta red. Si eres docente, entra desde un navegador donde ya hayas "
+    "abierto el panel, o con datos móviles.",
+)
+NAVEGADORES_DOCENTES = set()
+COOKIE_NAVEGADOR = "reto_nav"
+
+
+def navegador_de(cab):
+    """Identificador del navegador (cookie reto_nav), o "" si no trae una válida."""
+    m = re.search(rf"(?:^|;\s*){COOKIE_NAVEGADOR}=([A-Za-z0-9_-]{{22}})(?:;|$)", cab("Cookie") or "")
+    return m.group(1) if m else ""
+
+
+def revisar_clave_admin(clave, ip, nav):
+    """True si la clave es la del panel. Aplica los dos frenos y recuerda el navegador que acertó."""
+    quien = f"nav:{nav}" if nav else f"ip:{ip}"
+    FRENO_ADMIN.revisar(quien)
+    if nav not in NAVEGADORES_DOCENTES:
+        FRENO_ADMIN_RED.revisar(ip)
+    if not secrets.compare_digest(clave.encode("utf-8"), CLAVE_ADMIN.encode("utf-8")):
+        FRENO_ADMIN.fallo(quien)
+        FRENO_ADMIN_RED.fallo(ip)
+        return False
+    if nav and len(NAVEGADORES_DOCENTES) < 1000:
+        NAVEGADORES_DOCENTES.add(nav)
+    return True
 
 
 def entrar(d, ip=""):
@@ -1058,9 +1087,20 @@ def origen_y_urls(cab):
     return [f"{proto}://{host}"]
 
 
-def atender(metodo, ruta, cab, leer_cuerpo, ip):  # noqa: C901
+def atender(metodo, ruta, cab, leer_cuerpo, ip):
     """Núcleo HTTP común al servidor local y al alojamiento WSGI.
-    cab(nombre) → valor de cabecera; leer_cuerpo(n) → bytes. Devuelve (código, tipo, bytes, cabeceras extra)."""
+    cab(nombre) → valor de cabecera; leer_cuerpo(n) → bytes. Devuelve (código, tipo, bytes, cabeceras extra).
+    Si el navegador no trae la cookie reto_nav, la respuesta se la entrega (ver FRENO_ADMIN)."""
+    nav = navegador_de(cab)
+    codigo, tipo, datos, extra = _atender(metodo, ruta, cab, leer_cuerpo, ip, nav)
+    if not nav:
+        segura = "; Secure" if (cab("X-Forwarded-Proto") or "").startswith("https") else ""
+        valor = f"{COOKIE_NAVEGADOR}={secrets.token_urlsafe(16)}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Strict"
+        extra = {**extra, "Set-Cookie": valor + segura}
+    return codigo, tipo, datos, extra
+
+
+def _atender(metodo, ruta, cab, leer_cuerpo, ip, nav):  # noqa: C901
     url = urlparse(ruta)
     qs = parse_qs(url.query)
 
@@ -1068,12 +1108,8 @@ def atender(metodo, ruta, cab, leer_cuerpo, ip):  # noqa: C901
         return codigo, "application/json; charset=utf-8", json.dumps(obj, ensure_ascii=False).encode("utf-8"), {}
 
     def es_admin():
-        clave = (cab("X-Clave-Admin") or (qs.get("clave") or [""])[0]).strip().upper()
-        FRENO_ADMIN.revisar(ip)
-        if not secrets.compare_digest(clave.encode("utf-8"), CLAVE_ADMIN.encode("utf-8")):
-            FRENO_ADMIN.fallo(ip)
-            return False
-        return True
+        # Solo por la cabecera: una clave en la URL (?clave=) queda en los registros del alojamiento.
+        return revisar_clave_admin((cab("X-Clave-Admin") or "").strip().upper(), ip, nav)
 
     def token():
         aut = cab("Authorization") or ""
