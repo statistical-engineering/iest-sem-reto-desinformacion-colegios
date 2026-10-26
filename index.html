@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reto contra la desinformación</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4efe4; color: #17150f;
+         font: 18px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; padding: 16px; }
+  a { display: inline-block; margin-top: 12px; padding: 12px 22px; border-radius: 10px; background: #17150f;
+      color: #f4efe4; text-decoration: none; font-weight: 700; }
+</style>
+<script src="destino.js"></script>
+</head>
+<body>
+<main>
+  <h1>Reto contra la desinformación</h1>
+  <p>Te estamos llevando al reto…</p>
+  <a id="enlace" href="#">Entrar al reto</a>
+</main>
+<script>irAlReto(window.RUTA_RETO || "/");</script>
+</body>
+</html>
