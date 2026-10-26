@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero · Detectives de la desinformación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Special+Elite&display=swap">
+<style>
+  :root {
+    --fondo: #0e0d0a; --fondo-2: #1a1813; --linea: #2f2c24; --tinta: #f5f0e3; --tinta-2: #c3bba6; --tinta-3: #8a8371;
+    --amarillo: #ffd23f; --rojo: #e34948; --verde: #2fbf71; --oro: #f2c14e; --plata: #c9ced6; --bronce: #cd8a52;
+    --serie-1: #3987e5; --serie-2: #d95926;
+    --f-titulo: "Bricolage Grotesque", "Segoe UI Black", system-ui, sans-serif;
+    --f-texto: "Lexend", "Segoe UI", system-ui, sans-serif;
+    --f-maquina: "Special Elite", "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(1400px 700px at 80% -20%, rgba(255, 210, 63, 0.10), transparent 60%), var(--fondo);
+    color: var(--tinta); font: 2vh/1.4 var(--f-texto); overflow: hidden;
+  }
+  body::after { /* líneas de monitor muy sutiles */
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px);
+  }
+  .barra { display: flex; align-items: center; gap: 2vw; padding: 2vh 3vw; border-bottom: 1px solid var(--linea); }
+  .barra .nombre { font: 800 2.6vh var(--f-titulo); letter-spacing: 0.01em; margin-right: auto; }
+  .barra .nombre small { display: block; font: 1.6vh var(--f-maquina); color: var(--amarillo); letter-spacing: 0.14em; }
+  .vivo { font: 1.7vh var(--f-maquina); letter-spacing: 0.16em; color: var(--rojo); }
+  .vivo::before { content: "●"; margin-right: 0.6em; animation: parpadeo 1.2s infinite; }
+  @keyframes parpadeo { 50% { opacity: 0.2; } }
+  .hora { font: 700 2.4vh var(--f-titulo); font-variant-numeric: tabular-nums; color: var(--tinta-2); }
+  #escena { height: calc(100vh - 9vh); padding: 4vh 4vw; position: relative; }
+  .entra { animation: entra 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes entra { from { opacity: 0; transform: translateY(3vh); } }
+  .ante { font: 2vh var(--f-maquina); letter-spacing: 0.2em; text-transform: uppercase; color: var(--amarillo); }
+  h1 { font: 800 9vh/0.95 var(--f-titulo); margin: 1vh 0 2vh; letter-spacing: -0.02em; }
+  h2 { font: 800 5vh/1 var(--f-titulo); margin: 0 0 2vh; }
+  .sub { font-size: 2.6vh; color: var(--tinta-2); max-width: 60ch; }
+  .resaltar { background: linear-gradient(transparent 58%, rgba(255, 210, 63, 0.85) 58%, rgba(255, 210, 63, 0.85) 90%, transparent 90%); color: var(--tinta); }
+
+  /* inscripción */
+  .dos { display: grid; grid-template-columns: 1.3fr 1fr; gap: 5vw; height: 100%; align-items: center; }
+  .url { font: 4.4vh var(--f-maquina); background: var(--fondo-2); border: 1px solid var(--linea); padding: 1.6vh 2vw; border-radius: 1vh; display: inline-block; margin: 0.6vh 0; }
+  .sala { display: flex; gap: 1.2vw; margin-top: 2vh; }
+  .sala span { width: 10vh; height: 13vh; display: grid; place-items: center; font: 800 9vh var(--f-titulo); background: var(--amarillo); color: var(--fondo); border-radius: 1.2vh; box-shadow: 0 0.8vh 0 #b8901a; }
+  .contador { text-align: center; border: 2px solid var(--linea); border-radius: 2vh; padding: 5vh 2vw; background: var(--fondo-2); }
+  .contador b { display: block; font: 800 24vh/0.9 var(--f-titulo); color: var(--amarillo); font-variant-numeric: tabular-nums; }
+  .contador span { font-size: 3vh; color: var(--tinta-2); }
+
+  /* reloj */
+  .reloj-grande { font: 800 30vh/0.85 var(--f-titulo); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+  .reloj-grande.alerta { color: var(--amarillo); }
+  .reloj-grande.critico { color: var(--rojo); animation: latir 1s infinite; }
+  @keyframes latir { 50% { transform: scale(1.02); } }
+  .chips { display: flex; gap: 2vw; margin-top: 4vh; }
+  .chip { background: var(--fondo-2); border: 1px solid var(--linea); border-radius: 1.4vh; padding: 2vh 2vw; min-width: 18vw; }
+  .chip b { display: block; font: 800 7vh/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
+  .chip span { color: var(--tinta-2); font-size: 2.2vh; }
+  .sobre { display: grid; place-items: center; text-align: center; border: 2px dashed var(--linea); border-radius: 2vh; padding: 6vh 3vw; }
+  .sello { display: inline-block; font: 4.2vh var(--f-maquina); letter-spacing: 0.18em; text-transform: uppercase; color: var(--rojo); border: 0.6vh double var(--rojo); padding: 1.4vh 2vw; transform: rotate(-8deg); margin-bottom: 3vh; }
+
+  /* ranking */
+  .ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 1vh; }
+  .ranking li { display: grid; grid-template-columns: 6vh 1fr auto; align-items: center; gap: 1.5vw; background: var(--fondo-2); border: 1px solid var(--linea); border-radius: 1vh; padding: 1.2vh 1.5vw; animation: entra 0.5s both; }
+  .ranking .p { font: 800 3.6vh var(--f-titulo); color: var(--amarillo); text-align: center; }
+  .ranking .q b { display: block; font: 700 2.8vh var(--f-titulo); }
+  .ranking .q small { color: var(--tinta-3); font-size: 1.9vh; }
+  .ranking .t { font: 800 3.6vh var(--f-titulo); font-variant-numeric: tabular-nums; }
+
+  /* podio */
+  .podio { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 2vw; height: 68vh; margin-top: 2vh; }
+  .escalon { text-align: center; opacity: 0; animation: sube 0.9s cubic-bezier(0.2, 0.9, 0.2, 1.1) forwards; }
+  .escalon .quien { padding: 0 1vw 2vh; }
+  .escalon .quien b { display: block; font: 800 4.2vh/1.05 var(--f-titulo); }
+  .escalon .quien small { display: block; color: var(--tinta-2); font-size: 2.2vh; margin-top: 0.6vh; }
+  .escalon .quien .pts { font: 800 3.6vh var(--f-titulo); color: var(--amarillo); margin-top: 1vh; font-variant-numeric: tabular-nums; }
+  .escalon .bloque { border-radius: 1.4vh 1.4vh 0 0; display: grid; place-items: center; font: 800 14vh/1 var(--f-titulo); color: var(--fondo); }
+  .e1 .bloque { height: 34vh; background: linear-gradient(180deg, #ffe08a, var(--oro)); }
+  .e2 .bloque { height: 24vh; background: linear-gradient(180deg, #eef1f5, var(--plata)); }
+  .e3 .bloque { height: 17vh; background: linear-gradient(180deg, #e9b184, var(--bronce)); }
+  .e3 { animation-delay: 0.6s; } .e2 { animation-delay: 2.2s; } .e1 { animation-delay: 3.8s; }
+  .e1 .quien b { font-size: 5.2vh; }
+  @keyframes sube { from { opacity: 0; transform: translateY(12vh); } to { opacity: 1; transform: none; } }
+  .confeti { position: fixed; top: -4vh; width: 1vh; height: 2vh; opacity: 0; animation: cae linear forwards; pointer-events: none; }
+  @keyframes cae { 0% { opacity: 1; transform: translateY(0) rotate(0); } 100% { opacity: 0.9; transform: translateY(110vh) rotate(720deg); } }
+
+  /* experimento */
+  .exp { display: grid; grid-template-columns: 1fr 1fr; gap: 4vw; align-items: center; height: 100%; }
+  .barras { display: grid; gap: 3vh; }
+  .barra-dato span { display: block; font-size: 2.4vh; color: var(--tinta-2); margin-bottom: 0.8vh; }
+  .barra-dato .pista { height: 4.2vh; background: var(--fondo-2); border-radius: 0.6vh; position: relative; overflow: hidden; }
+  .barra-dato .pista i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 0.6vh 0.6vh 0; animation: crece 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes crece { from { width: 0 !important; } }
+  .barra-dato b { font: 800 5vh var(--f-titulo); font-variant-numeric: tabular-nums; display: block; margin-top: 0.6vh; }
+  .leyenda-clave { display: inline-block; width: 1.6vh; height: 1.6vh; border-radius: 0.3vh; margin-right: 0.8vh; vertical-align: -0.1vh; }
+  .conclusion { font: 700 3.4vh/1.25 var(--f-titulo); border-left: 0.8vh solid var(--amarillo); padding-left: 2vw; margin-top: 3vh; }
+  .estudio { font-size: 2.2vh; color: var(--tinta-2); margin-top: 2vh; }
+  .grandes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; }
+  .grandes div { background: var(--fondo-2); border: 1px solid var(--linea); border-radius: 1.4vh; padding: 3vh 1.5vw; text-align: center; }
+  .grandes b { display: block; font: 800 12vh/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
+  .grandes div:first-child b { color: var(--amarillo); }
+  .grandes span { color: var(--tinta-2); font-size: 2.2vh; }
+  .posts-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8vh 2vw; margin-top: 3vh; font-size: 1.9vh; }
+  .posts-mini div { display: flex; gap: 1vw; align-items: center; border-bottom: 1px solid var(--linea); padding-bottom: 0.6vh; }
+  .posts-mini .m { flex: none; width: 4vh; text-align: center; font-weight: 700; }
+  .posts-mini .ok { color: var(--verde); } .posts-mini .no { color: var(--rojo); }
+  .posts-mini .v { flex: none; font: 700 2.2vh var(--f-titulo); width: 7vh; text-align: right; font-variant-numeric: tabular-nums; }
+  .puntos-nav { position: absolute; bottom: 2vh; left: 50%; transform: translateX(-50%); display: flex; gap: 1vh; }
+  .puntos-nav i { width: 1.2vh; height: 1.2vh; border-radius: 50%; background: var(--linea); }
+  .puntos-nav i.si { background: var(--amarillo); }
+  .ayuda { position: fixed; right: 2vw; bottom: 1.6vh; font-size: 1.5vh; color: var(--tinta-3); }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; } .escalon { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="barra">
+  <div class="nombre">Detectives de la desinformación<small id="evento">TABLERO</small></div>
+  <span class="vivo">EN VIVO</span>
+  <span class="hora" id="hora"></span>
+</div>
+<div id="escena"></div>
+<div class="ayuda">F: pantalla completa · ← → cambiar · espacio: pausar</div>
+<script>
+(function () {
+  "use strict";
+  const escena = document.getElementById("escena");
+  const T = { d: null, desfase: 0, firma: "", diapo: 0, pausa: false, ultimoCambio: Date.now() };
+  const num = (v, d = 0) => Number(v).toLocaleString("es-CO", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ahora = () => Date.now() / 1000 + T.desfase;
+
+  async function sondear() {
+    try {
+      const r = await fetch("/api/publico", { cache: "no-store" });
+      const d = await r.json();
+      T.desfase = d.servidor_ahora - Date.now() / 1000;
+      const antes = T.d;
+      T.d = d;
+      document.getElementById("evento").textContent = (d.evento || "").toUpperCase();
+      const firma = JSON.stringify([d.estado, d.sala, d.modo_sorpresa, d.urls, d.conteo, d.ranking, d.experimento && d.experimento.n, d.reloj && d.reloj.pausado, (d.por_colegio || []).length]);
+      if (!antes || antes.estado !== d.estado) { T.diapo = 0; T.ultimoCambio = Date.now(); pintar(true); }
+      else if (firma !== T.firma && d.estado !== "resultados") pintar(false);
+      T.firma = firma;
+    } catch (e) { /* servidor no disponible: se reintenta */ }
+  }
+  setInterval(sondear, 2000);
+  sondear();
+
+  setInterval(() => {
+    document.getElementById("hora").textContent = new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+    const r = document.getElementById("reloj");
+    if (r && T.d) {
+      // reloj común: lo que quedaba según el servidor, descontado localmente (congelado si está en pausa)
+      const rl = T.d.reloj || {};
+      const rest = rl.restante_seg == null ? 0 : rl.pausado ? rl.restante_seg : Math.max(0, T.d.servidor_ahora + rl.restante_seg - ahora());
+      const t = Math.ceil(rest), mm = Math.floor(t / 60), ss = t % 60;
+      r.textContent = `${mm}:${String(ss).padStart(2, "0")}`;
+      r.className = "reloj-grande" + (rl.pausado ? "" : rest <= 120 ? " critico" : rest <= 600 ? " alerta" : "");
+      const et = document.getElementById("reloj-etiqueta");
+      if (et) et.textContent = rl.pausado ? "⏸ Reto en pausa" : "Tiempo restante · todos los colegios";
+    }
+    if (T.d && T.d.estado === "resultados" && !T.pausa && Date.now() - T.ultimoCambio > duracionDiapo()) cambiarDiapo(1);
+  }, 250);
+
+  // ------------------------------------------------------------ escenas
+  function pintar(animar) {
+    const d = T.d;
+    if (d.estado === "inscripcion") return inscripcion(animar);
+    if (d.estado === "abierto") return enCurso(animar);
+    if (d.estado === "cerrado") return cerrado(animar);
+    return diapositiva();
+  }
+  const cls = (animar) => (animar ? "entra" : "");
+
+  function inscripcion(animar) {
+    const d = T.d;
+    escena.innerHTML = `<div class="dos ${cls(animar)}">
+      <div>
+        <div class="ante">Inscripciones abiertas</div>
+        <h1>¿Lo <span class="resaltar">compartirías</span>?</h1>
+        <p class="sub">Abre en tu celular o computador:</p>
+        ${d.urls.slice(0, 2).map((u) => `<div class="url">${esc(u)}</div>`).join("<br>")}
+        <p class="sub" style="margin-top:3vh">Código de sala</p>
+        <div class="sala">${[...d.sala].map((c) => `<span>${esc(c)}</span>`).join("")}</div>
+      </div>
+      <div class="contador"><b>${d.conteo.inscritos}</b><span>detectives inscritos${(d.por_colegio || []).length > 1 ? ` · ${d.por_colegio.length} colegios` : ""}</span></div>
+    </div>`;
+  }
+
+  function enCurso(animar) {
+    const d = T.d;
+    const derecha = d.ranking
+      ? `<div><div class="ante">Clasificación en vivo · entregados</div><ol class="ranking" style="margin-top:2vh">${filasRanking(d.ranking.slice(0, 6))}</ol>
+         ${d.ranking.length ? "" : `<p class="sub">Aún nadie entrega.</p>`}</div>`
+      : `<div class="sobre"><div><span class="sello">Confidencial</span><h2>La clasificación se revela al final</h2><p class="sub">Piensa despacio: el bono de tiempo es pequeño y acertar vale mucho más.</p></div></div>`;
+    escena.innerHTML = `<div class="dos ${cls(animar)}">
+      <div>
+        <div class="ante" id="reloj-etiqueta">Tiempo restante · todos los colegios</div>
+        <div class="reloj-grande" id="reloj">--:--</div>
+        <div class="chips">
+          <div class="chip"><b>${d.conteo.en_curso}</b><span>investigando</span></div>
+          <div class="chip"><b>${d.conteo.finalizados}</b><span>entregaron</span></div>
+          ${(d.por_colegio || []).length > 1 ? `<div class="chip"><b>${d.por_colegio.length}</b><span>colegios</span></div>` : ""}
+        </div>
+        <p class="sub" style="margin-top:3vh">¿Llegaste tarde? Entra igual: código de sala <b style="color:var(--amarillo)">${esc(d.sala)}</b></p>
+      </div>${derecha}</div>`;
+  }
+
+  function cerrado(animar) {
+    escena.innerHTML = `<div class="${cls(animar)}" style="display:grid;place-items:center;height:100%;text-align:center">
+      <div><span class="sello">Expediente cerrado</span><h1>¡Se acabó el tiempo!</h1>
+      <p class="sub" style="margin:0 auto">${T.d.conteo.finalizados} detectives entregaron. Estamos revisando los resultados…</p></div></div>`;
+  }
+
+  function filasRanking(lista) {
+    return lista.map((f, i) => `<li style="animation-delay:${i * 70}ms"><span class="p">${f.puesto}</span>
+      <span class="q"><b>${esc(f.nombre)}</b><small>${esc(f.colegio)} · ${esc(f.grado)}.°</small></span>
+      <span class="t">${num(f.total, 2)}</span></li>`).join("");
+  }
+
+  // ------------------------------------------------------------ resultados: diapositivas
+  function diapos() {
+    const lista = [podio, rankingCompleto];
+    const x = T.d.experimento;
+    if (x && x.listo) lista.push(creerCompartir, recordatorio, multitud);
+    return lista;
+  }
+  function duracionDiapo() { return T.diapo === 0 ? 22000 : 15000; }
+  function cambiarDiapo(paso) {
+    const n = diapos().length;
+    T.diapo = (T.diapo + paso + n) % n;
+    T.ultimoCambio = Date.now();
+    diapositiva();
+  }
+  function diapositiva() {
+    const lista = diapos();
+    if (T.diapo >= lista.length) T.diapo = 0;
+    lista[T.diapo]();
+    const nav = document.createElement("div");
+    nav.className = "puntos-nav";
+    nav.innerHTML = lista.map((_, i) => `<i class="${i === T.diapo ? "si" : ""}"></i>`).join("");
+    escena.appendChild(nav);
+  }
+
+  function podio() {
+    const r = T.d.ranking || [];
+    const bloque = (f, n) => f ? `<div class="escalon e${n}"><div class="quien"><b>${esc(f.nombre)}</b><small>${esc(f.colegio)} · ${esc(f.grado)}.°</small>
+      <div class="pts">${num(f.total, 2)} pts</div></div><div class="bloque">${n}</div></div>` : `<div></div>`;
+    escena.innerHTML = `<div class="ante" style="text-align:center">Resultados oficiales</div>
+      <h2 style="text-align:center;margin-top:1vh">Podio de detectives</h2>
+      <div class="podio">${bloque(r[1], 2)}${bloque(r[0], 1)}${bloque(r[2], 3)}</div>`;
+    setTimeout(confeti, 4200);
+  }
+  function confeti() {
+    if (T.diapo !== 0 || !T.d || T.d.estado !== "resultados") return;
+    const colores = ["#ffd23f", "#3987e5", "#d95926", "#2fbf71", "#f5f0e3"];
+    for (let i = 0; i < 90; i++) {
+      const c = document.createElement("i");
+      c.className = "confeti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = colores[i % colores.length];
+      c.style.animationDuration = 2.5 + Math.random() * 2.5 + "s";
+      c.style.animationDelay = Math.random() * 0.8 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 6000);
+    }
+  }
+  function rankingCompleto() {
+    const r = T.d.ranking || [];
+    escena.innerHTML = `<div class="entra"><div class="ante">Clasificación general · top ${r.length}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1vh 2vw;margin-top:2vh">
+      <ol class="ranking">${filasRanking(r.slice(0, 5))}</ol><ol class="ranking">${filasRanking(r.slice(5, 10))}</ol></div>
+      <p class="sub" style="margin-top:3vh">Desempate: puntaje total → puntos → quién respondió su última pregunta antes. Nunca hay dos detectives en el mismo puesto.</p></div>`;
+  }
+  function barra(etiqueta, valor, color) {
+    return `<div class="barra-dato"><span><i class="leyenda-clave" style="background:${color}"></i>${etiqueta}</span>
+      <div class="pista"><i style="width:${Math.max(0, Math.min(100, valor))}%;background:${color}"></i></div><b>${num(valor, 0)} %</b></div>`;
+  }
+  function creerCompartir() {
+    const c = T.d.experimento.clase;
+    const brecha = c.comparte_falsas - c.cree_falsas;
+    const concl = brecha > 0
+      ? `Igual que en el estudio: la clase compartiría más falsedades (${num(c.comparte_falsas, 0)} %) de las que creyó verdaderas (${num(c.cree_falsas, 0)} %). Compartimos sin pensar en si es cierto.`
+      : `A diferencia del estudio, aquí la clase compartiría menos falsedades (${num(c.comparte_falsas, 0)} %) de las que creyó verdaderas (${num(c.cree_falsas, 0)} %). ¡Buena señal!`;
+    escena.innerHTML = `<div class="exp entra"><div>
+        <div class="ante">El experimento de la clase · 1</div><h2>¿Creer es lo mismo que compartir?</h2>
+        <div class="barras">
+          ${barra("De las publicaciones FALSAS, la clase dijo que compartiría…", c.comparte_falsas, "var(--serie-2)")}
+          ${barra("De las publicaciones FALSAS, la clase creyó que eran verdaderas…", c.cree_falsas, "var(--serie-1)")}
+        </div></div>
+      <div><p class="conclusion">${concl}</p>
+        <p class="estudio">Arechar et al. (2023), <i>Nature Human Behaviour</i>: en 16 países, la gente compartiría titulares falsos que reconocería como falsos si se le preguntara. n = ${T.d.experimento.n} estudiantes.</p></div></div>`;
+  }
+  function recordatorio() {
+    const x = T.d.experimento, a = x.grupo_sin_recordatorio, b = x.grupo_con_recordatorio;
+    if (!a || !b) return creerCompartir();
+    const dif = a.comparte_falsas - b.comparte_falsas;
+    const concl = dif > 0
+      ? `El grupo que pensó en la exactitud de un titular antes compartiría ${num(dif, 0)} puntos menos de falsedades. Lo mismo que encontró el estudio.`
+      : `Aquí el recordatorio no redujo lo que se compartiría. Con ${a.n + b.n} estudiantes, la diferencia puede ser puro azar: así se ve la ciencia de verdad.`;
+    escena.innerHTML = `<div class="exp entra"><div>
+        <div class="ante">El experimento de la clase · 2</div><h2>El recordatorio de exactitud</h2>
+        <p class="sub" style="margin-bottom:3vh">La mitad de la clase, elegida al azar, calificó primero si UN titular era exacto.</p>
+        <div class="barras">
+          ${barra(`Sin recordatorio (n = ${a.n}): compartirían falsas`, a.comparte_falsas, "var(--serie-2)")}
+          ${barra(`Con recordatorio (n = ${b.n}): compartirían falsas`, b.comparte_falsas, "var(--serie-1)")}
+        </div></div>
+      <div><p class="conclusion">${concl}</p>
+        <p class="estudio">En el estudio, este recordatorio sutil mejoró la calidad de lo compartido en 16 países, y fue más efectivo que unos consejos de alfabetización digital (aunque la gente creía lo contrario).</p></div></div>`;
+  }
+  function multitud() {
+    const x = T.d.experimento, m = x.multitud;
+    const posts = x.por_publicacion.map((p) => `<div><span class="m ${p.multitud_acierta ? "ok" : "no"}">${p.multitud_acierta ? "✓" : "✗"}</span>
+      <span style="flex:1">${esc(p.texto)} <i style="color:var(--tinta-3)">(${p.verdad === "V" ? "verdadera" : "falsa"})</i></span>
+      <span class="v">${num(p.pct_cree_verdadera, 0)} %</span></div>`).join("");
+    escena.innerHTML = `<div class="entra">
+      <div class="ante">El experimento de la clase · 3</div><h2>La sabiduría de la multitud</h2>
+      <div class="grandes">
+        <div><b>${m.aciertos_multitud}/${x.total_posts}</b><span>aciertos de la clase votando junta</span></div>
+        <div><b>${num(m.promedio_individual, 1)}/${x.total_posts}</b><span>aciertos del estudiante promedio</span></div>
+        <div><b>${num(m.pct_estudiantes_superados, 0)} %</b><span>de los estudiantes acertó menos que la clase junta</span></div>
+      </div>
+      <div class="posts-mini">${posts}</div>
+      <p class="estudio">Columna derecha: % de la clase que creyó verdadera cada publicación. En el estudio, promediar las opiniones de personas no expertas distinguió lo verdadero de lo falso con alta precisión.</p></div>`;
+  }
+
+  // ------------------------------------------------------------ teclado
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "f" || e.key === "F") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+    if (!T.d || T.d.estado !== "resultados") return;
+    if (e.key === "ArrowRight") cambiarDiapo(1);
+    if (e.key === "ArrowLeft") cambiarDiapo(-1);
+    if (e.key === " ") { T.pausa = !T.pausa; e.preventDefault(); }
+  });
+})();
+</script>
+</body>
+</html>

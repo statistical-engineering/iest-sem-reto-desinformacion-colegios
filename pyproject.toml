@@ -59,6 +59,9 @@ ignore = [
 "2_Aplicacion_Reto/modo_prueba.py" = ["D", "ANN", "N"]
 "2_Aplicacion_Reto/iniciar_internet.py" = ["D", "ANN", "N"]
 "4_Codigo_y_datos/scripts/*.py" = ["D", "ANN", "N"]
+# Servidor publicado en PythonAnywhere, importado tal como corre (despliegues/github-pages/LEEME.md).
+"despliegues/github-pages/src/servidor.py" = ["D", "ANN", "N"]
+"despliegues/github-pages/src/wsgi_pythonanywhere.py" = ["D", "ANN", "N"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
