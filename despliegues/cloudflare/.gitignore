@@ -1,0 +1,4 @@
+# Estado local de «wrangler dev» (base SQLite de prueba) y la base de la prueba común en modo local
+.wrangler/
+# Clave de prueba del semillero para «wrangler dev»: nunca se versiona
+.dev.vars

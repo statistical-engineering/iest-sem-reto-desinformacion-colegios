@@ -1,0 +1,3298 @@
+{
+ "titulo": "Detectives de la desinformación",
+ "descripcion": "Reto de 90 minutos para estudiantes de 9.° a 11.°: 3 expedientes sobre desinformación y 7 casos estadísticos con datos reales de Colombiacheck y el DANE.",
+ "duracion_min": 90,
+ "bono_tiempo_max": 20,
+ "puntos_totales": 1000,
+ "misiones": [
+  {
+   "id": "m1",
+   "titulo": "¿Lo compartirías?",
+   "subtitulo": "Desinformación · el experimento de la clase",
+   "intro": "Vas a ver 10 afirmaciones reales que circularon en Colombia: algunas en redes y WhatsApp, otras dichas por figuras públicas o publicadas como noticia. Todas fueron revisadas por Colombiacheck. Primero decide, con honestidad, si las compartirías: esa parte NO da ni quita puntos. Después dirás si crees que son verdaderas o falsas: esa parte SÍ da puntos. Al final, el tablero mostrará qué hizo la clase y lo compararemos con el estudio de Nature.",
+   "preguntas": [
+    {
+     "id": "m1_recordatorio",
+     "tipo": "recordatorio",
+     "puntos": 0,
+     "solo_grupo": "B",
+     "enunciado": "Antes de empezar: queremos probar un titular para futuros retos. Según lo que sabes, ¿este titular es exacto?",
+     "publicaciones": [
+      {
+       "id": "r1",
+       "texto": "Ave usada en publicidad oficial no existe en Colombia",
+       "encabezado": "Titular de prueba"
+      }
+     ],
+     "categorias": [
+      {
+       "id": "V",
+       "texto": "Exacto"
+      },
+      {
+       "id": "F",
+       "texto": "No exacto"
+      }
+     ],
+     "explicacion": "Esta pregunta era el «recordatorio de exactitud» del estudio de Nature: a la mitad de la clase (elegida al azar) se le pidió pensar en la exactitud de un titular antes de decidir qué compartir. No daba puntos."
+    },
+    {
+     "id": "m1_compartir",
+     "tipo": "compartir",
+     "puntos": 0,
+     "experimento": "compartir",
+     "enunciado": "Si vieras estas publicaciones en tus redes, ¿las compartirías? (No da puntos: responde lo que de verdad harías.)",
+     "publicaciones": [
+      {
+       "id": "p1",
+       "texto": "Colombia posee el 10% de la biodiversidad del planeta",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p2",
+       "texto": "YouTube dijo que eliminaría videos que contradijeran a la OMS sobre COVID-19",
+       "encabezado": "Mensaje reenviado"
+      },
+      {
+       "id": "p3",
+       "texto": "Colombia solo llevó 71 deportistas a Tokio frente a 147 en Río 2016",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p4",
+       "texto": "Estatua de Colón en Ciudad de México será reemplazada por escultura indígena",
+       "encabezado": "Noticia compartida"
+      },
+      {
+       "id": "p5",
+       "texto": "Esta noche rayos cósmicos van a pasar cerca de la Tierra. Apague su celular",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p6",
+       "texto": "Comer plátano o banano bloquea la entrada celular del coronavirus",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p7",
+       "texto": "Nunca presione el botón de UNIRME. Es una nueva forma de hackeo en WhatsApp",
+       "encabezado": "Mensaje reenviado"
+      },
+      {
+       "id": "p8",
+       "texto": "La NASA dijo que un asteroide impactará la Tierra el 6 de mayo de 2022",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p9",
+       "texto": "La luz de los teléfonos móviles produce maculopatía o cáncer de ojo",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p10",
+       "texto": "Aprueban DNI para mascotas en España",
+       "encabezado": "Noticia compartida"
+      }
+     ],
+     "categorias": [
+      {
+       "id": "S",
+       "texto": "La compartiría"
+      },
+      {
+       "id": "N",
+       "texto": "No la compartiría"
+      }
+     ],
+     "explicacion": "Esta parte no daba puntos: medía qué compartiría la clase para compararlo con lo que cree."
+    },
+    {
+     "id": "m1_veracidad",
+     "tipo": "clasificar",
+     "puntos": 120,
+     "experimento": "veracidad",
+     "requiere": "m1_compartir",
+     "estilo": "publicaciones",
+     "enunciado": "Ahora sí, con puntos: ¿cada publicación es verdadera o falsa?",
+     "items": [
+      {
+       "id": "p1",
+       "texto": "Colombia posee el 10% de la biodiversidad del planeta",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p2",
+       "texto": "YouTube dijo que eliminaría videos que contradijeran a la OMS sobre COVID-19",
+       "encabezado": "Mensaje reenviado"
+      },
+      {
+       "id": "p3",
+       "texto": "Colombia solo llevó 71 deportistas a Tokio frente a 147 en Río 2016",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p4",
+       "texto": "Estatua de Colón en Ciudad de México será reemplazada por escultura indígena",
+       "encabezado": "Noticia compartida"
+      },
+      {
+       "id": "p5",
+       "texto": "Esta noche rayos cósmicos van a pasar cerca de la Tierra. Apague su celular",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p6",
+       "texto": "Comer plátano o banano bloquea la entrada celular del coronavirus",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p7",
+       "texto": "Nunca presione el botón de UNIRME. Es una nueva forma de hackeo en WhatsApp",
+       "encabezado": "Mensaje reenviado"
+      },
+      {
+       "id": "p8",
+       "texto": "La NASA dijo que un asteroide impactará la Tierra el 6 de mayo de 2022",
+       "encabezado": "Publicación viral"
+      },
+      {
+       "id": "p9",
+       "texto": "La luz de los teléfonos móviles produce maculopatía o cáncer de ojo",
+       "encabezado": "Reenviado muchas veces"
+      },
+      {
+       "id": "p10",
+       "texto": "Aprueban DNI para mascotas en España",
+       "encabezado": "Noticia compartida"
+      }
+     ],
+     "categorias": [
+      {
+       "id": "V",
+       "texto": "Verdadera"
+      },
+      {
+       "id": "F",
+       "texto": "Falsa"
+      }
+     ],
+     "respuesta": {
+      "p1": "V",
+      "p2": "V",
+      "p3": "V",
+      "p4": "V",
+      "p5": "F",
+      "p6": "F",
+      "p7": "F",
+      "p8": "F",
+      "p9": "F",
+      "p10": "F"
+     },
+     "explicacion": "Las 10 publicaciones son afirmaciones reales verificadas por Colombiacheck. «Colombia posee el 10% de la biodiversidad del planeta»: VERDADERO (Colombia sí tiene el 10% de la biodiversidad del planeta, como han dicho Fajardo y Hernández). «YouTube dijo que eliminaría videos que contradijeran a la OMS sobre COVID-19»: VERDADERO (YouTube sí dijo que eliminaría videos que contradigan a la OMS sobre COVID-19). «Colombia solo llevó 71 deportistas a Tokio frente a 147 en Río 2016»: VERDADERO (Camilo Romero acertó en su afirmación sobre la menor participación de Colombia en Tokio frente a Río 2016). «Estatua de Colón en Ciudad de México será reemplazada por escultura indígena»: VERDADERO (Es cierto, la estatua de Colón en Ciudad de México será reemplazada por réplica de escultura indígena). «Esta noche rayos cósmicos van a pasar cerca de la Tierra. Apague su celular»: FALSO (De nuevo, mensaje en el que se pide 'apagar los celulares' esta noche porque rayos cósmicos pasarán cerca a la Tierra es falso). «Comer plátano o banano bloquea la entrada celular del coronavirus»: FALSO (Comer plátano o banano no bloquea la entrada del coronavirus). «Nunca presione el botón de UNIRME. Es una nueva forma de hackeo en WhatsApp»: FALSO (Botón de “unirme” en Whatsapp no es una táctica de hackeo sino una función de chat de audio). «La NASA dijo que un asteroide impactará la Tierra el 6 de mayo de 2022»: FALSO (La NASA no ha dicho que la Tierra será impactada por un asteroide el 6 de mayo de 2022). «La luz de los teléfonos móviles produce maculopatía o cáncer de ojo»: FALSO (Maculopatía no es igual a cáncer de ojo ni es causada por la luz del celular). «Aprueban DNI para mascotas en España»: FALSO (No, España no aprobó DNI para perros y gatos en enero de 2022)."
+    }
+   ]
+  },
+  {
+   "id": "m2",
+   "titulo": "Detectives de chequeos",
+   "subtitulo": "Desinformación · leer como verificador",
+   "intro": "Un chequeo tiene dos partes: lo que circulaba y lo que encontró el verificador. Aprender a leer esas conclusiones es la mitad del trabajo.",
+   "glosario": [
+    {
+     "termino": "Verdadero",
+     "definicion": "La afirmación es correcta."
+    },
+    {
+     "termino": "Verdadero, pero…",
+     "definicion": "Es correcta en lo esencial, pero le falta contexto o tiene una imprecisión menor que no cambia su sentido."
+    },
+    {
+     "termino": "Cuestionable",
+     "definicion": "Mezcla algo cierto con exageraciones, comparaciones tramposas o imprecisiones que sí cambian su sentido."
+    },
+    {
+     "termino": "Falso",
+     "definicion": "La afirmación es incorrecta, inventada o manipulada."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "m2_trampas",
+     "tipo": "clasificar",
+     "puntos": 65,
+     "estilo": "expediente",
+     "enunciado": "Lee lo que encontró el verificador y clasifica la TRAMPA que se usó en cada caso. Cada trampa aparece una sola vez.",
+     "categorias": [
+      {
+       "id": "IA",
+       "texto": "Creado o alterado con IA"
+      },
+      {
+       "id": "CTX",
+       "texto": "Real, pero de otro lugar o fecha"
+      },
+      {
+       "id": "EST",
+       "texto": "Estafa: busca tu dinero o tus datos"
+      },
+      {
+       "id": "CITA",
+       "texto": "Frase o mensaje atribuido falsamente"
+      },
+      {
+       "id": "ALA",
+       "texto": "Alarma o falsa ciencia sin fundamento"
+      }
+     ],
+     "variantes": [
+      {
+       "items": [
+        {
+         "id": "e1",
+         "texto": "Video de supuesta anaconda gigante en el río Amazonas fue creado con IA",
+         "detalle": "Lo que circulaba: «Una enorme Anaconda fue captada deslizándose majestuosa por las aguas del…»"
+        },
+        {
+         "id": "e2",
+         "texto": "Video del rescate de un gatito entre escombros fue grabado en Brasil días antes del terremoto en Colombia",
+         "detalle": "Lo que circulaba: «Video de un gatito que es rescatado de los escombros del terremoto»"
+        },
+        {
+         "id": "e3",
+         "texto": "Ojo a un supuesto mensaje de Instagram sobre haber infringido sus reglas: es para robar sus datos",
+         "detalle": "Lo que circulaba: «Hay una infracción en su cuenta debido a las actividades de su cuenta»"
+        },
+        {
+         "id": "e4",
+         "texto": "“A ustedes que ya no creen, no esperan, no oran”: circula mensaje falsamente atribuido al papa León XIV",
+         "detalle": "Lo que circulaba: «A ustedes que ya no creen, no esperan, no oran»"
+        },
+        {
+         "id": "e5",
+         "texto": "Cadena de domo atmosférico de calor en los próximos días en Colombia es falsa",
+         "detalle": "Lo que circulaba: «En Colombia habrá un domo de calor atmosférico»"
+        }
+       ],
+       "respuesta": {
+        "e1": "IA",
+        "e2": "CTX",
+        "e3": "EST",
+        "e4": "CITA",
+        "e5": "ALA"
+       },
+       "explicacion": "«Video de supuesta anaconda gigante en el río Amazonas fue creado con IA» → Creado o alterado con IA. «Video del rescate de un gatito entre escombros fue grabado en Brasil días antes del terremoto en Colombia» → Real, pero de otro lugar o fecha. «Ojo a un supuesto mensaje de Instagram sobre haber infringido sus reglas: es para robar sus datos» → Estafa: busca tu dinero o tus datos. «“A ustedes que ya no creen, no esperan, no oran”: circula mensaje falsamente atribuido al papa León XIV» → Frase o mensaje atribuido falsamente. «Cadena de domo atmosférico de calor en los próximos días en Colombia es falsa» → Alarma o falsa ciencia sin fundamento."
+      },
+      {
+       "items": [
+        {
+         "id": "e1",
+         "texto": "Este video en el que suben a una ballena a un barco para quitarle percebes fue creado con IA",
+         "detalle": "Lo que circulaba: «Video muestra el rescate y limpieza de una ballena»"
+        },
+        {
+         "id": "e2",
+         "texto": "Video de desbordamiento de agua en el parque El Virrey, en Bogotá, es de 2020",
+         "detalle": "Lo que circulaba: «Video muestra reciente desbordamiento de agua en El Virrey por lluvias»"
+        },
+        {
+         "id": "e3",
+         "texto": "Gobierno no está regalando paneles solares, como dice anuncio en Facebook con enlace sospechoso",
+         "detalle": "Lo que circulaba: «Cómo solicitar paneles solares gratis»"
+        },
+        {
+         "id": "e4",
+         "texto": "El “maravilloso mensaje” sobre lo rápido que se va la vida que le atribuyen falsamente al papa",
+         "detalle": "Lo que circulaba: «El Papa Francisco se lució con éste maravilloso mensaje»"
+        },
+        {
+         "id": "e5",
+         "texto": "Bomberos no han advertido sobre “nuevos temblores” como afirman audios de WhatsApp",
+         "detalle": "Lo que circulaba: «Bomberos informan que se esperan temblores más grandes en las proximas…»"
+        }
+       ],
+       "respuesta": {
+        "e1": "IA",
+        "e2": "CTX",
+        "e3": "EST",
+        "e4": "CITA",
+        "e5": "ALA"
+       },
+       "explicacion": "«Este video en el que suben a una ballena a un barco para quitarle percebes fue creado con IA» → Creado o alterado con IA. «Video de desbordamiento de agua en el parque El Virrey, en Bogotá, es de 2020» → Real, pero de otro lugar o fecha. «Gobierno no está regalando paneles solares, como dice anuncio en Facebook con enlace sospechoso» → Estafa: busca tu dinero o tus datos. «El “maravilloso mensaje” sobre lo rápido que se va la vida que le atribuyen falsamente al papa» → Frase o mensaje atribuido falsamente. «Bomberos no han advertido sobre “nuevos temblores” como afirman audios de WhatsApp» → Alarma o falsa ciencia sin fundamento."
+      },
+      {
+       "items": [
+        {
+         "id": "e1",
+         "texto": "Imagen de falso gato serpiente que circula en redes fue creada con inteligencia artificial",
+         "detalle": "Lo que circulaba: «Gato serpiente es la especie más rara de la Tierra»"
+        },
+        {
+         "id": "e2",
+         "texto": "Esta foto no muestra una lluvia de peces, sino el accidente de un camión con bagre en China",
+         "detalle": "Lo que circulaba: «Esta imagen prueba una lluvia de peces»"
+        },
+        {
+         "id": "e3",
+         "texto": "Cuidado, esta página que muestra supuesta entrevista de Carlos Calero es una estafa",
+         "detalle": "Lo que circulaba: «Carlos Calero habla sobre cómo generar riquezas a través de criptomonedas»"
+        },
+        {
+         "id": "e4",
+         "texto": "El papa no dijo “come lo que quieras en Semana Santa”",
+         "detalle": "Lo que circulaba: «El papa aseguró “come lo que quieras en Semana Santa”.»"
+        },
+        {
+         "id": "e5",
+         "texto": "Falso, tormenta solar no causará terremotos en los próximos días",
+         "detalle": "Lo que circulaba: «Llamarada solar causará terremotos en los próximos días»"
+        }
+       ],
+       "respuesta": {
+        "e1": "IA",
+        "e2": "CTX",
+        "e3": "EST",
+        "e4": "CITA",
+        "e5": "ALA"
+       },
+       "explicacion": "«Imagen de falso gato serpiente que circula en redes fue creada con inteligencia artificial» → Creado o alterado con IA. «Esta foto no muestra una lluvia de peces, sino el accidente de un camión con bagre en China» → Real, pero de otro lugar o fecha. «Cuidado, esta página que muestra supuesta entrevista de Carlos Calero es una estafa» → Estafa: busca tu dinero o tus datos. «El papa no dijo “come lo que quieras en Semana Santa”» → Frase o mensaje atribuido falsamente. «Falso, tormenta solar no causará terremotos en los próximos días» → Alarma o falsa ciencia sin fundamento."
+      },
+      {
+       "items": [
+        {
+         "id": "e1",
+         "texto": "Esta imagen no muestra la “cuenca Oriental” de la Luna ni es de la misión Artemis II, está generada con IA",
+         "detalle": "Lo que circulaba: «Imagen del cráter Mare Orientale de la Luna captada por Artemis II»"
+        },
+        {
+         "id": "e2",
+         "texto": "Este video no es de tsunami por terremoto de Turquía en 2023 sino de Sudáfrica en 2017",
+         "detalle": "Lo que circulaba: «Tsunami por terremoto en Turquía»"
+        },
+        {
+         "id": "e3",
+         "texto": "Otra falsa oferta de empleo de Almacenes Éxito circula en Facebook",
+         "detalle": "Lo que circulaba: «Oferta laboral grupo ÉXITO, se BUSCA personas como tú»"
+        },
+        {
+         "id": "e4",
+         "texto": "Falso que Casio respondió a Shakira en Twitter por su nueva canción, era una cuenta apócrifa",
+         "detalle": "Lo que circulaba: «Quizás no seamos un Rolex, pero al menos no nos han dejado por Clara Chia»"
+        },
+        {
+         "id": "e5",
+         "texto": "Cáncer no es causado por un hongo ni se cura con bicarbonato de sodio",
+         "detalle": "Lo que circulaba: «El cáncer se produce por un hongo y se cura con bicarbonato de sodio»"
+        }
+       ],
+       "respuesta": {
+        "e1": "IA",
+        "e2": "CTX",
+        "e3": "EST",
+        "e4": "CITA",
+        "e5": "ALA"
+       },
+       "explicacion": "«Esta imagen no muestra la “cuenca Oriental” de la Luna ni es de la misión Artemis II, está generada con IA» → Creado o alterado con IA. «Este video no es de tsunami por terremoto de Turquía en 2023 sino de Sudáfrica en 2017» → Real, pero de otro lugar o fecha. «Otra falsa oferta de empleo de Almacenes Éxito circula en Facebook» → Estafa: busca tu dinero o tus datos. «Falso que Casio respondió a Shakira en Twitter por su nueva canción, era una cuenta apócrifa» → Frase o mensaje atribuido falsamente. «Cáncer no es causado por un hongo ni se cura con bicarbonato de sodio» → Alarma o falsa ciencia sin fundamento."
+      }
+     ]
+    },
+    {
+     "id": "m2_veredicto",
+     "tipo": "clasificar",
+     "puntos": 75,
+     "estilo": "expediente",
+     "enunciado": "El veredicto: según el titular del chequeo, ¿qué calificación le dio Colombiacheck a cada afirmación? Usa el glosario (hay dos de cada una).",
+     "categorias": [
+      {
+       "id": "V",
+       "texto": "Verdadero"
+      },
+      {
+       "id": "VP",
+       "texto": "Verdadero, pero…"
+      },
+      {
+       "id": "C",
+       "texto": "Cuestionable"
+      },
+      {
+       "id": "F",
+       "texto": "Falso"
+      }
+     ],
+     "items": [
+      {
+       "id": "v1",
+       "texto": "El luchador Javier ‘Blair’ Reyes sí expuso una bandera con un mensaje contra la corrupción en Colombia",
+       "detalle": "Lo que circulaba: «Luchador colombiano expone un mensaje contra la corrupción en una bandera»"
+      },
+      {
+       "id": "v2",
+       "texto": "Sí, Minsalud confirmó que en Bogotá hay una paciente con Coronavirus (Covid-19)",
+       "detalle": "Lo que circulaba: «Se confirmó primer caso de coronavirus Covid-19 en Bogotá y en Colombia»"
+      },
+      {
+       "id": "v3",
+       "texto": "Covid-19 sí tiene síntomas similares a la gripa, pero es mucho más contagiosa",
+       "detalle": "Lo que circulaba: «El coronavirus es como una gripa pero con mayor compromiso pulmonar»"
+      },
+      {
+       "id": "v4",
+       "texto": "Sí detectaron gripe aviar en Filipinas, pero no es nueva y rara vez afecta a humanos",
+       "detalle": "Lo que circulaba: «Detectaron brote de gripe aviar H5N6 en Filipinas en marzo de 2020»"
+      },
+      {
+       "id": "v5",
+       "texto": "Trino hace comparación cuestionable sobre la magnitud de los terremotos en Colombia y Venezuela",
+       "detalle": "Lo que circulaba: «Trino compara magnitud de terremotos de Colombia y Venezuela»"
+      },
+      {
+       "id": "v6",
+       "texto": "Usuario de TikTok exagera sobre inflación, estancamiento económico e impuesto a ganancias ocasionales",
+       "detalle": "Lo que circulaba: «Colombia no va a crecer por la inflación más alta del siglo XXI»"
+      },
+      {
+       "id": "v7",
+       "texto": "Es falso que les apliquen una fotomulta a quienes usen dispositivos electrónicos en bancos",
+       "detalle": "Lo que circulaba: «Se aplicarán foto multas a quienes usen celular en bancos»"
+      },
+      {
+       "id": "v8",
+       "texto": "Es falso que vacunas contra COVID-19 dejen el brazo imantado",
+       "detalle": "Lo que circulaba: «Vacunas de COVID19 dejan brazo imantado»"
+      }
+     ],
+     "respuesta": {
+      "v1": "V",
+      "v2": "V",
+      "v3": "VP",
+      "v4": "VP",
+      "v5": "C",
+      "v6": "C",
+      "v7": "F",
+      "v8": "F"
+     },
+     "explicacion": "Pistas: «sí…» sin peros = Verdadero; «sí…, pero…» = Verdadero, pero…; «cuestionable», «exagera» = Cuestionable; «es falso que…» = Falso. «El luchador Javier ‘Blair’ Reyes sí expuso una bandera con un mensaje contra la corrupción en Colombia» → Verdadero. «Sí, Minsalud confirmó que en Bogotá hay una paciente con Coronavirus (Covid-19)» → Verdadero. «Covid-19 sí tiene síntomas similares a la gripa, pero es mucho más contagiosa» → Verdadero pero.... «Sí detectaron gripe aviar en Filipinas, pero no es nueva y rara vez afecta a humanos» → Verdadero pero.... «Trino hace comparación cuestionable sobre la magnitud de los terremotos en Colombia y Venezuela» → Cuestionable. «Usuario de TikTok exagera sobre inflación, estancamiento económico e impuesto a ganancias ocasionales» → Cuestionable. «Es falso que les apliquen una fotomulta a quienes usen dispositivos electrónicos en bancos» → Falso. «Es falso que vacunas contra COVID-19 dejen el brazo imantado» → Falso."
+    }
+   ]
+  },
+  {
+   "id": "c1",
+   "titulo": "Caso 1 · ¿Las elecciones disparan la desinformación?",
+   "subtitulo": "Laboratorio · hipótesis y evidencia",
+   "intro": "Encargo: un concejal dijo en la radio que «en elecciones todo se llena de noticias falsas». Tu editora te pide comprobarlo con 57 meses de chequeos (2022–2026), que incluyen siete jornadas electorales. Un buen analista anota su hipótesis ANTES de mirar los datos: el expediente se abre cuando la registres.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Conteo vs. proporción",
+     "definicion": "Un conteo dice cuántos; una proporción dice qué parte del total."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c1_hipotesis",
+     "tipo": "opcion",
+     "puntos": 0,
+     "enunciado": "Tu hipótesis, antes de ver los datos (sin puntos): en los meses de elecciones, ¿qué crees que pasa con los chequeos que publica Colombiacheck?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Se multiplican: el doble o más que en un mes normal"
+      },
+      {
+       "id": "b",
+       "texto": "Suben un poco"
+      },
+      {
+       "id": "c",
+       "texto": "Casi no cambian en cantidad, pero cambian de tema"
+      },
+      {
+       "id": "d",
+       "texto": "Bajan, porque el equipo se dedica a cubrir las elecciones"
+      }
+     ],
+     "explicacion": "Era tu hipótesis: no daba puntos. Lo importante es compararla con lo que mostraron los datos."
+    },
+    {
+     "id": "c1_evaluar",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 36,
+     "categorias": [
+      {
+       "id": "R",
+       "texto": "Respaldada por los datos"
+      },
+      {
+       "id": "C",
+       "texto": "Contradicha por los datos"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede saber con estos datos"
+      }
+     ],
+     "enunciado": "Con la evidencia del expediente, decide si cada afirmación está respaldada, contradicha o si los datos no permiten saberlo.",
+     "items": [
+      {
+       "id": "c1_evaluar_1",
+       "texto": "En los meses de elecciones, la parte de chequeos dedicada a temas electorales sube claramente"
+      },
+      {
+       "id": "c1_evaluar_2",
+       "texto": "En los meses de elecciones Colombiacheck publicó al menos un 50 % más de chequeos que en un mes típico"
+      },
+      {
+       "id": "c1_evaluar_3",
+       "texto": "En junio de 2026 (segunda vuelta presidencial), cerca de 4 de cada 10 chequeos fueron sobre elecciones"
+      },
+      {
+       "id": "c1_evaluar_4",
+       "texto": "Fuera de época electoral, el tema electoral casi desaparece de lo que se verifica"
+      },
+      {
+       "id": "c1_evaluar_5",
+       "texto": "Durante las elecciones circuló más desinformación electoral en las redes"
+      },
+      {
+       "id": "c1_evaluar_6",
+       "texto": "Las elecciones hacen que la gente crea más en noticias falsas"
+      }
+     ],
+     "respuesta": {
+      "c1_evaluar_1": "R",
+      "c1_evaluar_2": "C",
+      "c1_evaluar_3": "R",
+      "c1_evaluar_4": "R",
+      "c1_evaluar_5": "N",
+      "c1_evaluar_6": "N"
+     },
+     "explicacion": "«En los meses de elecciones, la parte de chequeos dedicada a temas electorales sube claramente» → Respaldada: en B, 24,7 % en meses de votación vs. 4,6 % en el resto. «En los meses de elecciones Colombiacheck publicó al menos un 50 % más de chequeos que en un mes típico» → Contradicha: en A, los meses de votación tienen en promedio 41,1 chequeos vs. 35,7: solo 15 % más. «En junio de 2026 (segunda vuelta presidencial), cerca de 4 de cada 10 chequeos fueron sobre elecciones» → Respaldada: en B, 42,4 %. «Fuera de época electoral, el tema electoral casi desaparece de lo que se verifica» → Respaldada: en B, los meses sin votación promedian 4,6 %. «Durante las elecciones circuló más desinformación electoral en las redes» → No se puede saber: los datos dicen qué VERIFICÓ el medio, no qué circuló; pudo haber más o lo mismo. «Las elecciones hacen que la gente crea más en noticias falsas» → No se puede saber: ningún gráfico mide lo que la gente cree.",
+     "requiere": "c1_hipotesis"
+    },
+    {
+     "id": "c1_razon",
+     "tipo": "numero",
+     "puntos": 18,
+     "tolerancia": 0.3,
+     "unidad": "veces",
+     "requiere": "c1_hipotesis",
+     "enunciado": "Usa el Gráfico B (pasa el cursor sobre «oct 23», elecciones locales de 2023). En los meses SIN elecciones, en promedio el 4,6 % de los chequeos fue sobre elecciones. ¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)",
+     "respuesta": 7.47,
+     "explicacion": "34,5 % ÷ 4,6 % ≈ 7,5 veces. Comparar proporciones («qué parte del total») permite ver un cambio que el conteo total esconde."
+    },
+    {
+     "id": "c1_conclusion",
+     "tipo": "construir",
+     "puntos": 36,
+     "partes": [
+      {
+       "id": "parte1",
+       "etiqueta": "Conclusión principal",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "Las elecciones casi no cambian CUÁNTO verifica el medio, pero sí cambian DE QUÉ se ocupa"
+        },
+        {
+         "id": "b",
+         "texto": "Las elecciones aumentan mucho el número de chequeos, porque en esos meses circula más desinformación"
+        },
+        {
+         "id": "c",
+         "texto": "El tema electoral es lo que más verifica Colombiacheck a lo largo de todo el periodo"
+        },
+        {
+         "id": "d",
+         "texto": "En elecciones se verifica más contenido electoral porque la gente cree más en noticias falsas en esas fechas"
+        }
+       ]
+      },
+      {
+       "id": "parte2",
+       "etiqueta": "Evidencia que la sostiene",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "A y C: el volumen mensual y anual es casi estable; B: la parte electoral se dispara justo en los meses de votación"
+        },
+        {
+         "id": "b",
+         "texto": "A: los meses de votación son, uno por uno, los picos más altos de toda la serie mensual"
+        },
+        {
+         "id": "c",
+         "texto": "B: la parte electoral se mantiene alta todo el tiempo, también fuera de época de elecciones"
+        },
+        {
+         "id": "d",
+         "texto": "C: el número de chequeos por año crece a medida que se acercan las elecciones"
+        }
+       ]
+      },
+      {
+       "id": "parte3",
+       "etiqueta": "Limitación que hay que declarar",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "Muestra lo que el verificador decidió revisar, con un equipo de tamaño fijo, no cuánta desinformación electoral circuló"
+        },
+        {
+         "id": "b",
+         "texto": "Incluye una sola jornada electoral, así que no permite comparar entre elecciones"
+        },
+        {
+         "id": "c",
+         "texto": "Los meses tienen distinta cantidad de días, por eso sus porcentajes no se pueden comparar"
+        },
+        {
+         "id": "d",
+         "texto": "Los datos vienen de una encuesta a ciudadanos y dependen de lo que la gente recuerde"
+        }
+       ]
+      }
+     ],
+     "respuesta": {
+      "parte1": "a",
+      "parte2": "a",
+      "parte3": "a"
+     },
+     "enunciado": "Arma la conclusión del caso como lo haría un investigador: una afirmación, la evidencia que la sostiene y la limitación que hay que declarar.",
+     "explicacion": "Un verificador tiene capacidad casi fija (C: entre 423 y 479 chequeos al año). En elecciones no publica mucho más (A), pero dedica una parte mucho mayor a temas electorales (B). Eso describe su agenda, no el volumen de desinformación que circuló. Compara con tu hipótesis: ¿acertaste?",
+     "requiere": "c1_hipotesis"
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 1",
+    "revelar_tras": "c1_hipotesis",
+    "graficos": [
+     {
+      "tipo": "columnas",
+      "titulo": "Chequeos publicados por mes",
+      "subtitulo": "Naranja = mes con elecciones",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "ene 22",
+       "feb 22",
+       "mar 22",
+       "abr 22",
+       "may 22",
+       "jun 22",
+       "jul 22",
+       "ago 22",
+       "sep 22",
+       "oct 22",
+       "nov 22",
+       "dic 22",
+       "ene 23",
+       "feb 23",
+       "mar 23",
+       "abr 23",
+       "may 23",
+       "jun 23",
+       "jul 23",
+       "ago 23",
+       "sep 23",
+       "oct 23",
+       "nov 23",
+       "dic 23",
+       "ene 24",
+       "feb 24",
+       "mar 24",
+       "abr 24",
+       "may 24",
+       "jun 24",
+       "jul 24",
+       "ago 24",
+       "sep 24",
+       "oct 24",
+       "nov 24",
+       "dic 24",
+       "ene 25",
+       "feb 25",
+       "mar 25",
+       "abr 25",
+       "may 25",
+       "jun 25",
+       "jul 25",
+       "ago 25",
+       "sep 25",
+       "oct 25",
+       "nov 25",
+       "dic 25",
+       "ene 26",
+       "feb 26",
+       "mar 26",
+       "abr 26",
+       "may 26",
+       "jun 26",
+       "jul 26",
+       "ago 26",
+       "sep 26"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Chequeos",
+        "valores": [
+         15.0,
+         40.0,
+         54.0,
+         31.0,
+         43.0,
+         42.0,
+         39.0,
+         47.0,
+         48.0,
+         33.0,
+         35.0,
+         32.0,
+         37.0,
+         39.0,
+         39.0,
+         37.0,
+         37.0,
+         45.0,
+         29.0,
+         43.0,
+         37.0,
+         58.0,
+         30.0,
+         36.0,
+         34.0,
+         34.0,
+         34.0,
+         52.0,
+         40.0,
+         39.0,
+         56.0,
+         40.0,
+         39.0,
+         38.0,
+         43.0,
+         30.0,
+         34.0,
+         31.0,
+         31.0,
+         30.0,
+         33.0,
+         40.0,
+         40.0,
+         40.0,
+         41.0,
+         40.0,
+         28.0,
+         35.0,
+         35.0,
+         27.0,
+         31.0,
+         25.0,
+         27.0,
+         33.0,
+         25.0,
+         30.0,
+         10.0
+        ]
+       }
+      ],
+      "valores_visibles": false,
+      "tooltips": true,
+      "destacar": [
+       2,
+       4,
+       5,
+       21,
+       50,
+       52,
+       53
+      ],
+      "letra": "A"
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "% de los chequeos del mes sobre elecciones",
+      "subtitulo": "Título o afirmación con palabras como voto, candidato, registraduría, jurado, tarjetón",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "ene 22",
+       "feb 22",
+       "mar 22",
+       "abr 22",
+       "may 22",
+       "jun 22",
+       "jul 22",
+       "ago 22",
+       "sep 22",
+       "oct 22",
+       "nov 22",
+       "dic 22",
+       "ene 23",
+       "feb 23",
+       "mar 23",
+       "abr 23",
+       "may 23",
+       "jun 23",
+       "jul 23",
+       "ago 23",
+       "sep 23",
+       "oct 23",
+       "nov 23",
+       "dic 23",
+       "ene 24",
+       "feb 24",
+       "mar 24",
+       "abr 24",
+       "may 24",
+       "jun 24",
+       "jul 24",
+       "ago 24",
+       "sep 24",
+       "oct 24",
+       "nov 24",
+       "dic 24",
+       "ene 25",
+       "feb 25",
+       "mar 25",
+       "abr 25",
+       "may 25",
+       "jun 25",
+       "jul 25",
+       "ago 25",
+       "sep 25",
+       "oct 25",
+       "nov 25",
+       "dic 25",
+       "ene 26",
+       "feb 26",
+       "mar 26",
+       "abr 26",
+       "may 26",
+       "jun 26",
+       "jul 26",
+       "ago 26",
+       "sep 26"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "% sobre elecciones",
+        "valores": [
+         6.7,
+         2.5,
+         14.8,
+         3.2,
+         20.9,
+         28.6,
+         2.6,
+         0.0,
+         0.0,
+         0.0,
+         5.7,
+         0.0,
+         2.7,
+         0.0,
+         0.0,
+         2.7,
+         5.4,
+         4.4,
+         10.3,
+         9.3,
+         13.5,
+         34.5,
+         3.3,
+         5.6,
+         2.9,
+         8.8,
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         25.0,
+         12.5,
+         5.1,
+         2.6,
+         4.7,
+         0.0,
+         0.0,
+         6.5,
+         6.5,
+         0.0,
+         6.1,
+         2.5,
+         5.0,
+         0.0,
+         7.3,
+         5.0,
+         7.1,
+         8.6,
+         5.7,
+         14.8,
+         12.9,
+         4.0,
+         18.5,
+         42.4,
+         12.0,
+         0.0,
+         0.0
+        ]
+       }
+      ],
+      "valores_visibles": false,
+      "tooltips": true,
+      "destacar": [
+       2,
+       4,
+       5,
+       21,
+       50,
+       52,
+       53
+      ],
+      "letra": "B"
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Chequeos por año (años completos)",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Chequeos",
+        "valores": [
+         475.0,
+         434.0,
+         459.0,
+         467.0,
+         479.0,
+         423.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "C"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c2",
+   "titulo": "Caso 2 · ¿Más falso… o distinto?",
+   "subtitulo": "Laboratorio · promedios y mezclas",
+   "intro": "Encargo: un titular celebra que «lo que circula hoy es más falso que nunca: 82,5 % de los chequeos son Falsos» (en 2022 eran 70,6 %). Colombiacheck verifica dos cosas distintas: contenido viral en redes (publicaciones, videos y cadenas que circulan) y discurso público (lo que dicen políticos y figuras públicas). En los dos grupos hay cosas falsas y cosas ciertas: el grupo dice DÓNDE circuló, la calificación dice si era verdad. Antes de repetir el titular, usa el simulador para entender cómo se mueve un promedio cuando cambia la mezcla.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Promedio ponderado",
+     "definicion": "Un total que mezcla grupos según su tamaño: el grupo más grande pesa más."
+    },
+    {
+     "termino": "Efecto de composición",
+     "definicion": "El total cambia porque cambió la MEZCLA de grupos, aunque cada grupo cambie poco."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c2_simulador",
+     "tipo": "numero",
+     "puntos": 25,
+     "tolerancia": 0.5,
+     "unidad": "%",
+     "simulador": {
+      "etiqueta": "Parte de los chequeos que es discurso público",
+      "min": 0,
+      "max": 40,
+      "paso": 0.1,
+      "inicial": 0,
+      "unidad": "%",
+      "resultado": "% Falso del total",
+      "decimales": 1,
+      "grupos": [
+       {
+        "nombre": "Contenido viral en redes",
+        "valor": 79.44
+       },
+       {
+        "nombre": "Discurso público",
+        "valor": 40.74
+       }
+      ]
+     },
+     "enunciado": "Simulador: en todo el periodo, el contenido de redes es Falso el 79,4 % de las veces y el discurso público el 40,7 % (Gráfico A). Mueve el deslizador: ¿qué porcentaje de discurso público tendría que haber en la mezcla para que el % Falso TOTAL fuera exactamente 75 %? (Un decimal; también lo puedes despejar.)",
+     "respuesta": 11.48,
+     "explicacion": "Total = 79,4 × (1 − p) + 40,7 × p = 75 → p = (79,4 − 75) ÷ (79,4 − 40,7) ≈ 11,5 %. Ninguno de los dos grupos cambió: solo la mezcla. En 2022 el discurso público era el 12,6 % de los chequeos."
+    },
+    {
+     "id": "c2_evaluar",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 30,
+     "categorias": [
+      {
+       "id": "R",
+       "texto": "Respaldada por los datos"
+      },
+      {
+       "id": "C",
+       "texto": "Contradicha por los datos"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede saber con estos datos"
+      }
+     ],
+     "enunciado": "Con la evidencia del expediente, decide si cada afirmación está respaldada, contradicha o si los datos no permiten saberlo.",
+     "items": [
+      {
+       "id": "c2_evaluar_1",
+       "texto": "Las afirmaciones de discurso público terminan en «Cuestionable» con mucha más frecuencia que el contenido de redes"
+      },
+      {
+       "id": "c2_evaluar_2",
+       "texto": "Desde 2024 Colombiacheck casi dejó de verificar discurso público"
+      },
+      {
+       "id": "c2_evaluar_3",
+       "texto": "Dentro del contenido de redes, el % de Falso crece sin parar año tras año"
+      },
+      {
+       "id": "c2_evaluar_4",
+       "texto": "El aumento del % Falso total entre 2023 y 2025 se explica SOLO porque hubo menos discurso público"
+      },
+      {
+       "id": "c2_evaluar_5",
+       "texto": "Los políticos dicen menos mentiras que las redes sociales"
+      }
+     ],
+     "respuesta": {
+      "c2_evaluar_1": "R",
+      "c2_evaluar_2": "R",
+      "c2_evaluar_3": "C",
+      "c2_evaluar_4": "C",
+      "c2_evaluar_5": "N"
+     },
+     "explicacion": "«Las afirmaciones de discurso público terminan en «Cuestionable» con mucha más frecuencia que el contenido de redes» → Respaldada: A: 46,8 % vs. 18,2 %. «Desde 2024 Colombiacheck casi dejó de verificar discurso público» → Respaldada: C: 13, 6, 0 chequeos en 2024–2026. «Dentro del contenido de redes, el % de Falso crece sin parar año tras año» → Contradicha: B: la línea de redes baja hasta 2022–2023 y luego sube; no crece siempre. «El aumento del % Falso total entre 2023 y 2025 se explica SOLO porque hubo menos discurso público» → Contradicha: B: las redes por sí solas también subieron (75,6 % → 83,0 %); la mezcla explica una parte, no todo. «Los políticos dicen menos mentiras que las redes sociales» → No se puede saber: el verificador elige QUÉ afirmaciones revisar y las califica con criterios distintos; no es una muestra de todo lo que dicen."
+    },
+    {
+     "id": "c2_brecha",
+     "tipo": "opcion",
+     "enunciado": "En 2022 el % Falso total (70,6 %) quedó 4,7 puntos por DEBAJO del de redes (75,3 %). En 2025 la diferencia fue de solo 0,5 puntos. ¿Por qué se cerró la brecha?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Porque en 2022 una parte de los chequeos era discurso público, que rara vez es «Falso», y jalaba el promedio total hacia abajo; en 2025 casi todo era contenido de redes"
+      },
+      {
+       "id": "b",
+       "texto": "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre se acerca al de redes"
+      },
+      {
+       "id": "c",
+       "texto": "Porque el % de redes se calcula sobre todos los chequeos del año, así que en 2025 los dos números son el mismo cálculo"
+      },
+      {
+       "id": "d",
+       "texto": "Porque en 2022 hubo errores de calificación que Colombiacheck corrigió en los años siguientes"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "El total es un promedio ponderado de los dos grupos. Cuando un grupo (discurso público) casi desaparece (C), el total se pega al otro grupo (redes). Es un efecto de composición."
+    },
+    {
+     "id": "c2_conclusion",
+     "tipo": "construir",
+     "puntos": 25,
+     "partes": [
+      {
+       "id": "parte1",
+       "etiqueta": "Conclusión principal",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "El % Falso total depende de la MEZCLA de lo que se verifica: al dejar de revisar discurso público, el total sube aunque las redes cambien menos"
+        },
+        {
+         "id": "b",
+         "texto": "El % Falso total subió porque el contenido de redes se volvió más falso año tras año desde 2020"
+        },
+        {
+         "id": "c",
+         "texto": "El total subió porque Colombiacheck empezó a calificar con más dureza el discurso público desde 2024"
+        },
+        {
+         "id": "d",
+         "texto": "Los datos muestran que los políticos dicen la verdad más a menudo que las publicaciones de redes"
+        }
+       ]
+      },
+      {
+       "id": "parte2",
+       "etiqueta": "Evidencia que la sostiene",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "A: el discurso público rara vez es «Falso»; C: casi desapareció después de 2023; B: la línea total se pega a la de redes"
+        },
+        {
+         "id": "b",
+         "texto": "B: la línea de redes sube todos los años sin excepción y arrastra con ella al total"
+        },
+        {
+         "id": "c",
+         "texto": "A: los chequeos de redes son «Cuestionable» casi tan a menudo como los de discurso público"
+        },
+        {
+         "id": "d",
+         "texto": "C: los chequeos de discurso público se duplicaron entre 2022 y 2025"
+        }
+       ]
+      },
+      {
+       "id": "parte3",
+       "etiqueta": "Precaución que hay que declarar",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "Comparar promedios totales de años con mezclas distintas puede engañar: hay que mirar cada grupo por separado"
+        },
+        {
+         "id": "b",
+         "texto": "Hay que sumar los porcentajes de los dos tipos para obtener el % Falso total de cada año"
+        },
+        {
+         "id": "c",
+         "texto": "Los años con pocos chequeos de discurso público invalidan todo el gráfico B"
+        },
+        {
+         "id": "d",
+         "texto": "Como 2026 no tiene discurso público, ningún año se puede comparar con otro"
+        }
+       ]
+      }
+     ],
+     "respuesta": {
+      "parte1": "a",
+      "parte2": "a",
+      "parte3": "a"
+     },
+     "enunciado": "Arma la conclusión del caso como lo haría un investigador: una afirmación, la evidencia que la sostiene y la limitación que hay que declarar.",
+     "explicacion": "Mirar solo el total habría llevado a concluir que «todo se volvió más falso». Separando los grupos se ve que parte del cambio es de mezcla: menos discurso público (que casi nunca es Falso)."
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 2",
+    "graficos": [
+     {
+      "tipo": "columnas",
+      "titulo": "Calificación según el tipo de chequeo (%)",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "Falso",
+       "Cuestionable",
+       "Verdadero, pero…",
+       "Verdadero"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "Contenido viral en redes (n = 2.763)",
+        "valores": [
+         79.4,
+         18.2,
+         1.0,
+         1.3
+        ]
+       },
+       {
+        "nombre": "Discurso público (n = 216)",
+        "valores": [
+         40.7,
+         46.8,
+         8.3,
+         4.2
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "A"
+     },
+     {
+      "tipo": "lineas",
+      "titulo": "% de chequeos «Falso» por año",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "Total",
+        "valores": [
+         77.9,
+         76.7,
+         70.6,
+         73.0,
+         79.1,
+         82.5
+        ]
+       },
+       {
+        "nombre": "Solo redes",
+        "valores": [
+         83.1,
+         80.5,
+         75.3,
+         75.6,
+         80.3,
+         83.0
+        ]
+       },
+       {
+        "nombre": "Solo discurso público",
+        "valores": [
+         37.0,
+         46.9,
+         37.9,
+         41.7,
+         38.5,
+         50.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "y_min": 0,
+      "y_max": 100,
+      "letra": "B"
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Chequeos de discurso público por año",
+      "subtitulo": "2026: datos hasta septiembre",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025",
+       "2026"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Chequeos de discurso público",
+        "valores": [
+         54.0,
+         49.0,
+         58.0,
+         36.0,
+         13.0,
+         6.0,
+         0.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "C"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c3",
+   "titulo": "Caso 3 · La era de la IA",
+   "subtitulo": "Laboratorio · años incompletos y proyecciones",
+   "intro": "Encargo: preparas una nota sobre la inteligencia artificial y la desinformación. El problema: los datos de 2026 llegan solo hasta el 17 de septiembre (día 260 del año). Comparar ese año «tal cual» con años completos sería un error. Vas a usar proporciones y una proyección para no caer en la trampa.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Año incompleto",
+     "definicion": "2026 llega hasta el 17-09: su conteo no se compara con años completos."
+    },
+    {
+     "termino": "Proyección",
+     "definicion": "Estimar el total de un periodo suponiendo que el ritmo observado se mantiene. Es una suposición, no un dato."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c3_evaluar",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 30,
+     "categorias": [
+      {
+       "id": "R",
+       "texto": "Respaldada por los datos"
+      },
+      {
+       "id": "C",
+       "texto": "Contradicha por los datos"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede saber con estos datos"
+      }
+     ],
+     "enunciado": "Con la evidencia del expediente, decide si cada afirmación está respaldada, contradicha o si los datos no permiten saberlo.",
+     "items": [
+      {
+       "id": "c3_evaluar_1",
+       "texto": "Los datos muestran que la desinformación con IA empezó a bajar en 2026"
+      },
+      {
+       "id": "c3_evaluar_2",
+       "texto": "En proporción al total, 2026 es el año con más chequeos sobre IA"
+      },
+      {
+       "id": "c3_evaluar_3",
+       "texto": "Casi todo lo que Colombiacheck verificó sobre IA terminó calificado «Falso»"
+      },
+      {
+       "id": "c3_evaluar_4",
+       "texto": "Los videos ganaron mucho peso entre lo que se verifica"
+      },
+      {
+       "id": "c3_evaluar_5",
+       "texto": "Antes de 2023 no existía desinformación hecha con IA"
+      }
+     ],
+     "respuesta": {
+      "c3_evaluar_1": "C",
+      "c3_evaluar_2": "R",
+      "c3_evaluar_3": "R",
+      "c3_evaluar_4": "R",
+      "c3_evaluar_5": "N"
+     },
+     "explicacion": "«Los datos muestran que la desinformación con IA empezó a bajar en 2026» → Contradicha: A cuenta 37 casos, pero 2026 está incompleto; en B (proporción) 2026 es el máximo (15,2 %). «En proporción al total, 2026 es el año con más chequeos sobre IA» → Respaldada: B: 15,2 % frente a 13,2 % en 2025. «Casi todo lo que Colombiacheck verificó sobre IA terminó calificado «Falso»» → Respaldada: C: 98,4 %. «Los videos ganaron mucho peso entre lo que se verifica» → Respaldada: D: de 6,1 % de los títulos en 2020 a 32,9 % en 2026. «Antes de 2023 no existía desinformación hecha con IA» → No se puede saber: que ningún título lo mencione no prueba que no existiera: pudo no detectarse o no nombrarse (ausencia de evidencia no es evidencia de ausencia)."
+    },
+    {
+     "id": "c3_proporcion",
+     "tipo": "numero",
+     "puntos": 15,
+     "tolerancia": 0.1,
+     "unidad": "%",
+     "tabla": {
+      "columnas": [
+       "Año",
+       "Chequeos con IA en el título",
+       "Chequeos totales"
+      ],
+      "filas": [
+       [
+        "2020",
+        "0",
+        "475"
+       ],
+       [
+        "2021",
+        "0",
+        "434"
+       ],
+       [
+        "2022",
+        "0",
+        "459"
+       ],
+       [
+        "2023",
+        "3",
+        "467"
+       ],
+       [
+        "2024",
+        "29",
+        "479"
+       ],
+       [
+        "2025",
+        "56",
+        "423"
+       ],
+       [
+        "2026",
+        "37",
+        "243"
+       ]
+      ]
+     },
+     "enunciado": "Con la tabla, calcula qué PORCENTAJE de los chequeos de 2026 menciona IA en el título. (Un decimal.)",
+     "respuesta": 15.23,
+     "explicacion": "37 ÷ 243 × 100 = 15,23 %. Con menos casos que 2025, 2026 tiene una proporción mayor."
+    },
+    {
+     "id": "c3_proyeccion",
+     "tipo": "numero",
+     "puntos": 15,
+     "tolerancia": 6,
+     "unidad": "chequeos",
+     "enunciado": "Proyección: hasta el día 260 del año, 2026 lleva 243 chequeos publicados. Si siguiera al MISMO ritmo hasta el 31 de diciembre (día 365), ¿cuántos chequeos tendría en total? (Redondea a un número entero.)",
+     "respuesta": 341,
+     "explicacion": "243 × 365 ÷ 260 ≈ 341 chequeos. Aun proyectado, 2026 tendría menos que cualquier año entre 2020 y 2025 (423 o más). Ojo: una proyección supone que el ritmo no cambia (por ejemplo, diciembre suele tener menos chequeos), así que es una estimación, no un dato."
+    },
+    {
+     "id": "c3_conclusion",
+     "tipo": "construir",
+     "puntos": 30,
+     "partes": [
+      {
+       "id": "parte1",
+       "etiqueta": "Conclusión principal",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "La IA gana terreno como herramienta de engaño: su peso entre lo verificado sube cada año, aunque el conteo de 2026 aún no esté completo"
+        },
+        {
+         "id": "b",
+         "texto": "La IA empezó a perder fuerza en 2026: ese año se verificaron menos casos que en 2025"
+        },
+        {
+         "id": "c",
+         "texto": "La IA ya es la forma principal de desinformación en Colombia, por encima de cualquier otra"
+        },
+        {
+         "id": "d",
+         "texto": "El contenido hecho con IA resulta verdadero tan a menudo como el resto de lo que se verifica"
+        }
+       ]
+      },
+      {
+       "id": "parte2",
+       "etiqueta": "Evidencia que la sostiene",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "B: el porcentaje con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los videos ganan peso"
+        },
+        {
+         "id": "b",
+         "texto": "A: el conteo de 2026 es menor que el de 2025, lo que confirma que la tendencia ya cambió"
+        },
+        {
+         "id": "c",
+         "texto": "C: lo de IA y el resto se califican «Falso» en proporciones muy parecidas"
+        },
+        {
+         "id": "d",
+         "texto": "D: las fotos crecen mucho más rápido que los videos, señal de imágenes generadas"
+        }
+       ]
+      },
+      {
+       "id": "parte3",
+       "etiqueta": "Limitación que hay que declarar",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "Se cuentan palabras en el título (un chequeo de IA que no lo diga no se cuenta) y 2026 es un año incompleto"
+        },
+        {
+         "id": "b",
+         "texto": "La proporción de 2026 no es válida porque se calcula con un total de chequeos más pequeño"
+        },
+        {
+         "id": "c",
+         "texto": "Los gráficos A y B se contradicen, así que alguno de los dos está mal calculado"
+        },
+        {
+         "id": "d",
+         "texto": "Los años 2020 a 2022 deberían quitarse porque en ellos no hay ningún caso de IA"
+        }
+       ]
+      }
+     ],
+     "respuesta": {
+      "parte1": "a",
+      "parte2": "a",
+      "parte3": "a"
+     },
+     "enunciado": "Arma la conclusión del caso como lo haría un investigador: una afirmación, la evidencia que la sostiene y la limitación que hay que declarar.",
+     "explicacion": "El conteo (A) engaña por el año incompleto; la proporción (B) muestra la tendencia real. C y D dicen qué tipo de engaño es: contenido fabricado (casi siempre Falso) y cada vez más en video."
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 3",
+    "graficos": [
+     {
+      "tipo": "columnas",
+      "titulo": "Chequeos cuyo título menciona IA",
+      "subtitulo": "* 2026: datos hasta septiembre",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025",
+       "2026*"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Chequeos con IA",
+        "valores": [
+         0.0,
+         0.0,
+         0.0,
+         3.0,
+         29.0,
+         56.0,
+         37.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "destacar": [
+       6
+      ],
+      "letra": "A"
+     },
+     {
+      "tipo": "lineas",
+      "titulo": "% de los chequeos del año que mencionan IA",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025",
+       "2026*"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "% con IA",
+        "valores": [
+         0.0,
+         0.0,
+         0.0,
+         0.6,
+         6.1,
+         13.2,
+         15.2
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "y_min": 0,
+      "letra": "B"
+     },
+     {
+      "tipo": "barras_h",
+      "titulo": "% calificado «Falso»",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "Títulos que mencionan IA",
+       "Resto de chequeos"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "% Falso",
+        "valores": [
+         98.4,
+         75.7
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "x_max": 100,
+      "letra": "C"
+     },
+     {
+      "tipo": "lineas",
+      "titulo": "% de títulos que mencionan video o foto",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025",
+       "2026*"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "Video",
+        "valores": [
+         6.1,
+         8.5,
+         12.4,
+         22.3,
+         24.0,
+         20.3,
+         32.9
+        ]
+       },
+       {
+        "nombre": "Foto o imagen",
+        "valores": [
+         7.2,
+         12.0,
+         10.5,
+         11.1,
+         12.3,
+         13.5,
+         14.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "y_min": 0,
+      "letra": "D"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c4",
+   "titulo": "Caso 4 · ¿Quién está más expuesto?",
+   "subtitulo": "Laboratorio · correlación y promedio ponderado",
+   "intro": "Encargo: una fundación quiere lanzar una campaña contra la desinformación y te pregunta a quién dirigirla. Con la encuesta del DANE comparas departamentos y zonas urbanas y rurales. Pregunta clave: ¿qué se puede afirmar con datos de USO de internet, y qué no?",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Correlación",
+     "definicion": "Qué tanto dos variables se mueven juntas (de −1 a 1). Cerca de 0 = casi ninguna relación. Correlación no es causa."
+    },
+    {
+     "termino": "Promedio ponderado",
+     "definicion": "Un promedio nacional mezcla grupos según su tamaño: el grupo más grande pesa más."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c4_evaluar",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 36,
+     "categorias": [
+      {
+       "id": "R",
+       "texto": "Respaldada por los datos"
+      },
+      {
+       "id": "C",
+       "texto": "Contradicha por los datos"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede saber con estos datos"
+      }
+     ],
+     "enunciado": "Con la evidencia del expediente, decide si cada afirmación está respaldada, contradicha o si los datos no permiten saberlo.",
+     "items": [
+      {
+       "id": "c4_evaluar_1",
+       "texto": "En los departamentos donde más usuarios se conectan a diario, la gente pasa claramente más horas conectada"
+      },
+      {
+       "id": "c4_evaluar_2",
+       "texto": "En la zona rural, las redes sociales son una puerta de entrada casi tan usada como en la ciudad"
+      },
+      {
+       "id": "c4_evaluar_3",
+       "texto": "En la zona rural se usan mucho menos otras fuentes digitales, como periódicos o correo"
+      },
+      {
+       "id": "c4_evaluar_4",
+       "texto": "El promedio nacional de horas queda más cerca del urbano porque la mayoría de los usuarios vive en cabeceras"
+      },
+      {
+       "id": "c4_evaluar_5",
+       "texto": "La población rural cree más fácilmente en noticias falsas"
+      },
+      {
+       "id": "c4_evaluar_6",
+       "texto": "Los usuarios rurales pasan menos horas en redes sociales que los urbanos"
+      }
+     ],
+     "respuesta": {
+      "c4_evaluar_1": "C",
+      "c4_evaluar_2": "R",
+      "c4_evaluar_3": "R",
+      "c4_evaluar_4": "R",
+      "c4_evaluar_5": "N",
+      "c4_evaluar_6": "N"
+     },
+     "explicacion": "«En los departamentos donde más usuarios se conectan a diario, la gente pasa claramente más horas conectada» → Contradicha: A: la correlación es muy débil (r = 0,17); Vaupés tiene el uso diario más bajo (38,6 %) y aun así 4,82 h. «En la zona rural, las redes sociales son una puerta de entrada casi tan usada como en la ciudad» → Respaldada: B: 78,8 % rural vs. 80,5 % urbano. «En la zona rural se usan mucho menos otras fuentes digitales, como periódicos o correo» → Respaldada: B: periódicos digitales 7,7 % vs. 17,9 %. «El promedio nacional de horas queda más cerca del urbano porque la mayoría de los usuarios vive en cabeceras» → Respaldada: C: 81 % de los usuarios es urbano; D: el nacional (4,90 h) está cerca del urbano. «La población rural cree más fácilmente en noticias falsas» → No se puede saber: el DANE mide uso de internet, no creencias ni exposición a desinformación. «Los usuarios rurales pasan menos horas en redes sociales que los urbanos» → No se puede saber: D mide horas de INTERNET en general; nadie midió horas en redes sociales."
+    },
+    {
+     "id": "c4_ponderado",
+     "tipo": "opcion",
+     "enunciado": "Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet 3,28 horas al día, y nadie más cambia sus hábitos. ¿Qué pasa con el promedio nacional de horas?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Baja un poco, aunque ninguna persona haya cambiado sus hábitos"
+      },
+      {
+       "id": "b",
+       "texto": "Sube, porque al haber más usuarios conectados aumenta el uso de internet del país"
+      },
+      {
+       "id": "c",
+       "texto": "No cambia, porque el promedio de cada grupo (urbano y rural) sigue siendo el mismo"
+      },
+      {
+       "id": "d",
+       "texto": "Baja hasta 3,28 horas, porque el grupo nuevo arrastra a todo el país a su promedio"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 18,
+     "explicacion": "El promedio nacional es un promedio ponderado: si crece el grupo que usa menos horas, el total baja aunque nadie cambie. Es el mismo efecto de composición del Caso 2."
+    },
+    {
+     "id": "c4_conclusion",
+     "tipo": "construir",
+     "puntos": 36,
+     "partes": [
+      {
+       "id": "parte1",
+       "etiqueta": "Conclusión principal",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "Las redes llegan casi por igual al campo y a la ciudad, pero en el campo se usan mucho menos otras fuentes digitales para contrastar información"
+        },
+        {
+         "id": "b",
+         "texto": "La población rural está más desinformada porque usa menos horas de internet que la urbana"
+        },
+        {
+         "id": "c",
+         "texto": "Donde la gente se conecta a diario pasa más horas en internet, y por eso está más expuesta"
+        },
+        {
+         "id": "d",
+         "texto": "En la ciudad se usan menos las redes sociales, porque allí hay más alternativas digitales"
+        }
+       ]
+      },
+      {
+       "id": "parte2",
+       "etiqueta": "Evidencia que la sostiene",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "B: redes con porcentajes casi iguales; periódicos digitales y correo mucho más bajos en lo rural"
+        },
+        {
+         "id": "b",
+         "texto": "A: la nube de puntos sube con claridad: más uso diario, más horas al día"
+        },
+        {
+         "id": "c",
+         "texto": "C y D: hay casi tantos usuarios rurales como urbanos y usan internet las mismas horas"
+        },
+        {
+         "id": "d",
+         "texto": "D: el promedio nacional queda justo a mitad de camino entre lo urbano y lo rural"
+        }
+       ]
+      },
+      {
+       "id": "parte3",
+       "etiqueta": "Limitación que hay que declarar",
+       "opciones": [
+        {
+         "id": "a",
+         "texto": "La encuesta mide si se hace cada actividad y cuántas horas de internet, no cuánta desinformación ve o cree cada persona"
+        },
+        {
+         "id": "b",
+         "texto": "La zona rural tiene tan pocos usuarios que no se puede comparar con la urbana"
+        },
+        {
+         "id": "c",
+         "texto": "Los departamentos con pocos habitantes deberían borrarse del gráfico A para no confundir"
+        },
+        {
+         "id": "d",
+         "texto": "Como es una encuesta y no un censo, sus cifras no permiten concluir nada"
+        }
+       ]
+      }
+     ],
+     "respuesta": {
+      "parte1": "a",
+      "parte2": "a",
+      "parte3": "a"
+     },
+     "enunciado": "Arma la conclusión del caso como lo haría un investigador: una afirmación, la evidencia que la sostiene y la limitación que hay que declarar.",
+     "explicacion": "B permite hablar de canales de información (las redes llegan a todos; las alternativas para contrastar, no). Para hablar de vulnerabilidad haría falta medir creencias o exposición, que esta encuesta no mide."
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 4",
+    "graficos": [
+     {
+      "tipo": "dispersion",
+      "titulo": "Departamentos: uso diario vs. horas al día",
+      "subtitulo": "Cada punto es un departamento · correlación r = 0,17",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "letra": "A",
+      "eje_x": "% de usuarios que se conecta a diario",
+      "eje_y": "Horas al día usando internet",
+      "unidad_x": "%",
+      "unidad_y": " h",
+      "tooltips": true,
+      "valores_visibles": true,
+      "decimales": 1,
+      "etiquetas": [
+       "Amazonas",
+       "Antioquia",
+       "Arauca",
+       "Atlántico",
+       "Bogotá D.C.",
+       "Bolívar",
+       "Boyacá",
+       "Caldas",
+       "Caquetá",
+       "Casanare",
+       "Cauca",
+       "Cesar",
+       "Córdoba",
+       "Cundinamarca",
+       "Chocó",
+       "Guainía",
+       "Guaviare",
+       "Huila",
+       "La Guajira",
+       "Magdalena",
+       "Meta",
+       "Nariño",
+       "Norte de Santander",
+       "Putumayo",
+       "Quindío",
+       "Risaralda",
+       "San Andrés",
+       "Santander",
+       "Sucre",
+       "Tolima",
+       "Valle del Cauca",
+       "Vaupés",
+       "Vichada"
+      ],
+      "series": [
+       {
+        "nombre": "Horas al día usando internet",
+        "valores": [
+         4.08,
+         4.96,
+         5.03,
+         5.82,
+         5.6,
+         5.17,
+         3.67,
+         4.77,
+         4.2,
+         4.39,
+         3.53,
+         4.36,
+         4.22,
+         5.08,
+         5.12,
+         5.43,
+         4.49,
+         3.45,
+         4.75,
+         5.71,
+         4.45,
+         3.7,
+         4.56,
+         4.12,
+         4.37,
+         4.62,
+         7.05,
+         5.03,
+         4.12,
+         4.32,
+         4.61,
+         4.82,
+         5.08
+        ]
+       }
+      ],
+      "puntos": [
+       {
+        "x": 62.0,
+        "y": 4.08,
+        "etiqueta": "Amazonas",
+        "mostrar": false
+       },
+       {
+        "x": 79.0,
+        "y": 4.96,
+        "etiqueta": "Antioquia",
+        "mostrar": false
+       },
+       {
+        "x": 77.6,
+        "y": 5.03,
+        "etiqueta": "Arauca",
+        "mostrar": false
+       },
+       {
+        "x": 74.5,
+        "y": 5.82,
+        "etiqueta": "Atlántico",
+        "mostrar": false
+       },
+       {
+        "x": 87.7,
+        "y": 5.6,
+        "etiqueta": "Bogotá D.C.",
+        "mostrar": true
+       },
+       {
+        "x": 68.8,
+        "y": 5.17,
+        "etiqueta": "Bolívar",
+        "mostrar": false
+       },
+       {
+        "x": 69.2,
+        "y": 3.67,
+        "etiqueta": "Boyacá",
+        "mostrar": false
+       },
+       {
+        "x": 84.7,
+        "y": 4.77,
+        "etiqueta": "Caldas",
+        "mostrar": false
+       },
+       {
+        "x": 69.8,
+        "y": 4.2,
+        "etiqueta": "Caquetá",
+        "mostrar": false
+       },
+       {
+        "x": 81.5,
+        "y": 4.39,
+        "etiqueta": "Casanare",
+        "mostrar": false
+       },
+       {
+        "x": 66.9,
+        "y": 3.53,
+        "etiqueta": "Cauca",
+        "mostrar": false
+       },
+       {
+        "x": 72.8,
+        "y": 4.36,
+        "etiqueta": "Cesar",
+        "mostrar": false
+       },
+       {
+        "x": 62.4,
+        "y": 4.22,
+        "etiqueta": "Córdoba",
+        "mostrar": false
+       },
+       {
+        "x": 83.6,
+        "y": 5.08,
+        "etiqueta": "Cundinamarca",
+        "mostrar": false
+       },
+       {
+        "x": 48.0,
+        "y": 5.12,
+        "etiqueta": "Chocó",
+        "mostrar": true
+       },
+       {
+        "x": 64.4,
+        "y": 5.43,
+        "etiqueta": "Guainía",
+        "mostrar": false
+       },
+       {
+        "x": 72.4,
+        "y": 4.49,
+        "etiqueta": "Guaviare",
+        "mostrar": false
+       },
+       {
+        "x": 68.5,
+        "y": 3.45,
+        "etiqueta": "Huila",
+        "mostrar": true
+       },
+       {
+        "x": 49.6,
+        "y": 4.75,
+        "etiqueta": "La Guajira",
+        "mostrar": false
+       },
+       {
+        "x": 57.9,
+        "y": 5.71,
+        "etiqueta": "Magdalena",
+        "mostrar": true
+       },
+       {
+        "x": 86.0,
+        "y": 4.45,
+        "etiqueta": "Meta",
+        "mostrar": false
+       },
+       {
+        "x": 61.0,
+        "y": 3.7,
+        "etiqueta": "Nariño",
+        "mostrar": false
+       },
+       {
+        "x": 84.2,
+        "y": 4.56,
+        "etiqueta": "Norte de Santander",
+        "mostrar": false
+       },
+       {
+        "x": 60.2,
+        "y": 4.12,
+        "etiqueta": "Putumayo",
+        "mostrar": false
+       },
+       {
+        "x": 80.1,
+        "y": 4.37,
+        "etiqueta": "Quindío",
+        "mostrar": false
+       },
+       {
+        "x": 76.7,
+        "y": 4.62,
+        "etiqueta": "Risaralda",
+        "mostrar": false
+       },
+       {
+        "x": 81.0,
+        "y": 7.05,
+        "etiqueta": "San Andrés",
+        "mostrar": true
+       },
+       {
+        "x": 80.0,
+        "y": 5.03,
+        "etiqueta": "Santander",
+        "mostrar": false
+       },
+       {
+        "x": 61.1,
+        "y": 4.12,
+        "etiqueta": "Sucre",
+        "mostrar": false
+       },
+       {
+        "x": 81.3,
+        "y": 4.32,
+        "etiqueta": "Tolima",
+        "mostrar": false
+       },
+       {
+        "x": 78.0,
+        "y": 4.61,
+        "etiqueta": "Valle del Cauca",
+        "mostrar": false
+       },
+       {
+        "x": 38.6,
+        "y": 4.82,
+        "etiqueta": "Vaupés",
+        "mostrar": true
+       },
+       {
+        "x": 70.7,
+        "y": 5.08,
+        "etiqueta": "Vichada",
+        "mostrar": false
+       }
+      ]
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Qué hacen en internet: ciudad vs. campo (% de usuarios)",
+      "subtitulo": "",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Redes sociales",
+       "Mensajería",
+       "Correo",
+       "Periódicos digitales",
+       "Info de salud"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "Cabecera (urbano)",
+        "valores": [
+         80.5,
+         88.0,
+         65.0,
+         17.9,
+         40.8
+        ]
+       },
+       {
+        "nombre": "Rural",
+        "valores": [
+         78.8,
+         84.5,
+         38.4,
+         7.7,
+         19.2
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "B"
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Usuarios de internet (millones)",
+      "subtitulo": "",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Cabecera (urbano)",
+       "Rural"
+      ],
+      "unidad": "",
+      "decimales": 2,
+      "series": [
+       {
+        "nombre": "Millones de usuarios",
+        "valores": [
+         31.66,
+         7.36
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "C"
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Horas al día usando internet",
+      "subtitulo": "",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Cabecera (urbano)",
+       "Rural",
+       "Total nacional"
+      ],
+      "unidad": " h",
+      "decimales": 2,
+      "series": [
+       {
+        "nombre": "Horas",
+        "valores": [
+         5.17,
+         3.28,
+         4.9
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "destacar": [
+       2
+      ],
+      "letra": "D"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c5",
+   "titulo": "Caso 5 · ¿Falso porque es IA, o IA porque es falso?",
+   "subtitulo": "Laboratorio · probabilidad condicional",
+   "intro": "Encargo: un influencer publicó: «El 98 % de lo que tiene que ver con IA es falso. O sea: casi toda la desinformación es inteligencia artificial». Suena convincente… pero mezcla dos preguntas distintas. Antes de ver la tabla, haz tu apuesta.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "P(A | B)",
+     "definicion": "«Probabilidad de A sabiendo que pasó B»: se calcula SOLO dentro del grupo B."
+    },
+    {
+     "termino": "Tabla de doble entrada",
+     "definicion": "Filas y columnas cruzan dos variables. Para P(Falso | IA) mira la fila de IA; para P(IA | Falso), la columna de Falso."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c5_hipotesis",
+     "tipo": "estimar",
+     "puntos": 0,
+     "min": 0,
+     "max": 100,
+     "paso": 1,
+     "unidad": "%",
+     "enunciado": "Tu apuesta, antes de ver los datos (sin puntos): de cada 100 chequeos calificados «Falso», ¿cuántos crees que tratan de inteligencia artificial?",
+     "explicacion": "Era tu apuesta. El dato real: 5,4 de cada 100."
+    },
+    {
+     "id": "c5_f_dado_ia",
+     "tipo": "numero",
+     "puntos": 20,
+     "tolerancia": 0.2,
+     "unidad": "%",
+     "requiere": "c5_hipotesis",
+     "enunciado": "Con la tabla A: si escoges AL AZAR un chequeo cuyo título menciona IA, ¿cuál es la probabilidad (en %) de que esté calificado «Falso»? (Un decimal.)",
+     "respuesta": 98.4,
+     "explicacion": "Se mira solo la fila «Menciona IA»: 123 ÷ 125 = 98,4 %. Es P(Falso | IA)."
+    },
+    {
+     "id": "c5_ia_dado_f",
+     "tipo": "numero",
+     "puntos": 20,
+     "tolerancia": 0.2,
+     "unidad": "%",
+     "requiere": "c5_hipotesis",
+     "enunciado": "Ahora al revés: si escoges AL AZAR un chequeo calificado «Falso», ¿cuál es la probabilidad (en %) de que su título mencione IA? (Un decimal.)",
+     "respuesta": 5.39,
+     "explicacion": "Se mira solo la columna «Falso»: 123 ÷ 2284 = 5,4 %. Es P(IA | Falso): muy distinta de la anterior, porque los chequeos de IA son pocos frente al total."
+    },
+    {
+     "id": "c5_falacia",
+     "tipo": "opcion",
+     "enunciado": "¿Cuál es el error del influencer?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Confunde dos probabilidades: que lo de IA sea casi siempre falso (98 %) no significa que lo falso sea casi siempre IA (5,4 %)"
+      },
+      {
+       "id": "b",
+       "texto": "Ninguno: si el 98 % de lo de IA es falso, entonces casi todo lo falso tiene que ser de IA"
+      },
+      {
+       "id": "c",
+       "texto": "Su único error es redondear 98,4 % a 98 %"
+      },
+      {
+       "id": "d",
+       "texto": "El error es usar porcentajes: con conteos la conclusión sí sería correcta"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 20,
+     "explicacion": "Es la «falacia de la probabilidad inversa»: P(A | B) no es igual a P(B | A). Pasa en medicina, en juicios y en redes sociales. La clave es preguntar siempre: ¿de qué total estoy hablando?",
+     "requiere": "c5_hipotesis"
+    },
+    {
+     "id": "c5_evaluar",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 35,
+     "categorias": [
+      {
+       "id": "R",
+       "texto": "Respaldada por los datos"
+      },
+      {
+       "id": "C",
+       "texto": "Contradicha por los datos"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede saber con estos datos"
+      }
+     ],
+     "enunciado": "Con la evidencia del expediente, decide si cada afirmación está respaldada, contradicha o si los datos no permiten saberlo.",
+     "items": [
+      {
+       "id": "c5_evaluar_1",
+       "texto": "Si escoges al azar un chequeo de IA, es casi seguro que sea «Falso»"
+      },
+      {
+       "id": "c5_evaluar_2",
+       "texto": "Si escoges al azar un chequeo «Falso», lo más probable es que sea de IA"
+      },
+      {
+       "id": "c5_evaluar_3",
+       "texto": "Entre los chequeos que NO mencionan IA, unos 3 de cada 4 son «Falso»"
+      },
+      {
+       "id": "c5_evaluar_4",
+       "texto": "En 2025, la mayoría de los chequeos «Falso» mencionaba IA"
+      },
+      {
+       "id": "c5_evaluar_5",
+       "texto": "Usar IA hace que un contenido sea falso"
+      }
+     ],
+     "respuesta": {
+      "c5_evaluar_1": "R",
+      "c5_evaluar_2": "C",
+      "c5_evaluar_3": "R",
+      "c5_evaluar_4": "C",
+      "c5_evaluar_5": "N"
+     },
+     "explicacion": "«Si escoges al azar un chequeo de IA, es casi seguro que sea «Falso»» → Respaldada: A: 123 de 125. «Si escoges al azar un chequeo «Falso», lo más probable es que sea de IA» → Contradicha: A: solo 123 de 2284 (5,4 %). «Entre los chequeos que NO mencionan IA, unos 3 de cada 4 son «Falso»» → Respaldada: A: 2161 de 2855 (75,7 %). «En 2025, la mayoría de los chequeos «Falso» mencionaba IA» → Contradicha: B: en 2025 fue el 16,0 %. «Usar IA hace que un contenido sea falso» → No se puede saber: es una afirmación de CAUSA; además, lo que se verifica de IA suele ser contenido fabricado. La tabla solo muestra cómo se reparten los casos.",
+     "requiere": "c5_hipotesis"
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 5",
+    "revelar_tras": "c5_hipotesis",
+    "graficos": [
+     {
+      "tipo": "tabla",
+      "titulo": "Chequeos según su título y su calificación (2020–2026)",
+      "subtitulo": "Tabla de doble entrada · cada chequeo cae en una sola casilla",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "letra": "A",
+      "columnas": [
+       "",
+       "Falso",
+       "Otra calificación",
+       "Total"
+      ],
+      "filas": [
+       [
+        "Menciona IA",
+        "123",
+        "2",
+        "125"
+       ],
+       [
+        "No menciona IA",
+        "2.161",
+        "694",
+        "2.855"
+       ],
+       [
+        "Total",
+        "2.284",
+        "696",
+        "2.980"
+       ]
+      ],
+      "series": [],
+      "etiquetas": []
+     },
+     {
+      "tipo": "columnas",
+      "titulo": "Chequeos «Falso» por año: ¿cuántos mencionan IA?",
+      "subtitulo": "2026: datos hasta septiembre",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025",
+       "2026"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Mencionan IA",
+        "valores": [
+         0.0,
+         0.0,
+         0.0,
+         3.0,
+         28.0,
+         56.0,
+         36.0
+        ]
+       },
+       {
+        "nombre": "No mencionan IA",
+        "valores": [
+         370.0,
+         333.0,
+         324.0,
+         338.0,
+         351.0,
+         293.0,
+         152.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "B"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c6",
+   "titulo": "Caso 6 · El ranking que no era",
+   "subtitulo": "Laboratorio · encuestas y margen de error",
+   "intro": "Encargo: un periódico quiere publicar el ranking «los departamentos más pegados a internet». Pero las horas vienen de una ENCUESTA: el DANE preguntó a una muestra de hogares, y cada cifra tiene un margen de error. Tu trabajo: decir qué partes del ranking son seguras y cuáles no, y no confundir porcentajes con cantidades.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Intervalo de confianza 95 %",
+     "definicion": "Rango donde muy probablemente está el valor real de toda la población."
+    },
+    {
+     "termino": "Muestra",
+     "definicion": "Las personas que sí respondieron la encuesta; con ellas se estima para todos."
+    },
+    {
+     "termino": "Porcentaje vs. cantidad",
+     "definicion": "«Qué parte» vs. «cuántos». Cantidad = porcentaje × total."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c6_pares",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 30,
+     "enunciado": "Usa el Gráfico A (cada barra horizontal es el intervalo de confianza del 95 %). En cada pareja, ¿en cuál de los dos departamentos se usa internet más horas al día? Si los intervalos se cruzan, no se puede asegurar.",
+     "categorias": [
+      {
+       "id": "P",
+       "texto": "En el primero se usa más"
+      },
+      {
+       "id": "S",
+       "texto": "En el segundo se usa más"
+      },
+      {
+       "id": "N",
+       "texto": "No se puede asegurar (los intervalos se cruzan)"
+      }
+     ],
+     "items": [
+      {
+       "id": "par1",
+       "texto": "Bogotá D.C. vs. Antioquia"
+      },
+      {
+       "id": "par2",
+       "texto": "Caldas vs. La Guajira"
+      },
+      {
+       "id": "par3",
+       "texto": "Valle del Cauca vs. Bogotá D.C."
+      },
+      {
+       "id": "par4",
+       "texto": "Huila vs. Cauca"
+      },
+      {
+       "id": "par5",
+       "texto": "San Andrés vs. Atlántico"
+      },
+      {
+       "id": "par6",
+       "texto": "Vaupés vs. Antioquia"
+      }
+     ],
+     "respuesta": {
+      "par1": "P",
+      "par2": "N",
+      "par3": "S",
+      "par4": "N",
+      "par5": "P",
+      "par6": "N"
+     },
+     "explicacion": "Bogotá D.C. vs. Antioquia: el primero. Caldas vs. La Guajira: no se puede asegurar. Valle del Cauca vs. Bogotá D.C.: el segundo. Huila vs. Cauca: no se puede asegurar. San Andrés vs. Atlántico: el primero. Vaupés vs. Antioquia: no se puede asegurar. Que un número sea mayor que otro no basta: si sus márgenes de error se cruzan, la diferencia puede ser puro azar de la muestra."
+    },
+    {
+     "id": "c6_ancho",
+     "tipo": "opcion",
+     "enunciado": "Los intervalos de Vaupés (± 0,38 h) y de Guainía (± 0,60 h) son más anchos que el de Bogotá (± 0,25 h). ¿Por qué?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Porque allí la estimación es menos precisa: se encuesta a menos hogares y las respuestas varían más, así que hay más incertidumbre"
+      },
+      {
+       "id": "b",
+       "texto": "Porque en Vaupés y Guainía la gente usa internet más horas que en Bogotá"
+      },
+      {
+       "id": "c",
+       "texto": "Porque el DANE se equivocó al hacer la encuesta en esos departamentos"
+      },
+      {
+       "id": "d",
+       "texto": "Porque son departamentos más grandes en territorio, y eso agranda el intervalo"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "El ancho del intervalo depende sobre todo del tamaño de la muestra y de cuánto varían las respuestas. Con pocos datos, más incertidumbre: por eso los rankings con encuestas deben mostrar el margen de error."
+    },
+    {
+     "id": "c6_ordenar",
+     "tipo": "ordenar",
+     "puntos": 25,
+     "enunciado": "Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. Necesitas combinar los Gráficos B y C (cantidad = % × usuarios).",
+     "items": [
+      {
+       "id": "d0",
+       "texto": "Bogotá D.C."
+      },
+      {
+       "id": "d1",
+       "texto": "Antioquia"
+      },
+      {
+       "id": "d2",
+       "texto": "Atlántico"
+      },
+      {
+       "id": "d3",
+       "texto": "Meta"
+      },
+      {
+       "id": "d4",
+       "texto": "Chocó"
+      }
+     ],
+     "respuesta": [
+      "d0",
+      "d1",
+      "d2",
+      "d3",
+      "d4"
+     ],
+     "explicacion": "Personas conectadas a diario (millones): Bogotá D.C. ≈ 5,92; Antioquia ≈ 4,31; Atlántico ≈ 1,65; Meta ≈ 0,77; Chocó ≈ 0,12. El orden por porcentaje (B) es otro: un % alto en una población pequeña da pocas personas."
+    },
+    {
+     "id": "c6_cantidad",
+     "tipo": "opcion",
+     "enunciado": "Meta y Bogotá tienen porcentajes de uso diario parecidos (Gráfico B). ¿Por qué entonces Bogotá tiene unas 8 veces más personas conectadas a diario?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Porque el porcentaje se calcula sobre poblaciones de tamaño muy distinto: el mismo % de una base más grande da muchas más personas"
+      },
+      {
+       "id": "b",
+       "texto": "Porque en Bogotá cada persona se conecta más veces al día"
+      },
+      {
+       "id": "c",
+       "texto": "Porque los porcentajes de Meta están mal calculados"
+      },
+      {
+       "id": "d",
+       "texto": "Porque Bogotá tiene un porcentaje mucho más alto que Meta"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 20,
+     "explicacion": "Un porcentaje responde «qué parte»; una cantidad responde «cuántos». Para una campaña que quiere llegar a más personas importa la cantidad; para comparar hábitos, el porcentaje."
+    }
+   ],
+   "dossier": {
+    "titulo": "Expediente de evidencia · Caso 6",
+    "graficos": [
+     {
+      "tipo": "intervalos",
+      "titulo": "Horas al día usando internet, con margen de error (IC 95 %)",
+      "subtitulo": "Punto = estimación · barra = intervalo de confianza",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "San Andrés",
+       "Atlántico",
+       "Magdalena",
+       "Bogotá D.C.",
+       "Guainía",
+       "Antioquia",
+       "Vaupés",
+       "Caldas",
+       "La Guajira",
+       "Valle del Cauca",
+       "Cauca",
+       "Huila"
+      ],
+      "unidad": " h",
+      "decimales": 2,
+      "series": [
+       {
+        "nombre": "Horas al día",
+        "valores": [
+         7.05,
+         5.82,
+         5.71,
+         5.6,
+         5.43,
+         4.96,
+         4.82,
+         4.77,
+         4.75,
+         4.61,
+         3.53,
+         3.45
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "A",
+      "margenes": [
+       0.4,
+       0.27,
+       0.31,
+       0.25,
+       0.6,
+       0.21,
+       0.38,
+       0.26,
+       0.28,
+       0.19,
+       0.2,
+       0.18
+      ],
+      "ancho_completo": true
+     },
+     {
+      "tipo": "barras_h",
+      "titulo": "% de usuarios que usa internet todos los días",
+      "subtitulo": "",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Bogotá D.C.",
+       "Antioquia",
+       "Atlántico",
+       "Meta",
+       "Chocó"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "% diario",
+        "valores": [
+         87.72,
+         79.0,
+         74.52,
+         86.03,
+         48.03
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "x_max": 100,
+      "letra": "B"
+     },
+     {
+      "tipo": "barras_h",
+      "titulo": "Usuarios de internet (millones de personas)",
+      "subtitulo": "",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Bogotá D.C.",
+       "Antioquia",
+       "Atlántico",
+       "Meta",
+       "Chocó"
+      ],
+      "unidad": "",
+      "decimales": 2,
+      "series": [
+       {
+        "nombre": "Millones",
+        "valores": [
+         6.75,
+         5.45,
+         2.21,
+         0.89,
+         0.25
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "letra": "C"
+     }
+    ]
+   }
+  },
+  {
+   "id": "c7",
+   "titulo": "Caso 7 · El taller del gráfico",
+   "subtitulo": "Laboratorio · elegir, leer y desarmar gráficos",
+   "intro": "Encargo: te nombran editor de datos del periódico escolar. Tu trabajo tiene tres partes: escoger el gráfico correcto para cada pregunta, descubrir los trucos con que otros presentan los datos, y elegir el número que mejor resume un grupo. Cada pregunta trae su propio gráfico.",
+   "glosario": [
+    {
+     "termino": "Respaldada",
+     "definicion": "La evidencia del expediente la muestra directamente."
+    },
+    {
+     "termino": "Contradicha",
+     "definicion": "La evidencia muestra lo contrario, o la frase exagera lo que muestra."
+    },
+    {
+     "termino": "No se puede saber",
+     "definicion": "Los datos no alcanzan: habla de causas, de algo que no se midió (creencias, lo que circuló) o de otra población."
+    },
+    {
+     "termino": "Mediana",
+     "definicion": "El valor del medio cuando ordenas los datos. No la mueven los valores extremos."
+    },
+    {
+     "termino": "Cherry picking",
+     "definicion": "Escoger solo la parte de los datos que conviene a tu mensaje."
+    }
+   ],
+   "preguntas": [
+    {
+     "id": "c7_elegir",
+     "tipo": "clasificar",
+     "estilo": "expediente",
+     "puntos": 25,
+     "categorias": [
+      {
+       "id": "LIN",
+       "texto": "Líneas: cambio a lo largo del tiempo"
+      },
+      {
+       "id": "BAR",
+       "texto": "Barras: comparar cantidades entre categorías"
+      },
+      {
+       "id": "DIS",
+       "texto": "Dispersión: ver si dos variables se relacionan"
+      },
+      {
+       "id": "PAR",
+       "texto": "Barras al 100 %: qué parte de un total es cada grupo"
+      }
+     ],
+     "enunciado": "Para cada pregunta de investigación, ¿qué tipo de gráfico la responde mejor?",
+     "items": [
+      {
+       "id": "g1",
+       "texto": "¿Cómo cambió entre 2020 y 2026 el porcentaje de chequeos sobre inteligencia artificial?"
+      },
+      {
+       "id": "g2",
+       "texto": "¿Qué día de la semana publica Colombiacheck más chequeos?"
+      },
+      {
+       "id": "g3",
+       "texto": "¿Los departamentos donde más gente se conecta a diario son los que más horas pasan conectados?"
+      },
+      {
+       "id": "g4",
+       "texto": "En 2022, ¿qué PARTE de los chequeos fue de redes y qué parte de discurso público?"
+      },
+      {
+       "id": "g5",
+       "texto": "¿Qué departamento tiene más usuarios de internet?"
+      }
+     ],
+     "respuesta": {
+      "g1": "LIN",
+      "g2": "BAR",
+      "g3": "DIS",
+      "g4": "PAR",
+      "g5": "BAR"
+     },
+     "explicacion": "Tiempo → líneas; comparar categorías → barras; relación entre dos variables → dispersión; partes de un total → barras al 100 %. Elegir mal el gráfico puede esconder o inventar un patrón."
+    },
+    {
+     "id": "c7_eje",
+     "tipo": "opcion",
+     "enunciado": "Un perfil publicó este gráfico con el mensaje: «¡Los hombres usan internet MUCHÍSIMO más que las mujeres!». ¿Qué tiene de tramposo?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "El eje vertical empieza en 4,80 y no en cero: una diferencia de unos 9 minutos parece enorme"
+      },
+      {
+       "id": "b",
+       "texto": "Nada: la diferencia de verdad es enorme"
+      },
+      {
+       "id": "c",
+       "texto": "Los colores de las barras están invertidos"
+      },
+      {
+       "id": "d",
+       "texto": "Debería ser un gráfico de líneas porque son dos grupos"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "Hombres 4,98 h y mujeres 4,83 h: unos 9 minutos de diferencia. Cortar el eje en barras exagera las diferencias.",
+     "grafico": {
+      "tipo": "columnas",
+      "titulo": "Horas al día usando internet",
+      "subtitulo": "Publicación viral",
+      "fuente": "DANE, Encuesta TIC en Hogares (ENTIC) 2024",
+      "etiquetas": [
+       "Hombres",
+       "Mujeres"
+      ],
+      "unidad": " h",
+      "decimales": 2,
+      "series": [
+       {
+        "nombre": "Horas",
+        "valores": [
+         4.98,
+         4.83
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "y_min": 4.8,
+      "y_max": 5.0
+     }
+    },
+    {
+     "id": "c7_subida",
+     "tipo": "numero",
+     "puntos": 15,
+     "tolerancia": 0.1,
+     "unidad": "puntos porcentuales",
+     "grafico": {
+      "tipo": "lineas",
+      "titulo": "% de chequeos «Falso» por año",
+      "subtitulo": "",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "2020",
+       "2021",
+       "2022",
+       "2023",
+       "2024",
+       "2025"
+      ],
+      "unidad": "%",
+      "decimales": 1,
+      "series": [
+       {
+        "nombre": "% Falso",
+        "valores": [
+         77.9,
+         76.7,
+         70.6,
+         73.0,
+         79.1,
+         82.5
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true,
+      "y_min": 0,
+      "y_max": 100
+     },
+     "enunciado": "Un trino dice: «¡Desde 2022 lo falso se disparó: subió 12 puntos!». Con el gráfico (pasa el cursor por los puntos), ¿cuántos puntos porcentuales subió el % Falso entre 2020, el primer año de la serie, y 2025? (Un decimal.)",
+     "respuesta": 4.61,
+     "explicacion": "82,5 − 77,9 = 4,6 puntos, no 11,9."
+    },
+    {
+     "id": "c7_truco",
+     "tipo": "opcion",
+     "enunciado": "¿Qué truco usó el trino?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Escogió como punto de partida 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor"
+      },
+      {
+       "id": "b",
+       "texto": "Usó porcentajes en vez de conteos, y los porcentajes siempre exageran los cambios"
+      },
+      {
+       "id": "c",
+       "texto": "Comparó un año incompleto con uno completo"
+      },
+      {
+       "id": "d",
+       "texto": "No hay truco: desde 2022 hasta 2025 la subida es la misma que en toda la serie"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "Elegir a conveniencia el inicio o el final de una serie («cherry picking») es uno de los trucos más usados. Antes de creer una subida, mira la serie completa (y recuerda el Caso 2: parte de ese cambio es de mezcla)."
+    },
+    {
+     "id": "c7_mediana",
+     "tipo": "numero",
+     "puntos": 10,
+     "tolerancia": 0,
+     "unidad": "chequeo(s)",
+     "entero": true,
+     "grafico": {
+      "tipo": "columnas",
+      "titulo": "Periodistas según cuántos chequeos firmaron",
+      "subtitulo": "261 periodistas firmaron 2.980 chequeos",
+      "fuente": "Colombiacheck (Consejo de Redacción), chequeos con marcado ClaimReview, 2020–2026",
+      "etiquetas": [
+       "1",
+       "2 a 5",
+       "6 a 20",
+       "21 a 100",
+       "más de 100"
+      ],
+      "unidad": "",
+      "decimales": 0,
+      "series": [
+       {
+        "nombre": "Periodistas",
+        "valores": [
+         167.0,
+         59.0,
+         16.0,
+         10.0,
+         9.0
+        ]
+       }
+      ],
+      "valores_visibles": true,
+      "tooltips": true
+     },
+     "enunciado": "261 periodistas firmaron 2.980 chequeos. Con el gráfico, ¿cuál es la MEDIANA de chequeos por periodista? (Pista: busca al periodista que queda en la mitad de la fila si los ordenas de menos a más.)",
+     "respuesta": 1.0,
+     "explicacion": "Con 261 periodistas, la mediana es el número 131. Como 167 periodistas firmaron 1 solo chequeo (más de la mitad), la mediana es 1."
+    },
+    {
+     "id": "c7_tipico",
+     "tipo": "opcion",
+     "enunciado": "El PROMEDIO es 11,4 chequeos por periodista, pero la mediana es 1. ¿Qué número describe mejor al periodista típico, y por qué?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "La mediana: unos pocos periodistas con más de 100 chequeos (9 personas) inflan el promedio, mientras la mayoría firmó muy pocos"
+      },
+      {
+       "id": "b",
+       "texto": "El promedio, porque usa todos los datos y por eso siempre es el mejor resumen"
+      },
+      {
+       "id": "c",
+       "texto": "Los dos por igual, porque siempre dan casi el mismo resultado"
+      },
+      {
+       "id": "d",
+       "texto": "Ninguno: con tantos periodistas no se puede resumir"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 10,
+     "explicacion": "Cuando unos pocos valores son muy grandes (distribución sesgada), el promedio se va hacia ellos y la mediana describe mejor a la mayoría. Pasa con salarios, likes o seguidores."
+    },
+    {
+     "id": "c7_informe",
+     "tipo": "texto",
+     "puntos": 0,
+     "max": 700,
+     "enunciado": "Informe final del analista (sin puntos, lo lee tu docente): elige UNO de los siete casos y escribe en 3 a 5 frases su conclusión más importante, con qué gráficos la sostienes y qué limitación tiene.",
+     "explicacion": "Pregunta abierta: no tiene una única respuesta correcta."
+    }
+   ]
+  },
+  {
+   "id": "m5",
+   "titulo": "Lo que dice la ciencia",
+   "subtitulo": "Lectura · Nature Human Behaviour, 2023",
+   "intro": "Lee el resumen del estudio (lo tienes a la vista en toda la misión) y responde.",
+   "lectura": {
+    "titulo": "¿Por qué creemos y compartimos desinformación? Un experimento en 16 países",
+    "texto": "Arechar y colaboradores (2023) hicieron un experimento en 16 países de 6 continentes con 34.286 usuarios de redes sociales. Cada persona vio 20 titulares sobre COVID-19 (10 verdaderos y 10 falsos). A unos se les preguntó si cada titular era exacto; a otros, si lo compartirían. Algunos recibieron antes un «recordatorio de exactitud» (calificar si UN titular cualquiera era exacto) y otros leyeron cuatro consejos breves de alfabetización digital.\n\nResultados: (1) En todos los países, quienes tenían un estilo de pensamiento más analítico y valoraban más la exactitud distinguían mejor lo verdadero de lo falso; confiar en general en la gente no hacía diferencia. (2) Lo que la gente compartiría distinguía mucho menos entre verdadero y falso que lo que creía: muchas personas compartirían titulares falsos que reconocerían como falsos si se les preguntara. (3) El recordatorio de exactitud mejoró la calidad de lo que compartían; los consejos también, con un efecto menor. Curiosamente, la gente dijo que los consejos le parecían más útiles que el recordatorio. (4) Promediando las opiniones de personas no expertas («sabiduría de la multitud») se distinguían titulares verdaderos de falsos con alta precisión en todos los países.\n\nParticiparon Argentina, Australia, Brasil, China, Egipto, España, Estados Unidos, Filipinas, India, Italia, México, Nigeria, Reino Unido, Rusia, Arabia Saudita y Sudáfrica. Los autores reconocen límites: el «compartir» fue hipotético (lo que dijeron que harían), solo usaron titulares de COVID-19 y las muestras no eran totalmente representativas.",
+    "cita": "Arechar, A. A. et al. (2023). Understanding and combatting misinformation across 16 countries on six continents. Nature Human Behaviour, 7, 1502–1513. doi:10.1038/s41562-023-01641-6"
+   },
+   "preguntas": [
+    {
+     "id": "m5_creer_compartir",
+     "tipo": "opcion",
+     "enunciado": "¿Qué encontraron al comparar lo que la gente CREE con lo que COMPARTE?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Muchas personas compartirían titulares falsos que reconocerían como falsos si se les preguntara por su exactitud"
+      },
+      {
+       "id": "b",
+       "texto": "La gente solo comparte lo que cree que es verdad"
+      },
+      {
+       "id": "c",
+       "texto": "Nadie dijo que compartiría titulares falsos"
+      },
+      {
+       "id": "d",
+       "texto": "Quienes más comparten son siempre quienes menos saben"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 20,
+     "explicacion": "Es la «brecha entre creer y compartir». El tablero de la clase compara cuánto compartieron con cuánto creyeron."
+    },
+    {
+     "id": "m5_intervenciones",
+     "tipo": "opcion",
+     "enunciado": "¿Qué intervención fue más efectiva y cuál le pareció más útil a la gente?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Más efectivo: el recordatorio de exactitud. Más útil según la gente: los consejos"
+      },
+      {
+       "id": "b",
+       "texto": "Más efectivos: los consejos. Más útil según la gente: el recordatorio"
+      },
+      {
+       "id": "c",
+       "texto": "Ninguna de las dos funcionó"
+      },
+      {
+       "id": "d",
+       "texto": "Las dos fueron igual de efectivas y les parecieron igual de útiles"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 20,
+     "explicacion": "Lo que parece útil no siempre es lo que funciona; por eso se mide con experimentos."
+    },
+    {
+     "id": "m5_azar",
+     "tipo": "opcion",
+     "enunciado": "En el estudio (y en nuestra clase) las personas se repartieron AL AZAR entre los grupos con y sin recordatorio. ¿Para qué sirve repartir al azar?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Para que los grupos se parezcan en todo lo demás, y así la diferencia se pueda atribuir al recordatorio"
+      },
+      {
+       "id": "b",
+       "texto": "Para que los resultados salgan más altos"
+      },
+      {
+       "id": "c",
+       "texto": "Para no tener que contar cuántas personas hay en cada grupo"
+      },
+      {
+       "id": "d",
+       "texto": "Para que cada persona pueda escoger el grupo que prefiera"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "La asignación al azar es lo que permite pasar de «van juntos» (correlación) a «esto causó aquello» (efecto causal) en un experimento."
+    },
+    {
+     "id": "m5_multitud",
+     "tipo": "opcion",
+     "enunciado": "¿Qué significa la «sabiduría de la multitud» en este estudio?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Que el promedio de las opiniones de muchas personas no expertas distinguía titulares verdaderos de falsos con alta precisión"
+      },
+      {
+       "id": "b",
+       "texto": "Que lo que comparte la mayoría siempre es verdad"
+      },
+      {
+       "id": "c",
+       "texto": "Que los expertos se equivocan más que la gente común"
+      },
+      {
+       "id": "d",
+       "texto": "Que hay que creer lo que tiene más «me gusta»"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "No es «la mayoría tiene razón»: es promediar juicios independientes sobre la exactitud."
+    },
+    {
+     "id": "m5_paises",
+     "tipo": "multiple",
+     "enunciado": "¿Qué países de América Latina participaron en el estudio? Marca TODOS.",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "Argentina"
+      },
+      {
+       "id": "b",
+       "texto": "Brasil"
+      },
+      {
+       "id": "c",
+       "texto": "México"
+      },
+      {
+       "id": "d",
+       "texto": "Colombia"
+      },
+      {
+       "id": "e",
+       "texto": "Chile"
+      },
+      {
+       "id": "f",
+       "texto": "Perú"
+      }
+     ],
+     "respuesta": [
+      "a",
+      "b",
+      "c"
+     ],
+     "puntos": 15,
+     "explicacion": "Colombia NO participó: este reto es una pequeña réplica con titulares colombianos reales."
+    },
+    {
+     "id": "m5_limites",
+     "tipo": "opcion",
+     "enunciado": "¿Cuál es una limitación que reconocen los propios autores?",
+     "opciones": [
+      {
+       "id": "a",
+       "texto": "El «compartir» fue hipotético y solo usaron titulares sobre COVID-19"
+      },
+      {
+       "id": "b",
+       "texto": "Solo participaron 16 personas"
+      },
+      {
+       "id": "c",
+       "texto": "Solo se hizo en Estados Unidos"
+      },
+      {
+       "id": "d",
+       "texto": "No usaron titulares falsos"
+      }
+     ],
+     "respuesta": "a",
+     "puntos": 15,
+     "explicacion": "Reconocer límites hace más confiable un estudio, no menos."
+    }
+   ]
+  }
+ ],
+ "version": "18f0f539fc"
+}

@@ -1,0 +1,88 @@
+diff --git a/despliegues/cloudflare/web/static/js/estudiante.js b/despliegues/cloudflare/web/static/js/estudiante.js
+--- a/despliegues/cloudflare/web/static/js/estudiante.js
++++ b/despliegues/cloudflare/web/static/js/estudiante.js
+@@ -140,6 +140,8 @@
+       h("button", { role: "tab", "aria-selected": String(pestana === "nuevo"), onclick: () => ingreso("nuevo") }, "Inscribirme"),
+       h("button", { role: "tab", "aria-selected": String(pestana === "codigo"), onclick: () => ingreso("codigo") }, "Ya tengo código"));
+     let form;
++    const listaColegios = h("select", { class: "entrada", name: "colegio", required: true, disabled: true, "data-testid": "inscripcion-colegio" },
++      h("option", { value: "", text: "Escribe primero el código de sala" }));
+     if (pestana === "nuevo") {
+       form = h("form", { onsubmit: async (ev) => {
+         ev.preventDefault();
+@@ -154,14 +156,15 @@
+       } },
+         h("label", { class: "campo" }, h("span", {}, "Nombre completo ", h("small", {}, "(o nombre del equipo)")),
+           h("input", { class: "entrada", name: "nombre", required: true, maxlength: 60, autocomplete: "name" })),
+-        h("label", { class: "campo" }, h("span", { text: "Colegio" }), h("input", { class: "entrada", name: "colegio", required: true, maxlength: 80 })),
++        h("label", { class: "campo" }, h("span", { text: "Colegio" }), listaColegios),
+         h("div", { class: "campo" }, h("span", { text: "Grado" }),
+           h("div", { class: "segmentado", role: "radiogroup", "aria-label": "Grado" },
+             ...["9", "10", "11"].map((g) => h("label", {}, h("input", { type: "radio", name: "grado", value: g, required: true }), h("span", { text: g + ".°" }))))),
+         h("label", { class: "campo" }, h("span", {}, "Integrantes ", h("small", {}, "(solo si participan en equipo)")),
+           h("input", { class: "entrada", name: "integrantes", maxlength: 200, placeholder: "Nombres separados por comas" })),
+         h("label", { class: "campo" }, h("span", {}, "Código de sala ", h("small", {}, "(está en el tablero)")),
+-          h("input", { class: "entrada codigo", name: "sala", required: true, maxlength: 8, autocomplete: "off", autocapitalize: "characters" })),
++          h("input", { class: "entrada codigo", name: "sala", required: true, maxlength: 8, autocomplete: "off", autocapitalize: "characters",
++            oninput: (ev) => { clearTimeout(S.esperaColegios); S.esperaColegios = setTimeout(() => cargarColegios(listaColegios, ev.target.value), 300); } })),
+         h("button", { class: "boton grande", type: "submit" }, "Inscribirme"), msg);
+     } else {
+       form = h("form", { onsubmit: async (ev) => {
+@@ -187,6 +190,29 @@
+     const primero = form.querySelector("input"); if (primero && window.innerWidth > 900) primero.focus({ preventScroll: true });
+   }
+
++  // lista de colegios de la sala (versión de la nube): se pide a /api/colegios?sala= al escribir el código
++  let pedidoColegios = 0;
++  async function cargarColegios(lista, sala) {
++    const codigo = String(sala).trim().toUpperCase();
++    const n = ++pedidoColegios;
++    lista.disabled = true;
++    const espera = codigo.length < 3 ? "Escribe primero el código de sala" : "Buscando los colegios de la sala…";
++    lista.replaceChildren(h("option", { value: "", text: espera }));
++    if (codigo.length < 3) return;
++    try {
++      const r = await api("/api/colegios?sala=" + encodeURIComponent(codigo));
++      if (n !== pedidoColegios) return;
++      const vacia = "Esta sala aún no tiene colegios. Avísale al docente.";
++      lista.replaceChildren(h("option", { value: "", text: r.colegios.length ? "Elige tu colegio" : vacia }),
++        ...r.colegios.map((c) => h("option", { value: c.id_colegio, text: c.nombre })));
++      lista.disabled = !r.colegios.length;
++    } catch (e) {
++      if (n !== pedidoColegios) return;
++      const texto = e.codigo === 404 ? "No encontramos esa sala. Revisa el código." : e.message;
++      lista.replaceChildren(h("option", { value: "", text: texto }));
++    }
++  }
++
+   function mostrarCodigo(codigo) {
+     pantalla(h("div", { class: "tarjeta", style: "max-width:560px;margin:0 auto;text-align:center" },
+       h("div", { class: "antetitulo", text: "Inscripción lista" }),
+diff --git a/despliegues/cloudflare/web/tablero.html b/despliegues/cloudflare/web/tablero.html
+--- a/despliegues/cloudflare/web/tablero.html
++++ b/despliegues/cloudflare/web/tablero.html
+@@ -133,10 +133,23 @@
+   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+   const ahora = () => Date.now() / 1000 + T.desfase;
+
++  // versión de la nube: el tablero muestra la sala que trae su enlace (?sala=)
++  const SALA = (new URLSearchParams(location.search).get("sala") || "").trim().toUpperCase();
++  function avisoSala(texto) {
++    escena.replaceChildren();
++    const p = document.createElement("p");
++    p.className = "aviso-sala";
++    p.style.cssText = "font-size:32px;text-align:center;margin:20vh auto;max-width:900px";
++    p.textContent = texto;
++    escena.append(p);
++  }
++
+   async function sondear() {
++    if (!SALA) return avisoSala("Abre el tablero con el enlace de tu sala.");
+     try {
+-      const r = await fetch("/api/publico", { cache: "no-store" });
++      const r = await fetch("/api/publico?sala=" + encodeURIComponent(SALA), { cache: "no-store" });
+       const d = await r.json();
++      if (!r.ok) { T.d = null; return avisoSala(d.error || "No encontramos esa sala."); }
+       T.desfase = d.servidor_ahora - Date.now() / 1000;
+       const antes = T.d;
+       T.d = d;
