@@ -18,9 +18,11 @@ Reglas que hace cumplir el servidor (no el navegador):
   * las respuestas correctas nunca salen del servidor hasta publicar resultados, y los ids de opciones,
     ítems y partes que ve el navegador son opacos (HMAC por participante);
   * cada pregunta se responde una sola vez;
-  * hay UN reloj para todos (todos los colegios a la vez): lo abre, pausa, alarga y
-    cierra la organización desde el panel; al vencerse, el reto se cierra solo;
-  * la clasificación es un orden total y única para todos los colegios.
+  * hay varias salas, normalmente una por colegio (FR11). Cada sala tiene su código, su clave de docente,
+    su reloj, su configuración, sus colegios, su tablero y su clasificación: lo que pasa en una no toca
+    a las demás. La clave del semillero (CLAVE_ADMIN) crea y borra salas y entrega la clave de cada una;
+  * el reloj de cada sala lo abre, pausa, alarga y cierra su docente; al vencerse, esa sala se cierra sola;
+  * la clasificación de cada sala es un orden total.
 """
 
 import argparse
@@ -39,6 +41,7 @@ import sqlite3
 import sys
 import threading
 import time
+import unicodedata
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -59,9 +62,23 @@ BONO_MAX = BANCO["bono_tiempo_max"]
 
 LOCK = threading.RLock()
 DB = None
-CLAVE_ADMIN = ""
+CLAVE_ADMIN = ""  # clave del semillero: crea y borra salas
 URLS = []
 RUTA_DB = DATOS / "reto.db"
+# Sala sobre la que actúan cfg() y las consultas. Todo pasa dentro de LOCK, así que no se mezclan peticiones.
+SALA = ""
+# Lo que antes era la configuración única del reto ahora es de cada sala (columnas de la tabla salas).
+CAMPOS_SALA = (
+    "estado",
+    "evento",
+    "modo_sorpresa",
+    "retro",
+    "duracion_min",
+    "pausas",
+    "extra_seg",
+    "abierto_en",
+    "cerrado_en",
+)
 
 
 # =========================================================================== base de datos
@@ -77,8 +94,15 @@ def conectar(ruta):
     con.execute("PRAGMA synchronous=NORMAL")
     con.executescript("""
     CREATE TABLE IF NOT EXISTS config (clave TEXT PRIMARY KEY, valor TEXT);
+    CREATE TABLE IF NOT EXISTS salas (
+        codigo TEXT PRIMARY KEY, huella_clave TEXT, creada REAL, estado TEXT, evento TEXT,
+        modo_sorpresa TEXT, retro TEXT, duracion_min TEXT, pausas TEXT, extra_seg TEXT,
+        abierto_en TEXT, cerrado_en TEXT);
+    CREATE TABLE IF NOT EXISTS colegios (
+        id_colegio TEXT PRIMARY KEY, sala TEXT, nombre TEXT, normalizado TEXT, provisional INTEGER,
+        UNIQUE (sala, normalizado));
     CREATE TABLE IF NOT EXISTS participantes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, codigo TEXT UNIQUE, token TEXT UNIQUE,
+        id INTEGER PRIMARY KEY AUTOINCREMENT, codigo TEXT UNIQUE, token TEXT UNIQUE, sala TEXT,
         nombre TEXT, colegio TEXT, grado TEXT, integrantes TEXT, grupo TEXT, semilla TEXT,
         creado REAL, inicio REAL, fin REAL, estado TEXT, motivo_fin TEXT,
         puntos REAL DEFAULT 0, bono REAL DEFAULT 0, total REAL DEFAULT 0, tiempo_usado REAL,
@@ -93,45 +117,121 @@ def conectar(ruta):
 
 
 def cfg(clave, defecto=None):
-    fila = DB.execute("SELECT valor FROM config WHERE clave=?", (clave,)).fetchone()
-    return fila["valor"] if fila else defecto
+    """Valor de configuración. Los de CAMPOS_SALA son de la sala en curso (SALA); el resto, globales."""
+    if clave == "sala":
+        return SALA
+    if clave in CAMPOS_SALA:
+        # clave sale de CAMPOS_SALA, una lista fija: no hay texto del usuario en la consulta
+        fila = DB.execute(f"SELECT {clave} valor FROM salas WHERE codigo=?", (SALA,)).fetchone()  # noqa: S608
+    else:
+        fila = DB.execute("SELECT valor FROM config WHERE clave=?", (clave,)).fetchone()
+    return fila["valor"] if fila and fila["valor"] is not None else defecto
 
 
 def set_cfg(clave, valor):
+    """Guarda un valor de configuración (None borra uno de la sala, como abierto_en al reiniciar)."""
+    valor = None if valor is None else str(valor)
+    if clave in CAMPOS_SALA:
+        DB.execute(f"UPDATE salas SET {clave}=? WHERE codigo=?", (valor, SALA))  # noqa: S608
+        return
     DB.execute(
         "INSERT INTO config(clave, valor) VALUES(?, ?) ON CONFLICT(clave) DO UPDATE SET valor=excluded.valor",
-        (clave, str(valor)),
+        (clave, valor),
     )
 
 
 def inicializar_config():
-    defaults = {
-        "estado": "inscripcion",
-        "sala": "".join(secrets.choice(ALFABETO[:24]) for _ in range(4)),
-        "modo_sorpresa": "1",
-        "retro": "1",
-        "duracion_min": str(BANCO["duracion_min"]),
-        "evento": "Sala de verificación",
-        "colegios": "[]",
-        "pausas": "[]",
-        "extra_seg": "0",
-        "secreto_ids": secrets.token_hex(32),  # fijo: los ids opacos no cambian al reiniciar el servidor
-    }
-    for k, v in defaults.items():
-        if cfg(k) is None:
-            set_cfg(k, v)
+    if cfg("secreto_ids") is None:  # fijo para siempre: los ids opacos no cambian al reiniciar el servidor
+        set_cfg("secreto_ids", secrets.token_hex(32))
 
 
 def duracion_seg():
-    """Duración total del reloj común: la configurada más los minutos que la organización agregue o quite."""
+    """Duración total del reloj de la sala: la configurada más los minutos que el docente agregue o quite."""
     return float(cfg("duracion_min", BANCO["duracion_min"])) * 60 + float(cfg("extra_seg", 0) or 0)
 
 
+# =========================================================================== salas y colegios
+def usar_sala(codigo):
+    """Elige la sala sobre la que actúan cfg() y las consultas; 404 si no existe."""
+    global SALA
+    codigo = limpiar(codigo, 8).upper()
+    if not codigo or not DB.execute("SELECT 1 FROM salas WHERE codigo=?", (codigo,)).fetchone():
+        raise ErrorAPI("No existe una sala con ese código.", 404)
+    SALA = codigo
+    return codigo
+
+
+def huella(clave):
+    return hashlib.sha256(clave.encode("utf-8")).hexdigest()
+
+
+def nueva_clave_sala(codigo):
+    """Clave de docente de una sala: «<código>-» y 10 caracteres al azar. Solo se guarda su huella."""
+    return f"{codigo}-" + "".join(secrets.choice(ALFABETO) for _ in range(10))
+
+
+def crear_sala(evento=""):
+    """Crea una sala con código y clave nuevos. La clave se devuelve una sola vez."""
+    while True:
+        codigo = "".join(secrets.choice(ALFABETO[:24]) for _ in range(4))
+        if not DB.execute("SELECT 1 FROM salas WHERE codigo=?", (codigo,)).fetchone():
+            break
+    clave = nueva_clave_sala(codigo)
+    DB.execute(
+        "INSERT INTO salas(codigo, huella_clave, creada, estado, evento, modo_sorpresa, retro, duracion_min, "
+        "pausas, extra_seg) VALUES(?,?,?,'inscripcion',?,'1','1',?,'[]','0')",
+        (codigo, huella(clave), time.time(), limpiar(evento, 80) or "Sala de verificación", BANCO["duracion_min"]),
+    )
+    return {"sala": codigo, "clave": clave}
+
+
+def normalizar(nombre):
+    """Nombre para comparar colegios: sin tildes, en minúsculas y con un solo espacio."""
+    sin_tildes = "".join(c for c in unicodedata.normalize("NFKD", nombre) if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", sin_tildes).strip().lower()
+
+
+def colegios_sala():
+    filas = DB.execute(
+        "SELECT id_colegio, nombre, provisional FROM colegios WHERE sala=? ORDER BY nombre", (SALA,)
+    ).fetchall()
+    return [
+        {"id_colegio": f["id_colegio"], "nombre": f["nombre"], "provisional": bool(f["provisional"])} for f in filas
+    ]
+
+
 def colegios():
-    try:
-        return json.loads(cfg("colegios", "[]") or "[]")
-    except json.JSONDecodeError:
-        return []
+    return [c["nombre"] for c in colegios_sala()]
+
+
+def agregar_colegio(nombre, provisional):
+    """Agrega un colegio a la sala; si ya existe con otro formato (tildes, mayúsculas), 400 con «existente»."""
+    nombre = limpiar(nombre, 80)
+    if len(nombre) < 3:
+        raise ErrorAPI("Escribe el nombre del colegio.")
+    fila = DB.execute(
+        "SELECT id_colegio, nombre, provisional FROM colegios WHERE sala=? AND normalizado=?",
+        (SALA, normalizar(nombre)),
+    ).fetchone()
+    if fila:
+        error = ErrorAPI(f"El colegio «{fila['nombre']}» ya está en la sala.")
+        error.extra = {"existente": {**dict(fila), "provisional": bool(fila["provisional"])}}
+        raise error
+    id_colegio = "c" + secrets.token_hex(4)
+    DB.execute(
+        "INSERT INTO colegios VALUES(?,?,?,?,?)", (id_colegio, SALA, nombre, normalizar(nombre), int(provisional))
+    )
+    return id_colegio
+
+
+def quitar_colegio(id_colegio):
+    if DB.execute(
+        "SELECT 1 FROM participantes p JOIN colegios c ON c.sala=p.sala AND c.nombre=p.colegio "
+        "WHERE c.id_colegio=? AND c.sala=?",
+        (id_colegio, SALA),
+    ).fetchone():
+        raise ErrorAPI("Ese colegio ya tiene inscritos: no se puede quitar.")
+    DB.execute("DELETE FROM colegios WHERE id_colegio=? AND sala=?", (id_colegio, SALA))
 
 
 # =========================================================================== ids opacos (ADR-006)
@@ -188,9 +288,9 @@ def traducir(p, c, r, a_real):
     return r
 
 
-# =========================================================================== reloj común
-# Un solo reloj para todos los colegios. Corre desde que la organización abre el reto; las pausas no
-# cuentan. «segundos_de_reto(t)» es cuánto reloj había corrido en el instante t.
+# =========================================================================== reloj de la sala
+# Cada sala tiene su reloj. Corre desde que su docente abre el reto; las pausas no cuentan.
+# «segundos_de_reto(t)» es cuánto reloj había corrido en el instante t.
 def pausas():
     return json.loads(cfg("pausas", "[]") or "[]")
 
@@ -454,14 +554,19 @@ def finalizar(p, ahora, motivo):
 
 
 def vencer_tiempos():
-    """Si el reloj común llegó a cero, el reto se cierra solo para todos."""
-    if cfg("estado") == "abierto" and not en_pausa() and restante_reto() <= 0:
-        cambiar_estado("cerrado", motivo="tiempo")
+    """Cada sala cuyo reloj llegó a cero se cierra sola. Deja SALA como estaba."""
+    global SALA
+    actual = SALA
+    for (codigo,) in DB.execute("SELECT codigo FROM salas WHERE estado='abierto'").fetchall():
+        SALA = codigo
+        if not en_pausa() and restante_reto() <= 0:
+            cambiar_estado("cerrado", motivo="tiempo")
+    SALA = actual
 
 
 def clasificacion():
     """Orden total: puntaje total ↓, puntos ↓, momento de la última respuesta ↑, hora de entrega ↑, inscripción ↑."""
-    filas = DB.execute("SELECT * FROM participantes WHERE estado='finalizado'").fetchall()
+    filas = DB.execute("SELECT * FROM participantes WHERE estado='finalizado' AND sala=?", (SALA,)).fetchall()
     filas = sorted(
         filas, key=lambda p: (-round(p["total"], 9), -round(p["puntos"], 9), p["tiempo_respuestas"], p["fin"], p["id"])
     )
@@ -502,8 +607,9 @@ def experimento():
     resp = {}
     for r in DB.execute(
         "SELECT r.participante_id pid, r.pregunta_id q, r.respuesta, p.grupo FROM respuestas r "
-        "JOIN participantes p ON p.id=r.participante_id WHERE p.estado != 'descalificado' AND "
-        "r.pregunta_id IN ('m1_compartir','m1_veracidad')"
+        "JOIN participantes p ON p.id=r.participante_id WHERE p.estado != 'descalificado' AND p.sala=? AND "
+        "r.pregunta_id IN ('m1_compartir','m1_veracidad')",
+        (SALA,),
     ).fetchall():
         resp.setdefault(r["pid"], {"grupo": r["grupo"]})[r["q"]] = json.loads(r["respuesta"])
     completos = [v for v in resp.values() if "m1_compartir" in v and "m1_veracidad" in v]
@@ -639,8 +745,9 @@ def estado_participante(p, firma_cliente=""):
 
 def conteo_por_colegio():
     filas = DB.execute(
-        "SELECT colegio, COUNT(*) n FROM participantes WHERE estado != 'descalificado' "
-        "GROUP BY colegio ORDER BY n DESC, colegio"
+        "SELECT colegio, COUNT(*) n FROM participantes WHERE estado != 'descalificado' AND sala=? "
+        "GROUP BY colegio ORDER BY n DESC, colegio",
+        (SALA,),
     ).fetchall()
     return [{"colegio": f["colegio"], "n": f["n"]} for f in filas]
 
@@ -649,7 +756,7 @@ def publico(urls=None):
     estado = cfg("estado")
     cuenta = {
         r["estado"]: r["n"]
-        for r in DB.execute("SELECT estado, COUNT(*) n FROM participantes GROUP BY estado").fetchall()
+        for r in DB.execute("SELECT estado, COUNT(*) n FROM participantes WHERE sala=? GROUP BY estado", (SALA,))
     }
     datos = {
         "evento": cfg("evento"),
@@ -678,6 +785,10 @@ def publico(urls=None):
         ]
     if estado in ("cerrado", "resultados"):
         datos["experimento"] = experimento()
+        if estado != "resultados":  # la verdad de cada publicación sale solo con los resultados (FR6.1)
+            for pp in datos["experimento"].get("por_publicacion", []):
+                pp.pop("verdad", None)
+                pp.pop("multitud_acierta", None)
     return datos
 
 
@@ -686,12 +797,16 @@ def resumen_admin(urls=None):
     rank = {f["id"]: f for f in clasificacion()}
     resp_count = {
         r["participante_id"]: r["n"]
-        for r in DB.execute("SELECT participante_id, COUNT(*) n FROM respuestas GROUP BY participante_id").fetchall()
+        for r in DB.execute(
+            "SELECT r.participante_id, COUNT(*) n FROM respuestas r JOIN participantes p ON p.id=r.participante_id "
+            "WHERE p.sala=? GROUP BY r.participante_id",
+            (SALA,),
+        )
     }
     total_preg = len(PREGUNTAS)
     filas = []
     restante_comun = restante_reto()
-    for p in DB.execute("SELECT * FROM participantes ORDER BY id").fetchall():
+    for p in DB.execute("SELECT * FROM participantes WHERE sala=? ORDER BY id", (SALA,)).fetchall():
         restante = restante_comun if p["estado"] == "en_curso" else None
         f = rank.get(p["id"], {})
         filas.append(
@@ -775,9 +890,13 @@ def csv_resultados():
     )
     rank = {f["id"]: f for f in clasificacion()}
     pts = {}
-    for r in DB.execute("SELECT participante_id, pregunta_id, puntos FROM respuestas").fetchall():
+    for r in DB.execute(
+        "SELECT r.participante_id, r.pregunta_id, r.puntos FROM respuestas r JOIN participantes p "
+        "ON p.id=r.participante_id WHERE p.sala=?",
+        (SALA,),
+    ):
         pts.setdefault(r["participante_id"], {})[r["pregunta_id"]] = r["puntos"]
-    filas = DB.execute("SELECT * FROM participantes").fetchall()
+    filas = DB.execute("SELECT * FROM participantes WHERE sala=?", (SALA,)).fetchall()
     filas = sorted(filas, key=lambda p: (rank.get(p["id"], {}).get("puesto") or 10**6, p["id"]))
     fmt = lambda v: f"{v:.4f}".replace(".", ",") if isinstance(v, float) else v  # noqa: E731
     for p in filas:
@@ -824,7 +943,8 @@ def csv_respuestas():
     )
     for r in DB.execute(
         "SELECT r.*, p.codigo, p.nombre, p.grupo, p.inicio FROM respuestas r JOIN participantes p "
-        "ON p.id=r.participante_id ORDER BY p.id, r.momento"
+        "ON p.id=r.participante_id WHERE p.sala=? ORDER BY p.id, r.momento",
+        (SALA,),
     ).fetchall():
         w.writerow(
             [
@@ -848,6 +968,7 @@ class ErrorAPI(Exception):
     def __init__(self, mensaje, codigo=400):
         super().__init__(mensaje)
         self.codigo = codigo
+        self.extra = {}  # claves que se suman a {"error": ...}, como «existente» de un colegio repetido
 
 
 def limpiar(texto, largo=80):
@@ -862,42 +983,41 @@ def nuevo_codigo():
 
 
 def registrar(d):
+    try:
+        usar_sala(d.get("sala"))
+    except ErrorAPI:
+        raise ErrorAPI("El código de sala no es correcto. Pídeselo a tu docente.") from None
     if cfg("estado") not in ("inscripcion", "abierto"):
         raise ErrorAPI("Las inscripciones están cerradas.")
-    if limpiar(d.get("sala"), 10).upper() != cfg("sala"):
-        raise ErrorAPI("El código de sala no es correcto. Míralo en el tablero.")
     nombre = limpiar(d.get("nombre"), 60)
-    colegio = limpiar(d.get("colegio"), 80)
     grado = limpiar(d.get("grado"), 10)
     if len(nombre) < 3:
         raise ErrorAPI("Escribe tu nombre (o el del equipo).")
     if grado not in ("9", "10", "11"):
         raise ErrorAPI("Elige el grado: 9, 10 u 11.")
-    lista = colegios()
-    if lista:  # con lista de colegios, se elige de ella (así el ranking no tiene «Col. X» y «colegio x» separados)
-        exacto = {c.lower(): c for c in lista}
-        if colegio.lower() not in exacto:
-            raise ErrorAPI("Elige tu colegio de la lista.")
-        colegio = exacto[colegio.lower()]
-    elif len(colegio) < 3:
-        raise ErrorAPI("Escribe el nombre de tu colegio.")
+    # el colegio se elige de la lista de la sala (así no hay «Col. X» y «colegio x» separados)
+    elegido = {c["id_colegio"]: c["nombre"] for c in colegios_sala()}.get(limpiar(d.get("colegio"), 20))
+    if not elegido:
+        raise ErrorAPI("Elige tu colegio de la lista.")
+    colegio = elegido
     if DB.execute(
-        "SELECT 1 FROM participantes WHERE lower(nombre)=lower(?) AND lower(colegio)=lower(?) AND grado=?",
-        (nombre, colegio, grado),
+        "SELECT 1 FROM participantes WHERE sala=? AND lower(nombre)=lower(?) AND colegio=? AND grado=?",
+        (SALA, nombre, colegio, grado),
     ).fetchone():
         raise ErrorAPI(
             "Ya hay alguien inscrito con ese nombre en ese colegio y grado. Si eres tú, entra con tu "
             "código; si no, agrega tu segundo apellido."
         )
-    n = DB.execute("SELECT COUNT(*) n FROM participantes").fetchone()["n"]
-    grupo = "AB"[n % 2]  # asignación alternada: grupos del mismo tamaño para el experimento
+    n = DB.execute("SELECT COUNT(*) n FROM participantes WHERE sala=?", (SALA,)).fetchone()["n"]
+    grupo = "AB"[n % 2]  # asignación alternada en cada sala: grupos del mismo tamaño para el experimento
     codigo, token = nuevo_codigo(), secrets.token_urlsafe(24)
     DB.execute(
-        "INSERT INTO participantes(codigo, token, nombre, colegio, grado, integrantes, grupo, semilla, creado, "
-        "estado) VALUES(?,?,?,?,?,?,?,?,?, 'registrado')",
+        "INSERT INTO participantes(codigo, token, sala, nombre, colegio, grado, integrantes, grupo, semilla, "
+        "creado, estado) VALUES(?,?,?,?,?,?,?,?,?,?, 'registrado')",
         (
             codigo,
             token,
+            SALA,
             nombre,
             colegio,
             grado,
@@ -954,18 +1074,20 @@ def navegador_de(cab):
 
 
 def revisar_clave_admin(clave, ip, nav):
-    """True si la clave es la del panel. Aplica los dos frenos y recuerda el navegador que acertó."""
+    """Rol de la clave (ver rol_de_clave), o None si no sirve. Aplica los dos frenos y recuerda el navegador que
+    acertó."""
     quien = f"nav:{nav}" if nav else f"ip:{ip}"
     FRENO_ADMIN.revisar(quien)
     if nav not in NAVEGADORES_DOCENTES:
         FRENO_ADMIN_RED.revisar(ip)
-    if not secrets.compare_digest(clave.encode("utf-8"), CLAVE_ADMIN.encode("utf-8")):
+    rol = rol_de_clave(clave)
+    if not rol:
         FRENO_ADMIN.fallo(quien)
         FRENO_ADMIN_RED.fallo(ip)
-        return False
+        return None
     if nav and len(NAVEGADORES_DOCENTES) < 1000:
         NAVEGADORES_DOCENTES.add(nav)
-    return True
+    return rol
 
 
 def entrar(d, ip=""):
@@ -1045,9 +1167,9 @@ def cambiar_estado(nuevo, motivo="cierre"):
             ps = pausas()
             ps[-1][1] = ahora
             set_cfg("pausas", json.dumps(ps))
-        for p in DB.execute("SELECT * FROM participantes WHERE estado='en_curso'").fetchall():
+        for p in DB.execute("SELECT * FROM participantes WHERE estado='en_curso' AND sala=?", (SALA,)).fetchall():
             finalizar(p, ahora, motivo)
-        DB.execute("UPDATE participantes SET estado='no_inicio' WHERE estado='registrado'")
+        DB.execute("UPDATE participantes SET estado='no_inicio' WHERE estado='registrado' AND sala=?", (SALA,))
         if not cfg("cerrado_en"):
             set_cfg("cerrado_en", ahora)
     set_cfg("estado", nuevo)
@@ -1080,19 +1202,26 @@ def controlar_reloj(d):
 
 
 def guardar_colegios(texto):
-    nombres, vistos = [], set()
+    """Deja en la sala los colegios del texto (uno por línea): agrega los nuevos y quita los que ya no están,
+    salvo los que tienen inscritos."""
+    nombres = {}
     for linea in str(texto or "").splitlines():
         n = limpiar(linea, 80)
-        if len(n) >= 3 and n.lower() not in vistos:
-            vistos.add(n.lower())
-            nombres.append(n)
+        if len(n) >= 3:
+            nombres.setdefault(normalizar(n), n)
     if len(nombres) > 200:
         raise ErrorAPI("Máximo 200 colegios.")
-    set_cfg("colegios", json.dumps(nombres, ensure_ascii=False))
+    actuales = {normalizar(c["nombre"]): c["id_colegio"] for c in colegios_sala()}
+    for clave, id_colegio in actuales.items():
+        if clave not in nombres:
+            quitar_colegio(id_colegio)
+    for clave, nombre in nombres.items():
+        if clave not in actuales:
+            agregar_colegio(nombre, provisional=False)
 
 
 def accion_participante(d):
-    p = DB.execute("SELECT * FROM participantes WHERE id=?", (int(d.get("id", 0)),)).fetchone()
+    p = DB.execute("SELECT * FROM participantes WHERE id=? AND sala=?", (int(d.get("id", 0)), SALA)).fetchone()
     if not p:
         raise ErrorAPI("Participante no encontrado.", 404)
     accion = d.get("accion")
@@ -1118,18 +1247,103 @@ def accion_participante(d):
 def reiniciar(d):
     if d.get("confirmar") != "BORRAR":
         raise ErrorAPI("Escribe BORRAR para confirmar.")
-    copia = RUTA_DB.parent / f"copia_reto_{time.strftime('%Y%m%d_%H%M%S')}.db"
-    DB.execute("VACUUM INTO ?", (str(copia),))
-    DB.executescript(
-        "DELETE FROM respuestas; DELETE FROM eventos; DELETE FROM participantes; "
-        "DELETE FROM sqlite_sequence WHERE name='participantes';"
-    )
+    copia = copiar_sala()
+    ids = "SELECT id FROM participantes WHERE sala=?"
+    DB.execute(f"DELETE FROM respuestas WHERE participante_id IN ({ids})", (SALA,))  # noqa: S608
+    DB.execute(f"DELETE FROM eventos WHERE participante_id IN ({ids})", (SALA,))  # noqa: S608
+    DB.execute("DELETE FROM participantes WHERE sala=?", (SALA,))
     for k in ("abierto_en", "cerrado_en"):
-        DB.execute("DELETE FROM config WHERE clave=?", (k,))
+        set_cfg(k, None)
     set_cfg("estado", "inscripcion")
     set_cfg("pausas", "[]")
     set_cfg("extra_seg", "0")
     return {"ok": True, "copia": copia.name}
+
+
+def copiar_sala():
+    """Copia completa de los datos de la sala en curso (sin su clave), en una base SQLite que se puede volver a
+    abrir: datos/copias/<sala>_<fecha>.db (FR4.3, FR11.6). Las demás salas no van en la copia."""
+    carpeta = RUTA_DB.parent / "copias"
+    carpeta.mkdir(exist_ok=True)
+    destino = carpeta / f"{SALA}_{time.strftime('%Y%m%d_%H%M%S')}.db"
+    DB.execute("ATTACH DATABASE ? AS copia", (str(destino),))
+    try:
+        for tabla, consulta in (
+            (
+                "salas",
+                "SELECT codigo, creada, estado, evento, modo_sorpresa, retro, duracion_min, pausas, "
+                "extra_seg, abierto_en, cerrado_en FROM salas WHERE codigo=?",
+            ),
+            ("colegios", "SELECT * FROM colegios WHERE sala=?"),
+            ("participantes", "SELECT * FROM participantes WHERE sala=?"),
+            (
+                "respuestas",
+                "SELECT r.* FROM respuestas r JOIN participantes p ON p.id=r.participante_id WHERE p.sala=?",
+            ),
+            ("eventos", "SELECT e.* FROM eventos e JOIN participantes p ON p.id=e.participante_id WHERE p.sala=?"),
+        ):
+            DB.execute(f"CREATE TABLE copia.{tabla} AS {consulta}", (SALA,))  # noqa: S608
+    finally:
+        DB.execute("DETACH DATABASE copia")
+    return destino
+
+
+def listar_salas():
+    """Salas para el panel del semillero. Nunca trae claves ni huellas."""
+    filas = DB.execute(
+        "SELECT s.codigo, s.estado, s.evento, s.creada, s.abierto_en, s.cerrado_en, "
+        "(SELECT COUNT(*) FROM participantes p WHERE p.sala=s.codigo AND p.estado != 'descalificado') inscritos "
+        "FROM salas s ORDER BY s.creada"
+    ).fetchall()
+    return {
+        "salas": [
+            {
+                "sala": f["codigo"],
+                "estado": f["estado"],
+                "evento": f["evento"],
+                "creada": f["creada"],
+                "abierta": float(f["abierto_en"]) if f["abierto_en"] else None,
+                "cerrada": float(f["cerrado_en"]) if f["cerrado_en"] else None,
+                "inscritos": f["inscritos"],
+            }
+            for f in filas
+        ]
+    }
+
+
+def regenerar_clave():
+    """Nueva clave para la sala en curso; la anterior deja de servir en ese momento."""
+    clave = nueva_clave_sala(SALA)
+    DB.execute("UPDATE salas SET huella_clave=? WHERE codigo=?", (huella(clave), SALA))
+    return {"sala": SALA, "clave": clave}
+
+
+def borrar_sala(d):
+    """Borra la sala en curso con todos sus datos y sus copias. Solo cerrada o con resultados."""
+    if d.get("confirmar") != "BORRAR":
+        raise ErrorAPI("Escribe BORRAR para confirmar.")
+    if cfg("estado") not in ("cerrado", "resultados"):
+        raise ErrorAPI("Solo se borra una sala cerrada o con resultados publicados.")
+    ids = "SELECT id FROM participantes WHERE sala=?"
+    DB.execute(f"DELETE FROM respuestas WHERE participante_id IN ({ids})", (SALA,))  # noqa: S608
+    DB.execute(f"DELETE FROM eventos WHERE participante_id IN ({ids})", (SALA,))  # noqa: S608
+    for tabla in ("participantes", "colegios"):
+        DB.execute(f"DELETE FROM {tabla} WHERE sala=?", (SALA,))  # noqa: S608
+    DB.execute("DELETE FROM salas WHERE codigo=?", (SALA,))
+    for copia in (RUTA_DB.parent / "copias").glob(f"{SALA}_*.db"):
+        copia.unlink()
+    return {"ok": True}
+
+
+def rol_de_clave(clave):
+    """("sala", código) si es la clave de una sala, ("semillero", "") si es la del semillero; si no, None."""
+    codigo = clave.split("-", 1)[0] if "-" in clave else ""
+    fila = DB.execute("SELECT huella_clave FROM salas WHERE codigo=?", (codigo,)).fetchone() if codigo else None
+    if fila and hmac.compare_digest(huella(clave), fila["huella_clave"]):
+        return "sala", codigo
+    if CLAVE_ADMIN and secrets.compare_digest(clave.encode("utf-8"), CLAVE_ADMIN.encode("utf-8")):
+        return "semillero", ""
+    return None
 
 
 # =========================================================================== HTTP
@@ -1207,78 +1421,40 @@ def _atender(metodo, ruta, cab, leer_cuerpo, ip, nav):  # noqa: C901
             raise ErrorAPI("Método no permitido.", 405)
         with LOCK:
             vencer_tiempos()
+            sala_pedida = (qs.get("sala") or [""])[0]
+            if url.path.startswith("/api/admin/"):
+                rol = es_admin()
+                if not rol:
+                    raise ErrorAPI("Clave de docente incorrecta.", 403)
+                r = atender_admin(metodo, url.path, sala_pedida, d if metodo == "POST" else {}, rol, cab)
+                return r if isinstance(r, tuple) else json_r(200, r)
             if metodo == "GET":
                 if url.path == "/api/estado":
                     p = participante_por_token(token())
                     if not p:
                         raise ErrorAPI("Sesión no encontrada.", 401)
+                    usar_sala(p["sala"])
                     return json_r(200, estado_participante(p, (qs.get("firma") or [""])[0]))
                 if url.path == "/api/publico":
+                    if not sala_pedida:  # chequeo de salud: no muestra ninguna sala
+                        return json_r(200, {"ok": True})
+                    usar_sala(sala_pedida)
                     return json_r(200, publico(origen_y_urls(cab)))
-                if url.path.startswith("/api/admin/"):
-                    if not es_admin():
-                        raise ErrorAPI("Clave de docente incorrecta.", 403)
-                    if url.path == "/api/admin/resumen":
-                        return json_r(200, resumen_admin(origen_y_urls(cab)))
-                    if url.path == "/api/admin/resultados.csv":
-                        return (
-                            200,
-                            "text/csv; charset=utf-8",
-                            csv_resultados().encode("utf-8"),
-                            {"Content-Disposition": 'attachment; filename="resultados_reto.csv"'},
-                        )
-                    if url.path == "/api/admin/respuestas.csv":
-                        return (
-                            200,
-                            "text/csv; charset=utf-8",
-                            csv_respuestas().encode("utf-8"),
-                            {"Content-Disposition": 'attachment; filename="respuestas_detalle.csv"'},
-                        )
+                if url.path == "/api/colegios":
+                    usar_sala(sala_pedida)
+                    return json_r(
+                        200, {"colegios": [{k: c[k] for k in ("id_colegio", "nombre")} for c in colegios_sala()]}
+                    )
                 raise ErrorAPI("No encontrado.", 404)
 
             if url.path == "/api/registro":
                 return json_r(200, registrar(d))
             if url.path == "/api/entrar":
                 return json_r(200, entrar(d, ip))
-            if url.path.startswith("/api/admin/"):
-                if not es_admin():
-                    raise ErrorAPI("Clave de docente incorrecta.", 403)
-                if url.path == "/api/admin/login":
-                    return json_r(200, {"ok": True})
-                if url.path == "/api/admin/estado":
-                    cambiar_estado(d.get("estado"))
-                elif url.path == "/api/admin/reloj":
-                    return json_r(200, controlar_reloj(d))
-                elif url.path == "/api/admin/config":
-                    for k in ("modo_sorpresa", "retro"):
-                        if k in d:
-                            set_cfg(k, "1" if d[k] else "0")
-                    if "sala" in d:
-                        sala = limpiar(d["sala"], 8).upper()
-                        if not re.fullmatch(r"[A-Z0-9]{3,8}", sala):
-                            raise ErrorAPI("La sala debe tener de 3 a 8 letras o números.")
-                        set_cfg("sala", sala)
-                    if "evento" in d:
-                        set_cfg("evento", limpiar(d["evento"], 80) or "Reto")
-                    if "colegios" in d:
-                        guardar_colegios(d["colegios"])
-                    if "duracion_min" in d:
-                        if cfg("estado") != "inscripcion":
-                            raise ErrorAPI(
-                                "La duración solo se cambia antes de abrir el reto. Con el reto "
-                                "abierto, usa «+5 min» o «−5 min» en el reloj."
-                            )
-                        set_cfg("duracion_min", max(10, min(240, int(d["duracion_min"]))))
-                elif url.path == "/api/admin/participante":
-                    accion_participante(d)
-                elif url.path == "/api/admin/reiniciar":
-                    return json_r(200, reiniciar(d))
-                else:
-                    raise ErrorAPI("No encontrado.", 404)
-                return json_r(200, {"ok": True})
             p = participante_por_token(token())
             if not p:
                 raise ErrorAPI("Sesión no encontrada. Vuelve a entrar con tu código.", 401)
+            usar_sala(p["sala"])
             if url.path == "/api/comenzar":
                 comenzar(p)
                 return json_r(200, {"ok": True})
@@ -1294,10 +1470,99 @@ def _atender(metodo, ruta, cab, leer_cuerpo, ip, nav):  # noqa: C901
                 return json_r(200, {"ok": True})
             raise ErrorAPI("No encontrado.", 404)
     except ErrorAPI as e:
-        return json_r(e.codigo, {"error": str(e)})
+        return json_r(e.codigo, {"error": str(e), **e.extra})
     except Exception as e:  # noqa: BLE001
         print("[error]", repr(e), file=sys.stderr)
         return json_r(500, {"error": "Error interno del servidor."})
+
+
+SOLO_SEMILLERO = ("/api/admin/salas", "/api/admin/salas/crear", "/api/admin/salas/clave", "/api/admin/salas/borrar")
+
+
+def atender_admin(metodo, ruta, sala_pedida, d, rol, cab):  # noqa: PLR0913
+    """Rutas del panel. Con la clave de una sala todo actúa sobre esa sala y un ?sala= distinto da 403; con la del
+    semillero, las rutas de una sala exigen ?sala= (400 si falta) y además se administran las salas."""
+    tipo, propia = rol
+    if ruta == "/api/admin/login":
+        return {"ok": True, "rol": tipo, **({"sala": propia} if tipo == "sala" else {})}
+    pedida = limpiar(sala_pedida, 8).upper()
+    if ruta in SOLO_SEMILLERO and tipo != "semillero":
+        raise ErrorAPI("Solo la clave del semillero administra las salas.", 403)
+    if ruta == "/api/admin/salas":
+        return listar_salas()
+    if ruta == "/api/admin/salas/crear":
+        return crear_sala(d.get("evento", ""))
+    if tipo == "sala" and pedida and pedida != propia:
+        raise ErrorAPI("Esta clave es de otra sala.", 403)
+    if tipo == "semillero" and not pedida:
+        raise ErrorAPI("Indica la sala (?sala=código).")
+    usar_sala(propia or pedida)
+    if ruta == "/api/admin/salas/clave":
+        return regenerar_clave()
+    if ruta == "/api/admin/salas/borrar":
+        return borrar_sala(d)
+    if metodo == "GET":
+        return admin_get(ruta, cab)
+    return admin_post(ruta, d)
+
+
+def admin_get(ruta, cab):
+    if ruta == "/api/admin/resumen":
+        return resumen_admin(origen_y_urls(cab))
+    if ruta == "/api/admin/colegios":
+        return {"elegidos": colegios_sala()}
+    for nombre, generar in (("resultados", csv_resultados), ("respuestas", csv_respuestas)):
+        if ruta == f"/api/admin/{nombre}.csv":
+            archivo_csv = f"{nombre}_reto_{SALA}.csv"
+            return (
+                200,
+                "text/csv; charset=utf-8",
+                generar().encode("utf-8"),
+                {"Content-Disposition": f'attachment; filename="{archivo_csv}"'},
+            )
+    raise ErrorAPI("No encontrado.", 404)
+
+
+def admin_post(ruta, d):  # noqa: C901
+    if ruta == "/api/admin/estado":
+        cambiar_estado(d.get("estado"))
+    elif ruta == "/api/admin/reloj":
+        return controlar_reloj(d)
+    elif ruta == "/api/admin/config":
+        configurar(d)
+    elif ruta == "/api/admin/colegios":
+        if d.get("accion") == "provisional":
+            return {"ok": True, "id_colegio": agregar_colegio(d.get("nombre"), provisional=True)}
+        if d.get("accion") == "quitar":
+            quitar_colegio(limpiar(d.get("id_colegio"), 20))
+        else:
+            raise ErrorAPI("Acción no válida para los colegios.")
+    elif ruta == "/api/admin/participante":
+        accion_participante(d)
+    elif ruta == "/api/admin/reiniciar":
+        return reiniciar(d)
+    else:
+        raise ErrorAPI("No encontrado.", 404)
+    return {"ok": True}
+
+
+def configurar(d):
+    if "sala" in d:
+        raise ErrorAPI("El código de sala no se puede cambiar.")
+    for k in ("modo_sorpresa", "retro"):
+        if k in d:
+            set_cfg(k, "1" if d[k] else "0")
+    if "evento" in d:
+        set_cfg("evento", limpiar(d["evento"], 80) or "Reto")
+    if "colegios" in d:
+        guardar_colegios(d["colegios"])
+    if "duracion_min" in d:
+        if cfg("estado") != "inscripcion":
+            raise ErrorAPI(
+                "La duración solo se cambia antes de abrir el reto. Con el reto "
+                "abierto, usa «+5 min» o «−5 min» en el reloj."
+            )
+        set_cfg("duracion_min", max(10, min(240, int(d["duracion_min"]))))
 
 
 def archivo(ruta):
@@ -1359,6 +1624,7 @@ def preparar(ruta_db=None, clave=None):
     global DB, CLAVE_ADMIN, RUTA_DB
     RUTA_DB = Path(ruta_db or os.environ.get("RETO_DB") or DATOS / "reto.db").resolve()
     RUTA_DB.parent.mkdir(parents=True, exist_ok=True)
+    apartar_base_sin_salas(RUTA_DB)
     DB = conectar(RUTA_DB)
     inicializar_config()
     archivo_clave = RUTA_DB.parent / "clave_docente.txt"  # junto a la base: un simulacro no toca la clave real
@@ -1372,6 +1638,20 @@ def preparar(ruta_db=None, clave=None):
         CLAVE_ADMIN = "".join(secrets.choice(ALFABETO) for _ in range(10))
         archivo_clave.write_text(CLAVE_ADMIN, encoding="utf-8")
     return CLAVE_ADMIN
+
+
+def apartar_base_sin_salas(ruta):
+    """Una base de la versión de una sola sala no se mezcla con la de varias: se renombra (sus datos quedan
+    intactos en reto_antes_de_salas_<fecha>.db) y se empieza una base nueva."""
+    if not ruta.exists():
+        return
+    con = sqlite3.connect(ruta)
+    try:
+        columnas = {f[1] for f in con.execute("PRAGMA table_info(participantes)")}
+    finally:
+        con.close()
+    if columnas and "sala" not in columnas:
+        ruta.rename(ruta.with_name(f"reto_antes_de_salas_{time.strftime('%Y%m%d_%H%M%S')}.db"))
 
 
 def crear_app():
@@ -1473,10 +1753,14 @@ def main():
     print("  ESTUDIANTES (misma red wifi):")
     for u in URLS:
         print(f"      {u}")
-    print(f"  CÓDIGO DE SALA:  {cfg('sala')}")
-    print(f"  TABLERO (proyector):  {URLS[0]}/tablero")
+    salas = listar_salas()["salas"]
+    if not salas:  # en un salón basta una sala: se crea al primer arranque y su clave se muestra una vez
+        nueva = crear_sala()
+        print(f"  SALA NUEVA:  {nueva['sala']}   ·   CLAVE DE LA SALA:  {nueva['clave']}   (anótala: no se repite)")
+    print(f"  SALAS:  {', '.join(s['sala'] for s in salas) or nueva['sala']}")
+    print(f"  TABLERO (proyector):  {URLS[0]}/tablero?sala=<código>")
     print(f"  PANEL DOCENTE:        http://localhost:{a.puerto}/admin")
-    print(f"  CLAVE DOCENTE:        {CLAVE_ADMIN}   (guardada en datos/clave_docente.txt)")
+    print(f"  CLAVE DEL SEMILLERO:  {CLAVE_ADMIN}   (guardada en datos/clave_docente.txt; crea y borra salas)")
     print(linea)
     print("  Deja esta ventana abierta durante todo el reto. Ctrl+C para detener.")
     print(linea)
