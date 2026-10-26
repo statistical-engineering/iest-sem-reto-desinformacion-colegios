@@ -38,14 +38,14 @@ navegador del estudiante
 - **Pages no ejecuta código del servidor.** Las pantallas solas abren, pero muestran «Sin conexión con
   el servidor»: nadie califica, nadie guarda puntajes y no hay reloj. Se probó y se descartó.
 - **La API va en PythonAnywhere** porque ya existía una versión del reto preparada para ese servicio,
-  completa y probada con carga (300 estudiantes simultáneos de 6 colegios). La versión de
-  `despliegues/cloudflare/` todavía es un corte delgado: solo atiende 14 preguntas de tipo `opcion`.
+  con todos los tipos de pregunta. La versión de `despliegues/cloudflare/` todavía es un corte
+  delgado: solo atiende las preguntas de tipo `opcion` (`despliegues/cloudflare/LEEME.md`, «Estado»).
 - **Pages redirige en vez de llamar a la API por CORS.** Así no se cambia ninguna pantalla ni el
   servidor, las cookies y el token quedan en un solo dominio, y si el servidor cambia de dirección
   solo se edita una línea (`destino.js`).
 - **Las respuestas no salen del servidor.** `banco_preguntas.json` está solo en PythonAnywhere, que es
   quien califica. Los archivos de la rama `gh-pages` no las tienen.
-- **Costo: US$0.** PythonAnywhere gratis no pide tarjeta; la condición es renovar cada mes (ver
+- **Costo: US$ 0.** PythonAnywhere gratis no pide tarjeta; la condición es renovar cada mes (ver
   [Mantenimiento](#mantenimiento)).
 
 ### De dónde sale el código que corre en PythonAnywhere
@@ -93,7 +93,7 @@ Pestaña **Web** → **Add a new web app**:
 
 1. Dominio: el gratuito, `Angels16384.pythonanywhere.com` → **Next**.
 2. Framework: **Manual configuration** (no Django ni Flask).
-3. Python: **3.13** (la más nueva de la lista).
+3. Python: **3.12**, la misma de `.python-version`.
 4. **Next**. PythonAnywhere crea `/var/www/angels16384_pythonanywhere_com_wsgi.py` con un «Hello World».
 
 ### Paso 3. Subir el paquete
@@ -129,9 +129,17 @@ Lo que hace ese archivo:
 | `CLAVE_ADMIN` | la línea `CLAVE = "..."` | Clave del panel docente. El servidor no arranca si tiene menos de 10 caracteres |
 | `RETO_DB` | `/home/Angels16384/reto_datos/reto.db` | Base de datos fuera del código |
 | `RETO_JOURNAL` | `DELETE` | El disco de PythonAnywhere es de red: SQLite en modo clásico, sin WAL |
-| `RETO_URL_PUBLICA` | `https://Angels16384.pythonanywhere.com` | El enlace que muestra el panel |
+| `RETO_URL_PUBLICA` | `https://angels16384.pythonanywhere.com` | El enlace que muestra el panel (en minúsculas) |
 
 Luego `from servidor import crear_app` y `application = crear_app()`.
+
+El `wsgi_pythonanywhere.py` del paquete arma esa URL con el usuario tal cual (`Angels16384`). Para que
+quede en minúsculas se ajustó esa línea en el WSGI publicado:
+
+```bash
+sed -i 's|^os.environ\["RETO_URL_PUBLICA"\] = .*|os.environ["RETO_URL_PUBLICA"] = "https://angels16384.pythonanywhere.com"|' \
+  /var/www/angels16384_pythonanywhere_com_wsgi.py
+```
 
 **La clave la escribió a mano el responsable** en el editor de PythonAnywhere (Files → el archivo WSGI
 → línea `CLAVE = "..."` → **Save**). No se escribió en ningún chat, commit ni documento. Se comprobó,
@@ -140,8 +148,11 @@ sin mostrarla, que ya no fuera la de ejemplo y que tuviera al menos 10 caractere
 ```bash
 W=/var/www/angels16384_pythonanywhere_com_wsgi.py
 grep -c 'CAMBIA-ESTA-CLAVE' $W        # debe dar 0
-python3.13 -c "import ast; t=open('$W').read(); ast.parse(t); exec(t.split('CARPETA')[0]); print(len(CLAVE.strip()))"
+python3.12 -c "import re; m = re.search(r'^CLAVE = \"(.*)\"', open('$W').read(), re.M); print(len(m.group(1).strip()))"
 ```
+
+El segundo comando lee solo la línea `CLAVE = "..."` e imprime cuántos caracteres tiene (debe dar 10 o
+más), sin ejecutar el archivo y sin mostrar la clave.
 
 > No se recarga la web app antes de cambiar la clave: si arranca con la de ejemplo, cualquiera que la
 > conozca entra al panel.
@@ -171,14 +182,21 @@ Rama huérfana (sin historial en común con `develop`, no se fusiona) con 5 arch
 Las tres páginas conservan `?sala=...` y el `#...` del enlace, y muestran un botón «Entrar al reto» por si
 el navegador bloquea la redirección. Si `destino.js` todavía dice `TU_USUARIO`, no redirigen.
 
-Se publicó desde una carpeta aparte con esos archivos:
+La rama se creó una sola vez, desde una carpeta aparte con esos archivos (`git init -b gh-pages`,
+commit y push). Para cambiarla después **no se usa `push -f`**, que borra lo que otra persona haya
+subido: se clona solo esa rama, se cambia el archivo y se hace un `push` normal.
 
 ```bash
-git init -b gh-pages
-git add -A
-git commit -m "chore(pages): llevar al reto en PythonAnywhere"
-git push -f git@github.com:statistical-engineering/iest-sem-reto-desinformacion-colegios.git gh-pages
+git clone --branch gh-pages --single-branch \
+  git@github.com:statistical-engineering/iest-sem-reto-desinformacion-colegios.git reto-gh-pages
+cd reto-gh-pages
+# editar destino.js (o la página que haga falta)
+git add destino.js
+git commit -m "chore(pages): cambiar la direccion del servidor"
+git push
 ```
+
+Si `git push` responde que la rama remota tiene cambios nuevos, primero `git pull` y luego `git push`.
 
 ### Paso 8. Verificación
 
@@ -239,17 +257,26 @@ códigos de estudiante se bloquean después de 40 fallos por minuto por IP.
 
 No hacerlo con un reto en curso.
 
-1. En la copia local, ejecutar `4_Codigo_y_datos/REGENERAR_TODO.bat`, que crea un
-   `reto_para_internet.zip` nuevo.
-2. Subirlo en **Files**, reemplazando el anterior.
-3. En la consola **Bash**: `unzip -o ~/reto_para_internet.zip -d ~/reto`.
-4. Revisar que el WSGI conserve la clave (el `unzip` no lo toca, vive en `/var/www/`) y pulsar **Reload**.
+1. En la copia local, ejecutar `4_Codigo_y_datos/REGENERAR_TODO.bat`. Regenera el banco y las guías,
+   pero **no** crea el `.zip`.
+2. Armar el paquete a mano. En PowerShell, desde la carpeta `Reto_Desinformacion_Colegios` de la copia
+   local (`tar` viene con Windows 10 y 11):
+
+   ```powershell
+   tar -a -cf reto_para_internet.zip 2_Aplicacion_Reto/servidor.py 2_Aplicacion_Reto/banco_preguntas.json 2_Aplicacion_Reto/wsgi_pythonanywhere.py 2_Aplicacion_Reto/web
+   tar -tf reto_para_internet.zip
+   ```
+
+   El segundo comando lista lo que quedó adentro: deben salir los 10 archivos de la lista de arriba.
+3. Subirlo en **Files**, reemplazando el anterior.
+4. En la consola **Bash**: `unzip -o ~/reto_para_internet.zip -d ~/reto`.
+5. Revisar que el WSGI conserve la clave (el `unzip` no lo toca, vive en `/var/www/`) y pulsar **Reload**.
 
 Los datos de los estudiantes no se borran: están en `~/reto_datos/`.
 
 ### Si cambia la dirección del servidor
 
-Editar `destino.js` en la rama `gh-pages`, hacer commit y push a esa rama. Nada más cambia.
+Editar `destino.js` en la rama `gh-pages` como dice el [Paso 7](#paso-7-página-de-entrada-en-la-rama-gh-pages), con `push` normal. Nada más cambia.
 
 ### Si algo falla
 
