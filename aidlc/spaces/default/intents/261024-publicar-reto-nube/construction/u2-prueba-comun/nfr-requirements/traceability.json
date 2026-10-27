@@ -17,6 +17,8 @@
     "BR1.2",
     "BR1.3",
     "BR1.4",
+    "BR1.5",
+    "BR1.6",
     "BR2.1",
     "BR2.2",
     "BR2.3",
@@ -30,61 +32,278 @@
     "BR4.4",
     "BR4.5",
     "BR4.6",
+    "BR4.7",
+    "BR4.8",
+    "BR4.9",
+    "BR4.10",
     "BR5.1",
     "BR5.2",
     "BR5.3",
     "BR5.4",
+    "BR5.5",
     "BR6.1",
     "BR6.2",
     "BR6.3",
+    "BR6.4",
     "BR7.1",
     "BR7.2",
     "BR7.3",
     "BR7.4",
     "BR8.1",
-    "BR8.2"
+    "BR8.2",
+    "BR8.3"
   ],
   "coverage": [
-    {"id": "NFR1", "status": "OK", "target": "U2-E1, U2-E3"},
-    {"id": "NFR2", "status": "OK", "target": "U2-P1, U2-P2"},
-    {"id": "NFR3", "status": "OK", "target": "U2-P1, U2-P2"},
-    {"id": "NFR4", "status": "OK", "target": "U2-R5"},
-    {"id": "NFR5", "status": "OK", "target": "U2-R6"},
-    {"id": "NFR6", "status": "OK", "target": "U2-E2"},
-    {"id": "NFR8", "status": "OK", "target": "U2-S3, U2-S7"},
-    {"id": "NFR9", "status": "OK", "target": "U2-S1, U2-S2, U2-S6"},
-    {"id": "NFR10", "status": "OK", "target": "U2-S5"},
-    {"id": "NFR11", "status": "OK", "target": "U2-R1, U2-O3"},
-    {"id": "NFR12", "status": "OK", "target": "tech-stack-decisions.md (U2-M1: cobertura con trace y unittest)"},
-    {"id": "BR1.1", "status": "OK", "target": "U2-S1"},
-    {"id": "BR1.2", "status": "OK", "target": "U2-O1"},
-    {"id": "BR1.3", "status": "OK", "target": "U2-R4"},
-    {"id": "BR1.4", "status": "OK", "target": "U2-R3"},
-    {"id": "BR2.1", "status": "OK", "target": "U2-S3, U2-R2"},
-    {"id": "BR2.2", "status": "OK", "target": "U2-P4"},
-    {"id": "BR2.3", "status": "OK", "target": "U2-P4, U2-S3"},
-    {"id": "BR2.4", "status": "OK", "target": "U2-R4 (falla con mensaje, nunca adivina)"},
-    {"id": "BR3.1", "status": "OK", "target": "U2-R1"},
-    {"id": "BR3.2", "status": "OK", "target": "U2-R1"},
-    {"id": "BR3.3", "status": "OK", "target": "U2-R1, U2-O3"},
-    {"id": "BR4.1", "status": "OK", "target": "U2-O1 (misma forma de salida que simulacro.py)"},
-    {"id": "BR4.2", "status": "OK", "target": "U2-P3, U2-R7"},
-    {"id": "BR4.3", "status": "OK", "target": "U2-R7"},
-    {"id": "BR4.4", "status": "OK", "target": "U2-R7"},
-    {"id": "BR4.5", "status": "OK", "target": "U2-S6 (el resumen se pide con la clave de la sala)"},
-    {"id": "BR4.6", "status": "OK", "target": "U2-R2"},
-    {"id": "BR5.1", "status": "OK", "target": "U2-S7"},
-    {"id": "BR5.2", "status": "OK", "target": "U2-S7"},
-    {"id": "BR5.3", "status": "OK", "target": "U2-S7"},
-    {"id": "BR5.4", "status": "OK", "target": "U2-S7"},
-    {"id": "BR6.1", "status": "OK", "target": "U2-E1, U2-E3"},
-    {"id": "BR6.2", "status": "OK", "target": "U2-E1"},
-    {"id": "BR6.3", "status": "OK", "target": "U2-S6"},
-    {"id": "BR7.1", "status": "OK", "target": "U2-P1, U2-P2, U2-E4"},
-    {"id": "BR7.2", "status": "OK", "target": "U2-R5"},
-    {"id": "BR7.3", "status": "OK", "target": "U2-R6"},
-    {"id": "BR7.4", "status": "OK", "target": "U2-E2"},
-    {"id": "BR8.1", "status": "OK", "target": "U2-O2, U2-O3, U2-S4"},
-    {"id": "BR8.2", "status": "OK", "target": "U2-O3"}
-  ]
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "U2-E1, U2-E3"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "U2-P1, U2-P2"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "U2-P1, U2-P2"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "U2-R5"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "U2-R6"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "U2-E2"
+    },
+    {
+      "id": "NFR8",
+      "status": "OK",
+      "target": "U2-S3, U2-S7"
+    },
+    {
+      "id": "NFR9",
+      "status": "OK",
+      "target": "U2-S1, U2-S2, U2-S6, U2-S8"
+    },
+    {
+      "id": "NFR10",
+      "status": "OK",
+      "target": "U2-S5"
+    },
+    {
+      "id": "NFR11",
+      "status": "OK",
+      "target": "U2-R1, U2-O3"
+    },
+    {
+      "id": "NFR12",
+      "status": "OK",
+      "target": "tech-stack-decisions.md (U2-M1: cobertura con trace y unittest)"
+    },
+    {
+      "id": "BR1.1",
+      "status": "OK",
+      "target": "U2-S1"
+    },
+    {
+      "id": "BR1.2",
+      "status": "OK",
+      "target": "U2-O1"
+    },
+    {
+      "id": "BR1.3",
+      "status": "OK",
+      "target": "U2-R4"
+    },
+    {
+      "id": "BR1.4",
+      "status": "OK",
+      "target": "U2-R3"
+    },
+    {
+      "id": "BR1.5",
+      "status": "OK",
+      "target": "U2-R2, U2-R3, U2-S5"
+    },
+    {
+      "id": "BR1.6",
+      "status": "OK",
+      "target": "U2-R2, U2-R4, U2-R8"
+    },
+    {
+      "id": "BR2.1",
+      "status": "OK",
+      "target": "U2-S3, U2-R2"
+    },
+    {
+      "id": "BR2.2",
+      "status": "OK",
+      "target": "U2-P4"
+    },
+    {
+      "id": "BR2.3",
+      "status": "OK",
+      "target": "U2-P4, U2-S3"
+    },
+    {
+      "id": "BR2.4",
+      "status": "OK",
+      "target": "U2-R4 (falla con mensaje, nunca adivina)"
+    },
+    {
+      "id": "BR3.1",
+      "status": "OK",
+      "target": "U2-R1"
+    },
+    {
+      "id": "BR3.2",
+      "status": "OK",
+      "target": "U2-R1"
+    },
+    {
+      "id": "BR3.3",
+      "status": "OK",
+      "target": "U2-R1, U2-O3"
+    },
+    {
+      "id": "BR4.1",
+      "status": "OK",
+      "target": "U2-O1 (misma forma de salida que simulacro.py)"
+    },
+    {
+      "id": "BR4.2",
+      "status": "OK",
+      "target": "U2-P3, U2-R7"
+    },
+    {
+      "id": "BR4.3",
+      "status": "OK",
+      "target": "U2-R7"
+    },
+    {
+      "id": "BR4.4",
+      "status": "OK",
+      "target": "U2-R7"
+    },
+    {
+      "id": "BR4.5",
+      "status": "OK",
+      "target": "U2-S1 (el resumen se pide con la clave docente en X-Clave-Admin)"
+    },
+    {
+      "id": "BR4.6",
+      "status": "OK",
+      "target": "U2-R2"
+    },
+    {
+      "id": "BR4.7",
+      "status": "OK",
+      "target": "U2-O1 (pantalla_* en la salida y en el JSON)"
+    },
+    {
+      "id": "BR4.8",
+      "status": "OK",
+      "target": "U2-R1 (guion determinista con la inválida de cada tipo)"
+    },
+    {
+      "id": "BR4.9",
+      "status": "OK",
+      "target": "U2-R1"
+    },
+    {
+      "id": "BR4.10",
+      "status": "OK",
+      "target": "U2-S7 (resultados solo con el reto publicado)"
+    },
+    {
+      "id": "BR5.1",
+      "status": "OK",
+      "target": "U2-S7"
+    },
+    {
+      "id": "BR5.2",
+      "status": "OK",
+      "target": "U2-S7"
+    },
+    {
+      "id": "BR5.3",
+      "status": "OK",
+      "target": "U2-S7"
+    },
+    {
+      "id": "BR5.4",
+      "status": "OK",
+      "target": "U2-S7"
+    },
+    {
+      "id": "BR5.5",
+      "status": "OK",
+      "target": "U2-S7"
+    },
+    {
+      "id": "BR6.1",
+      "status": "OK",
+      "target": "U2-E1, U2-E3"
+    },
+    {
+      "id": "BR6.2",
+      "status": "OK",
+      "target": "U2-E1, U2-R7"
+    },
+    {
+      "id": "BR6.3",
+      "status": "OK",
+      "target": "U2-S6"
+    },
+    {
+      "id": "BR6.4",
+      "status": "OK",
+      "target": "U2-R4 (colegios_errores no esencial)"
+    },
+    {
+      "id": "BR7.1",
+      "status": "OK",
+      "target": "U2-P1, U2-P2, U2-E4"
+    },
+    {
+      "id": "BR7.2",
+      "status": "OK",
+      "target": "U2-R5"
+    },
+    {
+      "id": "BR7.3",
+      "status": "OK",
+      "target": "U2-R6"
+    },
+    {
+      "id": "BR7.4",
+      "status": "OK",
+      "target": "U2-E2"
+    },
+    {
+      "id": "BR8.1",
+      "status": "OK",
+      "target": "U2-O2, U2-O3, U2-S4"
+    },
+    {
+      "id": "BR8.2",
+      "status": "OK",
+      "target": "U2-O3"
+    },
+    {
+      "id": "BR8.3",
+      "status": "OK",
+      "target": "tech-stack-decisions.md (contrato_api.yaml y test_contrato.py)"
+    }
+  ],
+  "revision": "2026-10-27 (una sola sala)"
 }

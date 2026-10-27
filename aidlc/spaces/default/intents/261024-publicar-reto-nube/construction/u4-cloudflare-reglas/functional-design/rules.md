@@ -1,10 +1,16 @@
 # Reglas — U4 `u4-cloudflare-reglas`
 
+> **Revisión 2026-10-25 (una sola sala, solo Cloudflare).** Las reglas valen para un solo reto con varios
+> colegios, cada uno con su reloj (FR3.1, FR11, ADR-011). Cambian BR1.2, BR3.1, BR3.3, BR4.1 a BR4.4,
+> BR5.3, BR5.4, BR6.1, BR6.2 y BR7.2; el 4.º criterio del orden pasa de `fin` a `tiempo_usado` (FR2.6).
+> Nuevas: BR2.5 (redondeo), BR3.4 (por grado), BR4.5 a BR4.8 (relojes por colegio), BR5.5 (lista de
+> colegios) y BR7.3 (caso obligatorio de dos colegios). Los ids que siguen valiendo no cambian.
+
 Las reglas puras de la opción Cloudflare Workers: las seis «calculadoras» de ADR-001 con la forma del
-contrato C4 (`contract-summary.md`, «C4. Forma de las reglas»). Salen de `requirements.md` (FR2, FR3.2,
-FR6, FR7.1, FR7.4, FR10), de `components.md` (capa Reglas) y de `servidor.py`, que define la conducta que
-no cambia. Las decisiones propias de la unidad están en `../decisions.md` (ADR-W6 a ADR-W9). Ninguna regla
-lee la base ni el reloj: la hora llega como argumento, y ninguna escribe en el registro.
+contrato C4 (`contract-summary.md`, «C4. Forma de las reglas»). Salen de `requirements.md` (FR2, FR3,
+FR6, FR7.1, FR7.4, FR10, FR11), de `components.md` (capa Reglas) y de `servidor.py`, que define la conducta
+que no cambia. Las decisiones propias de la unidad están en `../decisions.md` (ADR-W6 a ADR-W9). Ninguna
+regla lee la base ni el reloj: la hora llega como argumento, y ninguna escribe en el registro.
 
 ```yaml
 rules:
@@ -20,8 +26,8 @@ rules:
     statement: 'La revision de una pregunta en resultados trae la respuesta de la variante con ids opacos y su explicacion; nunca antes.'
     category: policy
     applies_to: 'Banco: revision_publica'
-    trigger: 'U6 la llama solo con sala en resultados y participante finalizado'
-    logic: 'revision_publica(banco, semilla, grupo) devuelve, por cada pregunta visible para el grupo, {respuesta: respuesta_opaca(...), explicacion}; la regla no decide cuando se llama: es pura, y la condicion la aplica Resultados (U6)'
+    trigger: 'U5 la llama en /api/estado solo con el reto en resultados y el participante finalizado'
+    logic: 'revision_publica(banco, semilla, grupo) devuelve, por cada pregunta visible para el grupo, {respuesta: respuesta_opaca(...), explicacion}; la regla no decide cuando se llama: es pura, y la condicion la aplica quien la llama'
     violation: no aplica
     source: 'FR6.2, NFR8, estado_participante() de servidor.py'
   - id: BR1.3
@@ -57,69 +63,117 @@ rules:
     violation: 'RangeError (error interno 500): el banco validado nunca trae un tipo desconocido'
     source: 'FR2.1, NFR11, fraccion() de servidor.py, ADR-W8'
   - id: BR2.4
-    statement: 'El bono y el cierre del intento siguen la formula de hoy.'
+    statement: 'El bono y el cierre del intento siguen la formula de hoy, con todos los tiempos medidos desde inicio, que es el arranque del colegio.'
     category: calculation
     applies_to: 'Calificacion: bono y cerrar_intento'
     trigger: entregar, vencer y cerrar
-    logic: 'como en U1 (BR4.3): bono = bono_max x (puntos / puntos_totales) x (1 - tiempo_respuestas / duracion); fin = min(ahora, inicio + duracion); tiempo_respuestas = min(duracion, max(0, (ultima o fin) - inicio))'
+    logic: 'bono = bono_max x (puntos / puntos_totales) x (1 - tiempo_respuestas / duracion); fin = min(ahora, inicio + duracion); tiempo_usado = max(0, fin - inicio); tiempo_respuestas = min(duracion, max(0, (ultima o fin) - inicio)); total = puntos + bono; inicio es el arranque del colegio del participante aunque haya pulsado «Comenzar» despues (BR4.6), asi un colegio que arranco tarde no pierde bono'
     violation: no aplica
-    source: 'FR2.2, finalizar() de servidor.py'
+    source: 'FR2.2, FR2.6, finalizar() de servidor.py'
+  - id: BR2.5
+    statement: 'Todo redondeo de las reglas da el mismo numero que round de Python, tambien en los empates exactos.'
+    category: calculation
+    applies_to: 'comun.js: redondear(x, d), usado por Clasificacion, por el resumen (U5) y por los CSV (U6)'
+    trigger: cada redondeo
+    logic: 'r = Number(x.toFixed(d)); IF x x 10^d es exactamente un entero mas 0,5 (comprobado con la mantisa y el exponente del doble en BigInt) THEN se elige el vecino cuyo ultimo digito es par; ELSE r; d entre 0 y 9; x no finito no se redondea (no ocurre con datos validos)'
+    violation: no aplica
+    source: 'NFR11, ADR-W8 (revisión 2026-10-25)'
   - id: BR3.1
-    statement: 'ordenar da el orden total de una sala con los desempates de hoy y nunca dos puestos iguales.'
+    statement: 'ordenar da el orden total de todo el reto, entre todos los colegios, con los desempates de hoy medidos desde el arranque de cada colegio, y nunca dos puestos iguales.'
     category: calculation
     applies_to: 'Clasificacion: ordenar'
-    trigger: 'ranking, resumen, CSV y puesto del participante'
-    logic: 'recibe solo participantes finalizados de una sala; clave de orden: -redondear9(total), -redondear9(puntos), tiempo_respuestas asc, fin asc, id asc; devuelve FilaClasificada con puesto 1..n y los redondeos de clasificacion() (puntos, bono y total a 4; nota a 2; tiempo_usado a 1; tiempo_respuestas a 3); el id es unico, asi que el orden es total'
+    trigger: 'ranking, podio, resumen, CSV y puesto del participante'
+    logic: 'recibe solo participantes finalizados (ParticipanteParaOrden), de todos los colegios; clave de orden: -redondear(total, 9), -redondear(puntos, 9), tiempo_respuestas asc, tiempo_usado asc, id asc (FR2.3 con FR2.6: «hora de entrega» es tiempo_usado, relativo al arranque; «orden de inscripcion» es id, hora real); devuelve FilaClasificada con puesto 1..n y los redondeos de clasificacion() (puntos, bono y total a 4; nota a 2; tiempo_usado a 1; tiempo_respuestas a 3); el id es unico, asi que el orden es total; con todos los inicio iguales da el mismo orden que clasificacion() de servidor.py, que usa fin'
     violation: no aplica
-    source: 'FR2.3, NFR11, FR11.2, clasificacion() de servidor.py'
+    source: 'FR2.3, FR2.6, NFR11, FR11.2, FR11.7, clasificacion() de servidor.py, contrato C4'
   - id: BR3.2
     statement: 'La nota es 1 + 4 x puntos / 1.000, redondeada a 2 decimales, sobre los puntos y no sobre el total.'
     category: calculation
     applies_to: 'Clasificacion: nota'
-    trigger: ranking y vista del participante
-    logic: 'nota(puntos, puntos_totales) = redondear2(1 + 4 x puntos / puntos_totales)'
+    trigger: ranking, por grado y vista del participante
+    logic: 'nota(puntos, puntos_totales) = redondear(1 + 4 x puntos / puntos_totales, 2), en ese orden de operaciones; va de 1,0 a 5,0'
     violation: no aplica
-    source: 'clasificacion() y estado_participante() de servidor.py'
+    source: 'FR2.5, clasificacion() y estado_participante() de servidor.py'
   - id: BR3.3
-    statement: 'puesto_de devuelve el puesto de un participante en el orden de su sala o null si no esta finalizado.'
+    statement: 'puesto_de devuelve el puesto general y el puesto en el grado de un participante, o null si no esta finalizado.'
     category: calculation
     applies_to: 'Clasificacion: puesto_de'
     trigger: vista del participante en resultados
-    logic: 'busca el id en ordenar(finalizados de la sala)'
+    logic: 'busca el id en por_grado(ordenar(finalizados del reto)) y devuelve {puesto, puesto_grado, nota}'
     violation: no aplica
-    source: 'puesto_de() de servidor.py'
+    source: 'FR2.5, puesto_de() de servidor.py, D2 del contrato'
+  - id: BR3.4
+    statement: 'por_grado da el orden de cada grado con el mismo criterio del orden general y le pone puesto_grado a cada fila.'
+    category: calculation
+    applies_to: 'Clasificacion: por_grado'
+    trigger: tablero en resultados, resumen, CSV del paquete y vista del participante
+    logic: 'recibe la salida de ordenar; para cada grado de 9, 10 y 11, en el orden general, puesto_grado = 1..n del grado; devuelve {lista: filas con puesto_grado, por_grado: {"9": [...], "10": [...], "11": [...]}}; un grado sin finalizados da lista vacia; no reordena: el orden dentro del grado es el general filtrado, asi el podio de un grado nunca contradice el general'
+    violation: no aplica
+    source: 'FR2.5, D4 del contrato (por_grado y puesto_grado)'
   - id: BR4.1
-    statement: 'Solo se permiten las transiciones de sala que ofrece el panel; repetir el estado actual no es una transicion.'
+    statement: 'Solo se permiten las transiciones del reto que ofrece el panel; repetir el estado actual no es una transicion.'
     category: constraint
-    applies_to: 'CicloDeSala: transicion_permitida'
+    applies_to: 'CicloDelReto: transicion_permitida'
     trigger: POST /api/admin/estado
-    logic: 'permitidas: inscripcion a abierto, abierto a cerrado, cerrado a resultados (los tres botones de admin.js); todo lo demas es falso; reiniciar no pasa por aqui (U6); U1 solo tenia la primera'
-    violation: '400 en reto.js (U5 fija el mensaje)'
-    source: 'FR7.4, FR1.1, admin.js (botones Abrir, Cerrar, Publicar)'
+    logic: 'permitidas: inscripcion a abierto, abierto a cerrado, cerrado a resultados (los tres botones de admin.js); todo lo demas es falso; pedir el estado actual lo atiende reto.js como «ok sin hacer nada» antes de llamar; reiniciar no pasa por aqui (U6)'
+    violation: '400 «Ese cambio de estado no está permitido.» en reto.js'
+    source: 'FR7.4, FR1.1, admin.js (botones Abrir, Cerrar, Publicar), contrato «Cambios de estado»'
   - id: BR4.2
-    statement: 'La hora de entrega es la menor entre ahora, inicio + duracion y el cierre de la sala, con su motivo.'
+    statement: 'La hora de entrega de un intento es la menor entre ahora, inicio + duracion y el cierre del reto, con su motivo; inicio es el arranque de su colegio.'
     category: calculation
-    applies_to: 'CicloDeSala: hora_de_entrega'
-    trigger: antes de toda operacion sobre una sala
-    logic: 'como en U1 (BR4.2) y ADR-004, ahora con cierre no nulo: IF cierre <= ahora y cierre < inicio + duracion THEN {cierre, motivo cierre}; IF ahora >= inicio + duracion THEN {inicio + duracion, motivo tiempo}; ELSE nada; un intento iniciado despues del cierre no existe (comenzar exige sala abierta)'
+    applies_to: 'CicloDelReto: hora_de_entrega'
+    trigger: antes de toda operacion (vencer por colegio, ADR-004)
+    logic: 'IF cierre no es null y cierre <= ahora y cierre < inicio + duracion THEN {cierre, motivo cierre}; IF ahora >= inicio + duracion THEN {inicio + duracion, motivo tiempo}; ELSE nada; cierre es cerrado_en del reto; como inicio es el arranque, cada colegio vence a su hora'
     violation: no aplica
-    source: 'FR3.2, FR3.3, ADR-004'
+    source: 'FR3.1, FR3.2, FR3.3, ADR-004, ADR-011'
   - id: BR4.3
-    statement: 'Al cerrar la sala, quien nunca empezo pasa a no_inicio y quien esta en curso se entrega con motivo cierre.'
+    statement: 'Al cerrar el reto, quien nunca empezo pasa a no_inicio y quien esta en curso se entrega con motivo cierre, en todos los colegios.'
     category: calculation
-    applies_to: 'CicloDeSala: estado_tras_cierre'
+    applies_to: 'CicloDelReto: estado_tras_cierre'
     trigger: transicion a cerrado
-    logic: 'registrado a no_inicio; en_curso a finalizado con motivo cierre (via hora_de_entrega); finalizado, descalificado y no_inicio quedan igual'
+    logic: 'registrado a no_inicio; en_curso a finalizado con motivo cierre (cerrar_intento con ahora = hora del cierre); finalizado, descalificado y no_inicio quedan igual; da igual si el colegio arranco o vencio'
     violation: no aplica
-    source: 'FR1.2, cambiar_estado() de servidor.py'
+    source: 'FR1.2, FR3.1 («Cerrar el reto» entrega lo pendiente de todos los colegios), cambiar_estado() de servidor.py'
   - id: BR4.4
-    statement: 'La sala admite inscripciones solo en inscripcion y abierto.'
+    statement: 'El reto admite inscripciones solo en inscripcion y abierto.'
     category: constraint
-    applies_to: 'CicloDeSala: admite_inscripciones'
+    applies_to: 'CicloDelReto: admite_inscripciones'
     trigger: POST /api/registro
     logic: 'true si estado es inscripcion o abierto'
     violation: '400 «Las inscripciones están cerradas.» en reto.js'
     source: 'FR1.3, registrar() de servidor.py'
+  - id: BR4.5
+    statement: 'Un colegio se arranca solo con el reto abierto y una sola vez.'
+    category: constraint
+    applies_to: 'CicloDelReto: puede_arrancar_colegio'
+    trigger: 'POST /api/admin/colegios con accion arrancar'
+    logic: 'IF estado_reto no es abierto THEN {ok: false, mensaje: «Abre el reto antes de arrancar un colegio.»}; IF arranque no es null THEN {ok: false, mensaje: «Ese colegio ya arrancó.»}; ELSE {ok: true}; no hay regla para deshacer un arranque'
+    violation: '400 con el mensaje, en reto.js'
+    source: 'FR3.1, FR11.5, ADR-011'
+  - id: BR4.6
+    statement: 'Un equipo comienza solo con el reto abierto, su colegio arrancado y el reloj de su colegio sin vencer; su inicio es el arranque del colegio.'
+    category: constraint
+    applies_to: 'CicloDelReto: puede_comenzar'
+    trigger: POST /api/comenzar
+    logic: 'en este orden: IF estado_participante no es registrado THEN {resultado: sin_cambio} (como hoy, responde ok sin hacer nada); IF estado_reto no es abierto THEN {rechazo, «El reto todavía no ha empezado. Espera la señal del docente.»}; IF arranque es null THEN {rechazo, «Tu colegio todavía no ha empezado. Espera la señal del docente.»}; IF ahora >= arranque + duracion THEN {rechazo, «El tiempo del reto ya terminó.»}; ELSE {resultado: comenzar, inicio: arranque}'
+    violation: '400 con el mensaje, en reto.js'
+    source: 'FR3.1, FR11.3, comenzar() de servidor.py (reloj global), contrato (/api/comenzar)'
+  - id: BR4.7
+    statement: 'El estado del reloj de un colegio sale solo de su arranque, la duracion y la hora.'
+    category: calculation
+    applies_to: 'CicloDelReto: estado_reloj'
+    trigger: 'GET /api/admin/colegios, resumen, /api/publico (colegios[]) y /api/estado (colegio_restante_seg)'
+    logic: 'IF arranque es null THEN {sin_arrancar, restante_seg: null}; IF ahora >= arranque + duracion THEN {vencido, restante_seg: 0}; ELSE {corriendo, restante_seg: arranque + duracion - ahora}; el estado del reto no cambia el reloj: tras cerrar, un colegio corriendo se sigue mostrando con su resta (el panel ya no lo usa para nada)'
+    violation: no aplica
+    source: 'FR11.5, ADR-011, contrato «Lista de colegios y relojes»'
+  - id: BR4.8
+    statement: 'Al abrir el reto se arrancan a la vez todos los colegios que ya tienen al menos un equipo inscrito; los demas quedan sin arrancar.'
+    category: calculation
+    applies_to: 'CicloDelReto: colegios_al_abrir'
+    trigger: transicion de inscripcion a abierto
+    logic: 'recibe [{id_colegio, arranque, equipos}] y ahora; devuelve los id_colegio con equipos >= 1 y arranque null, en orden de id_colegio; equipos cuenta participantes no descalificados; con un solo colegio con equipos, todos comparten la hora de inicio, como el reloj global de hoy (FR11.7)'
+    violation: no aplica
+    source: 'FR3.1, FR11.7, ADR-011, contrato «Cambios de estado»'
   - id: BR5.1
     statement: 'normalizar_texto aplica los cuatro pasos de FR10.2 y no cambia mayusculas ni tildes.'
     category: validation
@@ -141,33 +195,41 @@ rules:
     category: validation
     applies_to: 'LimpiezaEntrada: validar_inscripcion'
     trigger: POST /api/registro
-    logic: 'en este orden, sobre los campos ya normalizados: nombre con menos de 3 caracteres «Escribe tu nombre (o el del equipo).»; grado fuera de 9, 10, 11 «Elige el grado: 9, 10 u 11.»; colegio vacio o que no es un id de la lista de la sala «Elige tu colegio de la lista.»; devuelve la lista de errores (vacia si todo esta bien); la regla de repetido no va aqui porque necesita la base (U5)'
+    logic: 'en este orden, sobre los campos ya normalizados: nombre con menos de 3 caracteres «Escribe tu nombre (o el del equipo).»; grado fuera de 9, 10, 11 «Elige el grado: 9, 10 u 11.»; colegio vacio o que no es un id_colegio de la lista del docente (ids_colegios) «Elige tu colegio de la lista.»; devuelve la lista de errores (vacia si todo esta bien); la regla de repetido no va aqui porque necesita la base (U5)'
     violation: 'el primer mensaje de la lista, con 400, en reto.js'
-    source: 'FR10.1, FR10.3, registrar() de servidor.py'
+    source: 'FR10.1, FR10.3, registrar() de servidor.py, ADR-009'
   - id: BR5.4
-    statement: 'normalizar_nombre da el nombre comparable de un colegio: limpio, sin tildes y en minusculas.'
+    statement: 'normalizar_nombre_colegio da el nombre comparable de un colegio: limpio, sin tildes y en minusculas.'
     category: validation
-    applies_to: 'LimpiezaEntrada: normalizar_nombre'
-    trigger: catalogo y colegios provisionales
-    logic: 'normalizar_texto(texto, 80), forma NFD, sin marcas diacriticas, en minusculas; como en U1'
+    applies_to: 'LimpiezaEntrada: normalizar_nombre_colegio (alias normalizar_nombre de U1)'
+    trigger: al agregar colegios a la lista del docente
+    logic: 'normalizar_texto(texto, 80), forma NFD, sin marcas diacriticas, en minusculas; «IE San José» y «ie san jose» dan lo mismo'
     violation: no aplica
-    source: 'FR10.3, ADR-002'
+    source: 'FR10.3, ADR-009 (rechaza nombres normalizados repetidos)'
+  - id: BR5.5
+    statement: 'preparar_colegios convierte lo que pega el docente en la lista de nombres que se agregan, o en el error del primero que no sirve.'
+    category: validation
+    applies_to: 'LimpiezaEntrada: preparar_colegios'
+    trigger: 'POST /api/admin/colegios con accion agregar'
+    logic: 'entrada {nombres o nombre, existentes: [{id_colegio, nombre, nombre_normalizado}]}; se parte nombres por saltos de linea (nombre es una sola linea); cada linea pasa por normalizar_texto(linea, 80); las vacias se omiten; IF una linea tiene menos de 3 letras (caracteres de la categoria Unicode L) THEN error «Escribe el nombre del colegio (al menos 3 letras).»; IF no queda ninguna linea THEN el mismo error; IF el nombre normalizado de una linea esta en existentes THEN error «Ese colegio ya existe.» con existente {id_colegio, nombre}; dos lineas iguales tras normalizar dentro del mismo texto cuentan una vez, con la primera forma escrita (decision del asistente: el docente quiso un solo colegio); si hay error no se agrega ninguno (todo o nada, D3)'
+    violation: '400 con el mensaje (y existente cuando aplica) en reto.js'
+    source: 'ADR-009, FR10.1, FR10.3, D3 del contrato'
   - id: BR6.1
-    statement: 'calcular reproduce experimento() de hoy sobre las respuestas de una sola sala, sin descalificados.'
+    statement: 'calcular reproduce experimento() de hoy sobre las respuestas de todo el reto, sin descalificados.'
     category: calculation
     applies_to: 'Experimento: calcular'
     trigger: resumen del panel y tablero
-    logic: 'recibe banco y filas {participante_id, grupo, estado, pregunta_id, respuesta} de la sala; descarta estado descalificado; completos = quienes respondieron m1_compartir y m1_veracidad; IF n < 2 THEN {n, listo: false}; tasas por grupo A/B y clase en porcentaje (100 x aciertos / casos), null si no hay casos; multitud con veredicto V si pct_v >= 50; por_publicacion con id, verdad, pct_cree_verdadera, pct_compartiria, multitud_acierta y texto de la publicacion; mismo orden de operaciones que servidor.py'
+    logic: 'recibe banco y filas {participante_id, grupo, estado, pregunta_id, respuesta} de todos los colegios; descarta estado descalificado; completos = quienes respondieron m1_compartir y m1_veracidad; IF n < 2 THEN {n, listo: false}; tasas por grupo A/B y clase en porcentaje (100 x aciertos / casos), null si no hay casos; multitud con veredicto V si pct_v >= 50; por_publicacion con id, verdad, pct_cree_verdadera, pct_compartiria, multitud_acierta y texto de la publicacion; mismo orden de operaciones que servidor.py; el reparto A/B es de toda la sala (FR11.2)'
     violation: no aplica
     source: 'FR11.2, experimento() de servidor.py, ADR-W8'
   - id: BR6.2
-    statement: 'Antes de resultados, la version publica del experimento es solo {n, listo}.'
+    statement: 'La version publica del experimento es nada en inscripcion y abierto, {n, listo} en cerrado y el objeto completo en resultados.'
     category: policy
     applies_to: 'Experimento: experimento_publico'
     trigger: GET /api/publico
-    logic: 'IF estado es resultados THEN el objeto completo; ELSE {n, listo}'
+    logic: 'IF estado es resultados THEN el objeto completo; IF estado es cerrado THEN {n, listo}; ELSE null (reto.js no envia la clave experimento, como hoy)'
     violation: 'la comprobacion de fugas de la prueba comun (FR6.3) falla'
-    source: 'FR6.1, ADR-W9'
+    source: 'FR6.1, ADR-W9, D5 del contrato, publico() de servidor.py'
   - id: BR7.1
     statement: 'Cada funcion de C4 pasa todos los casos de la tabla compartida, y la copia de la tabla no puede estar vieja.'
     category: validation
@@ -181,9 +243,17 @@ rules:
     category: validation
     applies_to: 'pruebas/*.test.js'
     trigger: cada corrida de pruebas
-    logic: 'validar_respuesta: por tipo, uno valido y dos invalidos; a_numero: coma, punto, miles, entero, sin digitos; normalizar_texto: NFC, ancho cero, control, espacios; validar_inscripcion: nombre corto, grado, colegio; transicion_permitida: las 3 permitidas y 4 prohibidas; el banco real solo se usa para estructura y para comprobar que no sale ninguna clave secreta'
+    logic: 'validar_respuesta: por tipo, uno valido y dos invalidos; a_numero: coma, punto, miles, entero, sin digitos; normalizar_texto: NFC, ancho cero, control, espacios; validar_inscripcion: nombre corto, grado, colegio fuera de la lista; preparar_colegios: lista valida, nombre corto, repetido con la lista, repetido dentro del texto; transicion_permitida: las 3 permitidas y 4 prohibidas; puede_comenzar y puede_arrancar_colegio: cada motivo; redondear: un empate exacto por cada numero de decimales usado; el banco real solo se usa para estructura y para comprobar que no sale ninguna clave secreta'
     violation: 'cobertura de lineas menor que 80 % en src/reglas/'
     source: 'FR10.5, NFR12, phases/construction.md («Testing Standards»)'
+  - id: BR7.3
+    statement: 'La tabla trae el caso obligatorio de dos colegios: con arranques distintos el orden usa los tiempos relativos, y con los mismos arranques coincide con la version local.'
+    category: validation
+    applies_to: 'casos de Clasificacion.ordenar y Calificacion.cerrar_intento'
+    trigger: al generar la tabla (ADR-W7)
+    logic: 'caso A: colegio 1 arranca en t0 y colegio 2 en t0 + 600 s; dos equipos, uno por colegio, con los mismos puntos y la ultima respuesta a los mismos minutos de su arranque: mismo bono y el desempate lo decide tiempo_usado y despues id, nunca la hora de pared; caso B: los mismos equipos con los dos arranques en t0: la salida es igual a la de clasificacion() de servidor.py; el generador se detiene si B no coincide'
+    violation: 'generar_casos.py se detiene; node --test falla'
+    source: 'FR2.6, FR11.7, contrato C4 (caso_obligatorio)'
 ```
 
 ## Resumen
@@ -191,12 +261,12 @@ rules:
 | Grupo | Reglas | Qué cubre |
 |---|---|---|
 | BR1 | BR1.1–BR1.3 | Banco: traducción opaca por tipo, revisión y examen público completo |
-| BR2 | BR2.1–BR2.4 | Calificacion: validación, `a_numero`, fracción de los 10 tipos, bono y cierre |
-| BR3 | BR3.1–BR3.3 | Clasificacion: orden total, nota y puesto |
-| BR4 | BR4.1–BR4.4 | CicloDeSala: transiciones del panel, hora de entrega con cierre, estados al cerrar, inscripciones |
-| BR5 | BR5.1–BR5.4 | LimpiezaEntrada: texto, integrantes, validación de la inscripción, nombre comparable |
-| BR6 | BR6.1–BR6.2 | Experimento: cálculo por sala y versión pública |
-| BR7 | BR7.1–BR7.2 | Pruebas con la tabla compartida y sin servidor |
+| BR2 | BR2.1–BR2.5 | Calificacion: validación, `a_numero`, fracción de los 10 tipos, bono y cierre desde el arranque, redondeo como Python |
+| BR3 | BR3.1–BR3.4 | Clasificacion: orden total del reto, nota, puesto y puesto por grado |
+| BR4 | BR4.1–BR4.8 | CicloDelReto: transiciones, entrega por colegio, cierre, inscripciones, arrancar, comenzar, estado del reloj y colegios al abrir |
+| BR5 | BR5.1–BR5.5 | LimpiezaEntrada: texto, integrantes, inscripción, nombre comparable y lista de colegios |
+| BR6 | BR6.1–BR6.2 | Experimento: cálculo de todo el reto y versión pública |
+| BR7 | BR7.1–BR7.3 | Pruebas con la tabla compartida, sin servidor, y el caso de dos colegios |
 
-Lo que necesita base o reloj (nombre repetido, grupo A/B, códigos únicos, escribir la entrega) no es
-regla: lo hacen U5 y U6 en `reto.js`, llamando a estas funciones.
+Lo que necesita base o reloj (nombre repetido, grupo A/B, códigos únicos, guardar un arranque, escribir la
+entrega) no es regla: lo hacen U5 y U6 en `reto.js`, llamando a estas funciones.
