@@ -4,6 +4,19 @@ Intención `261024-publicar-reto-nube`, alcance `classic`, proyecto brownfield, 
 Las respuestas citadas como Q1-Q9 están en `requirements-analysis-questions.md` (misma carpeta); las
 de Practices Discovery, en `aidlc/spaces/default/intents/261024-publicar-reto-nube/inception/practices-discovery/team-practices.md`.
 
+**Revisión del 2026-10-25 (reajuste a una sola sala).** El humano pegó las reglas de negocio del reto
+(copia textual en `reglas-de-negocio-2026-10-25.md`, misma carpeta) y dijo: «esto lo controla un solo
+profesor en un solo panel. no con varios profesores con varios paneles. es solo una sala.» Esta revisión:
+
+- reemplaza FR11 (antes «varios retos en paralelo, uno por sala») por **una sola sala con varios
+  colegios y un reloj por colegio**;
+- agrega el podio general, la clasificación por grado y la nota (FR2.5);
+- ajusta NFR1 y NFR9 a una sola sala y una sola clave docente;
+- deja **solo Cloudflare** para construir y desplegar (FR12.2c); las demás opciones quedan documentadas.
+
+Las decisiones abiertas que dejaban las reglas las tomó el asistente con la potestad que dio el humano
+(«potestad absoluta para decidir»); cada una lleva la marca «decisión del asistente».
+
 ## Intent analysis
 
 **Qué se busca.** Que el reto «Detectives de la desinformación» se pueda jugar desde un **enlace fijo
@@ -25,10 +38,11 @@ dominio, SQL, reloj y HTTP mezclados (`aidlc/spaces/default/codekb/Reto_Desinfor
 que obligan a una sola instancia con disco local (`aidlc/spaces/default/codekb/Reto_Desinformacion_Colegios/architecture.md`,
 «Dónde vive cada pieza de estado»).
 
-**Tipo de cambio.** Cuatro versiones nuevas en la nube, una por opción de hosting (FR12), construidas
-al lado de la versión local sin tocarla. Cada una lleva las dos correcciones de confidencialidad (FR6)
-y las tres funcionalidades nuevas pedidas en esta etapa: datos organizados (FR9), entrada limpia (FR10)
-y varias salas en paralelo (FR11).
+**Tipo de cambio.** Una versión nueva en la nube, en Cloudflare (FR12.2c), construida al lado de la
+versión local sin tocarla. Lleva las dos correcciones de confidencialidad (FR6) y las tres
+funcionalidades nuevas pedidas en esta etapa: datos organizados (FR9), entrada limpia (FR10) y una sola
+sala con varios colegios, cada uno con su propio reloj (FR11). Las demás opciones de hosting quedan en
+la tabla de comparación solo con su documentación.
 Alcance: todo el sistema (servidor, despliegue, guía de publicación). Complejidad: estándar a alta por
 el riesgo de integración (cambiar de hosting y de estructura a la vez), que es la razón del corte
 delgado primero (`team-practices.md`, «Walking Skeleton»).
@@ -66,11 +80,33 @@ versión de la nube y no a la versión local, que no cambia (FR12.1).
   (`architecture.md`, «Calificación»).
 - **FR2.4** Cada pregunta se acepta una sola vez por participante, y la fase «¿es verdad?» del Exp. 01
   sigue exigiendo antes «¿lo compartirías?».
+- **FR2.5 Podio general, clasificación por grado y nota** (reglas de negocio, §1 y §7). El podio
+  (1.°, 2.° y 3.°) se calcula entre **todos los equipos de todos los colegios** de la sala, con el orden
+  total de FR2.3. También hay clasificación por grado (9.°, 10.° y 11.°) con el mismo orden. La nota va
+  de 1,0 a 5,0: `1 + 4 × puntos / 1.000`, sin el bono.
+- **FR2.6 Tiempos relativos al reloj del colegio** (decisión del asistente). Como cada colegio arranca
+  a una hora distinta (FR3.1), el bono y el desempate por «última respuesta más temprana» y «entrega
+  más temprana» usan los minutos transcurridos desde el arranque del colegio de cada equipo, no la hora
+  del reloj de pared. Así un colegio que empezó 10 minutos tarde no pierde bono ni desempates. La
+  «inscripción más temprana» sí usa la hora real, porque todos se inscriben antes de arrancar.
 
 ### FR3. Conservar el reloj medido por el servidor
 
-- **FR3.1** El tiempo de cada intento lo mide el servidor (reloj global por defecto o individual desde
-  «Comenzar»); el navegador solo muestra la cuenta regresiva.
+- **FR3.1 Un reloj por colegio** (reglas de negocio, §4.1; antes: reloj global o individual). El
+  tiempo lo mide el servidor y el navegador solo muestra la cuenta regresiva. Cada colegio de la sala
+  tiene su propio reloj de 90 minutos, que empieza cuando el docente lo arranca desde el panel (decisión
+  del asistente: es el docente quien sabe cuándo un colegio está listo):
+  - «Abrir el reto» pasa la sala a `abierto` y arranca a la vez el reloj de todos los colegios que ya
+    tienen equipos inscritos; es el caso ideal en que todos empiezan juntos.
+  - Un colegio que llega tarde se arranca después con su propio botón «Arrancar reloj» en el panel, y
+    tiene sus 90 minutos completos desde ese momento.
+  - Cada arranque pide confirmación, como los cambios de estado.
+  - Un equipo solo puede pulsar «Comenzar» cuando su colegio ya arrancó; su tiempo corre desde el
+    arranque del colegio, aunque pulse «Comenzar» después. Mientras tanto ve «Tu colegio todavía no ha
+    empezado. Espera la señal del docente.».
+  - El reloj de un colegio no se detiene si se cierra la página; al vencer, el servidor entrega
+    automáticamente lo de cada equipo de ese colegio (FR3.2).
+  - «Cerrar el reto» entrega lo pendiente de todos los colegios, hayan vencido o no.
 - **FR3.2** Toda consulta (del estudiante, el tablero, el panel o una descarga) ve como entregados los
   intentos vencidos, con la hora de entrega igual al vencimiento exacto; puntos, bono, clasificación y
   CSV salen iguales que hoy. No hace falta un proceso aparte que revise cada pocos segundos (reescrito
@@ -176,8 +212,7 @@ de la nube. La versión local no se refactoriza (FR12.1).
   pruebas unitarias que corren sin servidor ni base (NFR12). Antes este punto exigía «funciones puras
   sin SQL, HTTP ni `time.time()`»: venía del pedido inicial y no de una necesidad del problema
   (decisión del humano, 2026-10-25), así que pasa a ser una opción más dentro del ADR.
-- **FR7.2** Cada ruta HTTP tiene su nivel de acceso (público, token, clave de sala o clave del
-  semillero), y una ruta sin nivel declarado no responde. Cómo se despachan las rutas (por ejemplo, una
+- **FR7.2** Cada ruta HTTP tiene su nivel de acceso (público, token o clave docente), y una ruta sin nivel declarado no responde. Cómo se despachan las rutas (por ejemplo, una
   tabla en vez de cadenas de `if`) lo decide el ADR con la misma comparación que FR7.1.
 - **FR7.3** El ADR también decide si se crea una capa aparte para la base de datos. Solo se justifica
   si hay al menos dos implementaciones reales.
@@ -219,8 +254,8 @@ cada archivo, ni un diccionario de las columnas.
   `AAAA-MM-DD_<sala>_reto.zip`, que contiene:
   - `participantes.csv`, `respuestas.csv`, `eventos.csv` y `colegios.csv` (la lista de FR10.3), uno
     por tabla de la base;
-  - la copia completa de los datos de la sala que define FR4.3. En las opciones con SQLite es
-    `reto.db`, hecha con `VACUUM INTO` como hoy en «Reiniciar», o armada solo con las filas de la sala;
+  - la copia completa de los datos del reto que define FR4.3. En las opciones con SQLite es
+    `reto.db`, hecha con `VACUUM INTO` como hoy en «Reiniciar»;
     en las demás es el formato de su ADR;
   - `metadatos.json`, con la fecha y hora de inicio y fin del reto, la sala, el nombre del evento, la
     duración, el número de participantes, la versión (huella) del banco y la versión de la app.
@@ -239,7 +274,7 @@ cada archivo, ni un diccionario de las columnas.
   carpeta por año y en ella un `.zip` por reto, sin cambiarle el nombre, así quedan ordenados por fecha.
 
 - **FR9.5 Solo el docente descarga** (decisión del humano, 2026-10-25). El paquete se sirve solo por una
-  ruta `/api/admin/*`. Lo descarga quien tenga la clave de esa sala o la clave del semillero (NFR9). La
+  ruta `/api/admin/*`. Lo descarga quien tenga la clave docente (NFR9). La
   clave viaja en la cabecera `X-Clave-Admin`. Sin clave o con una clave incorrecta, la respuesta es 403 y no trae datos.
   El paquete nunca lleva ninguna clave. `participantes.csv` tampoco trae el `token` de sesión de cada
   participante.
@@ -282,11 +317,10 @@ lista cerrada.
   El texto se guarda como lo escribió la persona después de esa limpieza: no se cambian mayúsculas ni
   tildes, porque el tablero lo muestra (conducta visible).
 - **FR10.3 Colegio de una lista cerrada** (decisión del humano, 2026-10-25, excepción aprobada a «no
-  cambiar la conducta visible»). El semillero mantiene un catálogo único de colegios con su clave. En
-  «inscripción», antes de abrir el reto, el docente elige con la clave de su sala los colegios de ese
-  catálogo que participan; si falta uno el día del reto, lo agrega a su sala como «provisional» y el
-  semillero después lo confirma o lo une con uno existente (ADR-002, Domain Design). Una sala puede
-  mezclar estudiantes de varios colegios (decisión del humano, 2026-10-25). En la pantalla de inscripción, el campo «Colegio» deja de ser
+  cambiar la conducta visible»). En «inscripción», antes de abrir el reto, el docente carga
+  desde su panel la lista de colegios que participan; si falta uno el día del reto, lo agrega en ese
+  momento (revisión del 2026-10-25: con un solo docente ya no hay catálogo del semillero ni colegios
+  «provisionales»). La sala mezcla equipos de varios colegios, cada uno con su reloj (FR3.1, FR11). En la pantalla de inscripción, el campo «Colegio» deja de ser
   texto libre y pasa a ser una lista para elegir. El servidor guarda el identificador del colegio, y
   rechaza cualquier valor que no esté en la lista. El nombre del colegio se muestra igual que está
   escrito en el catálogo. El control de nombre repetido compara el identificador del colegio en lugar del texto
@@ -316,49 +350,40 @@ Then elige su colegio de esa lista y no puede escribir otro
 And si una petición trae un colegio que no está en la lista, el servidor la rechaza
 ```
 
-### FR11. Varios retos en paralelo, uno por sala (decisión del humano, 2026-10-25)
+### FR11. Una sola sala, un solo docente, un reloj por colegio (revisión del 2026-10-25)
 
-Hoy el servidor lleva un solo reto: en la tabla `config` hay un solo `estado`, una sola `sala` y una
-sola duración (`servidor.py`, `inicializar_config`). Puede pasar que haya retos al mismo tiempo en
-lugares distintos. Este cambio se aprueba como excepción a «no cambiar la conducta visible», solo en lo
-que diga cada punto de abajo.
+Reemplaza el FR11 anterior («varios retos en paralelo, uno por sala»). El humano: «esto lo controla un
+solo profesor en un solo panel. no con varios profesores con varios paneles. es solo una sala.» A la
+sala entran equipos de varios colegios y cada colegio tiene su propio reloj (FR3.1). Este cambio se
+aprueba como excepción a «no cambiar la conducta visible», solo en lo que diga cada punto de abajo.
 
-- **FR11.1 Un servidor, varias salas.** Con un solo enlace fijo hay varias salas, cada una con su
-  código. Cada sala tiene su propio estado (inscripción → abierto → cerrado → resultados), su duración,
-  su reloj y su configuración (modo sorpresa, retroalimentación, nombre del evento).
-- **FR11.2 La sala separa todo.** Cada participante, respuesta y evento pertenece a una sala. Dentro de
-  cada sala se aplican igual que hoy:
-  - la calificación;
-  - el orden total sin empates (NFR11);
-  - el reparto alternado de los grupos A/B del experimento;
-  - el control de nombre repetido (FR10.3);
-  - la lista de colegios (FR10.3);
-  - la publicación de resultados (FR6, NFR8).
-
-  Publicar resultados en una sala no revela nada de otra sala.
-- **FR11.3 Pantalla del estudiante igual.** El estudiante ya escribe el código de sala al inscribirse;
-  con ese código entra a su sala. Su pantalla no cambia.
-- **FR11.4 Tablero por sala.** Cada sala tiene su tablero público y su clasificación; no hay ranking
-  general (decisión del humano). El docente proyecta el tablero de su sala.
-- **FR11.5 Panel y claves por sala.** Cada docente maneja solo su sala con su propia clave. Una clave
-  de una sala no lee ni cambia otra sala, y cualquier intento recibe 403. La clave general del
-  semillero, configurada como secreto en el hosting (NFR9), crea y cierra salas, y entrega la clave de
-  cada sala al docente que la va a usar. Estos son los cambios visibles del panel, aprobados como
-  excepción.
-- **FR11.6 Datos por sala.** El paquete de FR9 es por sala, se llama con su fecha y su código de sala
-  y lo descarga quien tenga la clave de esa sala o la del semillero. «Reiniciar» y el borrado de
-  NFR10.1 se aplican a una sala sin tocar las demás.
-- **FR11.7 Sin regresión.** Un reto con una sola sala se comporta como hoy para el estudiante y el
-  tablero, y la prueba común (FR12.3) termina en «TODO BIEN» con una sala. Se agrega una prueba con
-  varias salas a la vez que verifica que no se mezclan las clasificaciones, los relojes ni las
-  respuestas. Esa prueba es nueva; ninguna comprobación existente se debilita.
+- **FR11.1 Un enlace, una sala.** El servicio lleva un solo reto a la vez, con un solo estado
+  (inscripción → abierto → cerrado → resultados), una sola configuración (modo sorpresa,
+  retroalimentación, nombre del evento) y un código de sala. Ese código lo fija el docente y los
+  estudiantes lo escriben al inscribirse, como hoy (reglas de negocio, §3).
+- **FR11.2 Varios colegios en la sala.** Los equipos eligen su colegio de la lista (FR10.3). El colegio
+  agrupa a los equipos para el reloj (FR3.1); la calificación, el orden total, el reparto A/B del
+  experimento y la publicación de resultados son de toda la sala.
+- **FR11.3 Pantalla del estudiante igual.** Lo único nuevo que ve es el aviso de espera mientras su
+  colegio no ha arrancado (FR3.1).
+- **FR11.4 Un tablero.** Un solo tablero público con el podio general y la clasificación por grado
+  (FR2.5). El docente lo proyecta.
+- **FR11.5 Un panel, una clave.** Un solo panel docente con una sola clave (NFR9). Lo nuevo del panel:
+  la lista de colegios con el estado de su reloj (sin arrancar, minutos que quedan, vencido) y el botón
+  «Arrancar reloj» de cada colegio, con confirmación.
+- **FR11.6 Datos de la sala.** El paquete de FR9 es uno por reto, con su fecha y su código de sala.
+  «Reiniciar» borra el reto entero tras escribir BORRAR y guarda antes una copia automática.
+- **FR11.7 Sin regresión.** Con un solo colegio arrancado al abrir, el reto se comporta como hoy con el
+  reloj global. La prueba común (FR12.3) agrega un caso con dos colegios arrancados a distinta hora que
+  verifica que cada uno tiene sus 90 minutos y que el bono se mide desde el arranque de su colegio.
 
 ```gherkin
-Given dos salas abiertas a la vez, «KQMT» en un colegio y «PRWX» en otro
-When el docente de «KQMT» cierra su reto y publica resultados
-Then «PRWX» sigue abierta con su propio reloj
-And el tablero de «PRWX» no muestra a nadie de «KQMT»
-And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
+Given una sala con equipos de «IE San José» y «Colegio Nacional»
+And el docente abre el reto cuando solo «IE San José» tiene equipos listos
+When «Colegio Nacional» llega 10 minutos tarde y el docente pulsa su «Arrancar reloj»
+Then los equipos de «Colegio Nacional» tienen 90 minutos desde ese momento
+And al vencer los 90 minutos de «IE San José» solo se entregan sus equipos
+And el podio del tablero se calcula entre todos los equipos de los dos colegios
 ```
 
 ### FR12. Un despliegue por opción y comparación al final (decisión del humano, 2026-10-25)
@@ -375,7 +400,7 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 
 | Opción | Carpeta | Del pedido |
 |---|---|---|
-| Cloudflare Pages + Workers + D1 + un Durable Object por sala | `cloudflare/` | a |
+| Cloudflare Workers + un Durable Object con SQLite | `cloudflare/` | a |
 | Cloudflare Containers con el `Dockerfile` actual | `cloudflare-containers/` | b |
 | Google Apps Script + Google Sheets | `apps-script/` | c |
 | Render con Docker y disco persistente (línea base) | `render/` | d |
@@ -385,6 +410,15 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
   lo que ve el estudiante (FR4.2). Cloudflare Containers volvió a la lista porque estaba en el pedido
   inicial y se había quitado sin motivo. Si el humano la descarta, se borra su carpeta y se anota aquí
   por qué.
+- **FR12.2c Solo Cloudflare se construye** (revisión del 2026-10-25; el humano: «lo referente solo a
+  cloudflare»). Solo la opción `cloudflare/` se construye, se prueba y queda lista para desplegar. Las
+  demás quedan en la tabla de comparación así:
+  - Render y Cloudflare Containers: solo con datos de la documentación oficial, ya cargados (U15, U16).
+  - Google Apps Script: «no pasa», con el motivo ya registrado en Contract Design.
+  - GitHub Pages: «no se construye», por esta decisión; su carpeta queda solo con su `LEEME.md`.
+
+  La elección de FR12.6 se hace con esa tabla; si Cloudflare pasa todo, es la elegida sin respaldo
+  construido.
 - **FR12.2a Costo durante la comparación.** Ninguna opción genera cargos sin que el humano apruebe antes
   el monto y un tope. Render con disco es de pago según `render.yaml` («plan de pago más barato (lo
   necesario para tener disco)»). Mientras ese pago no se apruebe, Render entra en la tabla solo con
@@ -397,12 +431,12 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 - **FR12.3 La misma prueba para todas.** Una prueba común, nueva y fuera de `2_Aplicacion_Reto/`
   porque esa carpeta no cambia, corre contra la URL de cada versión desplegada. Tiene dos partes:
   - **Parte base:** las mismas comprobaciones de las 29 de `simulacro.py 40`, sin debilitar ninguna.
-  - **Parte nueva:** las comprobaciones de las fugas (FR6.3) y de varias salas (FR11.7), la medición de
+  - **Parte nueva:** las comprobaciones de las fugas (FR6.3) y de los relojes por colegio (FR11.7), la medición de
     NFR2 y NFR3, un reinicio a mitad de la prueba (NFR4) y el arranque en frío (NFR5).
 
   Contra la versión local se espera esto: la parte base da «TODO BIEN», igual que `simulacro.py`, y así
   se valida la prueba común. Las comprobaciones de fugas fallan mientras OQ9 no se apruebe, y pasan si
-  se aprueba y se corrigen. Las de varias salas no aplican, porque la versión local tiene una sola sala.
+  se aprueba y se corrigen. Las de relojes por colegio no aplican, porque la versión local tiene un solo reloj.
   Contra cada versión de la nube, las dos partes tienen que dar «TODO BIEN».
 - **FR12.4 Tabla de comparación.** Al final, una tabla (`despliegues/COMPARACION.md`) pone las cinco
   opciones lado a lado con lo que midió la prueba común. Las filas son:
@@ -418,14 +452,14 @@ And con la clave de «KQMT» no se puede descargar ni cambiar nada de «PRWX»
 
 | NFR | Cómo se da por cumplido en cada opción |
 |---|---|
-| NFR1 Carga | Prueba común con 10 salas de tamaños desiguales que suman 40 participantes |
+| NFR1 Carga | Prueba común con 40 equipos de 3 colegios arrancados a distinta hora |
 | NFR2, NFR3 Rapidez | Prueba común: p95 medido contra la URL |
 | NFR4 Persistencia | Prueba común: reinicio a mitad de la prueba, sin perder datos |
 | NFR5 Arranque en frío | Prueba común: primera petición tras dormir |
 | NFR6 Costo | Documentación oficial citada con URL y consumo medido en la prueba ≤ 50 % de la cuota |
 | NFR7 Operación | Alguien del semillero que no la construyó la despliega solo con su `LEEME.md` |
 | NFR8 Confidencialidad | Prueba común: comprobaciones de fugas (FR6.3) |
-| NFR9 Claves | Prueba común: 403 con clave ausente, incorrecta o de otra sala; revisión del código en el PR |
+| NFR9 Claves | Prueba común: 403 con clave ausente, incorrecta o en la URL; revisión del código en el PR |
 | NFR10, NFR10.1 Datos personales | Se sigue la guía de cierre y se comprueba que el proveedor no queda con filas ni archivos de participantes |
 | NFR11 Orden total y tiempo | Prueba común: mismos puntos y misma clasificación que la versión local con las mismas respuestas |
 | NFR12 Mantenibilidad | Cobertura medida con la herramienta del ADR de la opción |
@@ -455,14 +489,10 @@ And la segunda que pasa todo conserva su carpeta como respaldo
 Cada versión de la nube se mide contra estos requisitos con la prueba común (FR12.3). La versión local
 no se vuelve a medir: queda como línea base.
 
-- **NFR1 Carga.** Puede haber varios retos en paralelo en lugares distintos, más de cinco salas a la
-  vez (FR11). Contando a todas las personas de todas las salas, el máximo sigue siendo 40 al mismo
-  tiempo, cada una en su computador; lo normal son unas 25 (Q1). Q9-A decía «un solo reto a la vez» y
-  queda reemplazada en ese punto por la decisión del humano del 2026-10-25, registrada en esta etapa al
-  agregar FR11; de Q9-A solo se conserva el máximo de 40 personas. Las salas son de tamaños distintos (por ejemplo, 5 personas en un colegio y 10 en otro).
-  El diseño se prueba con 10 salas abiertas a la vez, de tamaños desiguales (de 1 a 10 personas), que
-  suman 40 participantes durante 90 minutos. El 10 es una propuesta, no salió de tus respuestas; se confirma en el ADR. Cada sala abre
-  su propio tablero, y el ADR suma esas peticiones al consumo de NFR6.
+- **NFR1 Carga.** Un solo reto a la vez (FR11, revisión del 2026-10-25; vuelve a valer Q9-A, «un
+  solo reto a la vez»). Hasta 40 equipos al mismo tiempo, cada uno en su computador, de varios colegios;
+  lo normal son unos 25 (Q1). El diseño se prueba con 40 equipos de 3 colegios cuyos relojes arrancan a
+  distinta hora, durante 90 minutos, con el tablero pidiendo cada 2 s.
 - **NFR2 Rapidez al responder.** Con 40 participantes activos, en el 95 % de los envíos pasa ≤ 1 s
   desde que el estudiante pulsa «Enviar» hasta que ve «Respuesta guardada» (Q3-A). Se mide como el
   tiempo de ida y vuelta de `POST /api/responder` más el `GET /api/estado` que le sigue, desde un
@@ -487,17 +517,11 @@ no se vuelve a medir: queda como línea base.
 - **NFR8 Confidencialidad de respuestas.** Ninguna respuesta correcta, veredicto ni dato del que se
   pueda deducir la clave llega al navegador antes de `resultados` (`project.md`, «Forbidden»; FR6). El
   banco con respuestas nunca se sirve como archivo estático.
-- **NFR9 Claves.** Hay dos tipos de clave, y las dos se comparan en tiempo constante, nunca se
-  escriben en el repositorio ni en el registro (`project.md`, «Forbidden») y solo viajan en la cabecera
-  `X-Clave-Admin`, nunca en la URL (`?clave=`):
-
-| Clave | Quién la tiene | Dónde vive | Largo mínimo | Qué abre |
-|---|---|---|---|---|
-| Del semillero | Personas del semillero | Secreto del hosting | 12 caracteres | Crear, cerrar y listar salas; cualquier ruta `/api/admin/*` de cualquier sala |
-| De sala | El docente de esa sala | La genera el servidor al crear la sala (ADR-003) y guarda solo su huella | 12 caracteres | Las rutas `/api/admin/*` de su sala y ninguna otra |
-
-  Con una clave ausente, incorrecta o de otra sala, la respuesta es 403 y no trae datos. Qué clave
-  acepta cada ruta de admin queda listado en el contrato de la API.
+- **NFR9 Claves.** Hay una sola clave, la del docente (revisión del 2026-10-25; antes había clave del
+  semillero y clave de sala). Vive como secreto del hosting, tiene al menos 12 caracteres, se compara en
+  tiempo constante, nunca se escribe en el repositorio ni en el registro (`project.md`, «Forbidden») y
+  solo viaja en la cabecera `X-Clave-Admin`, nunca en la URL (`?clave=`). Abre todas las rutas
+  `/api/admin/*`. Con una clave ausente o incorrecta, la respuesta es 403 y no trae datos.
 - **NFR10 Datos personales.** Los datos de menores (nombre, colegio, grado, integrantes, respuestas)
   pueden quedar en servidores del proveedor fuera de Colombia si el acceso docente va con clave y los
   datos se borran al terminar el reto (Q8-A). La otra condición de Q8-A, «repositorio privado», ya no se
@@ -611,7 +635,7 @@ And el proveedor ya no tiene archivos ni filas con datos de participantes
 - **OQ3.** ¿Cómo se mide NFR2-NFR3 contra el servicio desplegado? Queda resuelta en parte por FR12.3:
   una prueba común nueva que apunta a una URL. El diseño fija cómo reemplaza las comprobaciones que hoy
   abren la base directamente (`simulacro.py` lee y cambia `config.abierto_en`). Cualquier mecanismo de
-  prueba que mueva el reloj queda apagado en un despliegue real, o protegido con la clave del semillero.
+  prueba que mueva el reloj queda apagado en un despliegue real, o protegido con la clave docente.
   Si no se puede cumplir ninguna de las dos cosas, se descarta y la prueba espera el tiempo real, porque
   una ruta pública para mover el reloj rompería FR3.1 y NFR8.
 - **OQ9.** La versión local tiene hoy las fugas de FR6: el veredicto en «cerrado» y los identificadores
@@ -626,9 +650,8 @@ And el proveedor ya no tiene archivos ni filas con datos de participantes
   el diseño si hace falta además de la clave larga de NFR9.
 - **OQ7.** Lista de colegios (FR10.3): cómo la carga el docente y qué hace si el día del reto llega un
   estudiante de un colegio que no está en la lista. Se decide en el diseño.
-- **OQ8.** Varias salas (FR11): cómo crea el semillero una sala y le entrega la clave al docente
-  (panel del semillero, comando, lista fija en la configuración), cuántas salas puede haber a la vez como
-  máximo y si una sala vencida se cierra sola. Se decide en el diseño, con el consumo de cuota de NFR6.
+- **OQ8.** Cerrada en la revisión del 2026-10-25: hay una sola sala y una sola clave docente (FR11,
+  NFR9), así que no hay que crear salas ni repartir claves.
 
 ## Sources
 

@@ -8,6 +8,8 @@
     "FR2.2",
     "FR2.3",
     "FR2.4",
+    "FR2.5",
+    "FR2.6",
     "FR3.1",
     "FR3.2",
     "FR3.3",
@@ -53,21 +55,24 @@
     "FR12.2",
     "FR12.2a",
     "FR12.2b",
+    "FR12.2c",
     "FR12.3",
     "FR12.4",
     "FR12.5",
-    "FR12.6"
+    "FR12.6",
+    "NFR1",
+    "NFR9"
   ],
   "coverage": [
     {
       "id": "FR1.1",
       "status": "OK",
-      "target": "CicloDeSala, Salas, Exportacion, Persistencia (reiniciar con copia)"
+      "target": "CicloDelReto, Reto, Exportacion, Persistencia (reiniciar con copia)"
     },
     {
       "id": "FR1.2",
       "status": "OK",
-      "target": "CicloDeSala, Examen"
+      "target": "CicloDelReto, Examen"
     },
     {
       "id": "FR1.3",
@@ -95,19 +100,29 @@
       "target": "Examen (una vez, en el orden de requiere, sin cruzarse)"
     },
     {
+      "id": "FR2.5",
+      "status": "OK",
+      "target": "Clasificacion (podio general, puesto por grado, nota), Resultados, Tablero (ADR-011)"
+    },
+    {
+      "id": "FR2.6",
+      "status": "OK",
+      "target": "Clasificacion y Calificacion (tiempo_respuestas y tiempo_usado desde el arranque del colegio), Examen (ADR-011)"
+    },
+    {
       "id": "FR3.1",
       "status": "OK",
-      "target": "Examen"
+      "target": "Reto (arranque por colegio), CicloDelReto, Examen (inicio = arranque del colegio), PanelDocente, AppEstudiante (ADR-011)"
     },
     {
       "id": "FR3.2",
       "status": "OK",
-      "target": "CicloDeSala, Examen, Resultados, Exportacion"
+      "target": "CicloDelReto, Examen, Resultados, Exportacion (vence al consultar, por colegio, ADR-004)"
     },
     {
       "id": "FR3.3",
       "status": "OK",
-      "target": "CicloDeSala"
+      "target": "CicloDelReto"
     },
     {
       "id": "FR4.1",
@@ -122,12 +137,12 @@
     {
       "id": "FR4.3",
       "status": "OK",
-      "target": "Exportacion, Salas, Persistencia (CSV y copia de «Reiniciar»)"
+      "target": "Exportacion, Reto, Persistencia (CSV y copia de «Reiniciar»)"
     },
     {
       "id": "FR5.1",
       "status": "Deferred",
-      "target": "enlace fijo: lo decide el ADR del hosting (NFR Requirements, NFR Design, Infrastructure Design)"
+      "target": "enlace fijo: lo decide el ADR de la opción Cloudflare (NFR Design, Infrastructure Design)"
     },
     {
       "id": "FR5.2",
@@ -147,7 +162,7 @@
     {
       "id": "FR5.5",
       "status": "Deferred",
-      "target": "paridad si se reescribe el servidor: depende del ADR del hosting"
+      "target": "paridad del servidor reescrito en JS: se verifica con la prueba común (FR12.3)"
     },
     {
       "id": "FR6.1",
@@ -157,7 +172,7 @@
     {
       "id": "FR6.2",
       "status": "OK",
-      "target": "Banco"
+      "target": "Banco (ADR-006)"
     },
     {
       "id": "FR6.3",
@@ -167,22 +182,22 @@
     {
       "id": "FR7.1",
       "status": "OK",
-      "target": "Banco, Calificacion, Clasificacion, CicloDeSala, LimpiezaEntrada, Experimento (ADR-001)"
+      "target": "Banco, Calificacion, Clasificacion, CicloDelReto, LimpiezaEntrada, Experimento (ADR-001)"
     },
     {
       "id": "FR7.2",
       "status": "OK",
-      "target": "ApiHttp, Acceso; el despacho lo decide el ADR de cada opción (FR12.2b)"
+      "target": "ApiHttp, Acceso; el despacho lo decide el ADR de la opción (FR12.2b)"
     },
     {
       "id": "FR7.3",
       "status": "Deferred",
-      "target": "Persistencia: si es capa aparte lo decide el ADR de cada opción (FR12.2b)"
+      "target": "Persistencia: si es capa aparte lo decide el ADR de la opción (FR12.2b)"
     },
     {
       "id": "FR7.4",
       "status": "OK",
-      "target": "CicloDeSala, Salas"
+      "target": "CicloDelReto, Reto"
     },
     {
       "id": "FR7.5",
@@ -217,7 +232,7 @@
     {
       "id": "FR9.1",
       "status": "OK",
-      "target": "Exportacion, Persistencia (copia de una sola sala)"
+      "target": "Exportacion, Persistencia (paquete con colegios.csv y copia)"
     },
     {
       "id": "FR9.2",
@@ -237,7 +252,7 @@
     {
       "id": "FR9.5",
       "status": "OK",
-      "target": "Acceso, Exportacion"
+      "target": "Acceso, Exportacion (ADR-010)"
     },
     {
       "id": "FR10.1",
@@ -252,7 +267,7 @@
     {
       "id": "FR10.3",
       "status": "OK",
-      "target": "CatalogoColegios, Salas, AppEstudiante, PanelDocente (ADR-002)"
+      "target": "Reto (lista de colegios cargada por el docente), LimpiezaEntrada, Inscripcion (id_colegio), AppEstudiante, PanelDocente (ADR-009)"
     },
     {
       "id": "FR10.4",
@@ -267,37 +282,37 @@
     {
       "id": "FR11.1",
       "status": "OK",
-      "target": "Salas"
+      "target": "Reto (una sola fila: estado, configuración y código de sala), Persistencia (ADR-011)"
     },
     {
       "id": "FR11.2",
       "status": "OK",
-      "target": "Salas, Persistencia (ADR-005)"
+      "target": "Reto (colegios), Inscripcion (id_colegio), Clasificacion y Experimento (toda la sala)"
     },
     {
       "id": "FR11.3",
       "status": "OK",
-      "target": "AppEstudiante, Inscripcion (código personal único)"
+      "target": "AppEstudiante (solo el aviso de espera), Resultados"
     },
     {
       "id": "FR11.4",
       "status": "OK",
-      "target": "Resultados, Tablero (?sala=)"
+      "target": "Resultados, Tablero (GET /api/publico sin parámetros, podio general y por grado)"
     },
     {
       "id": "FR11.5",
       "status": "OK",
-      "target": "Acceso, Salas (ADR-003, ADR-005)"
+      "target": "Acceso (una clave, ADR-010), Reto (arrancar reloj), CicloDelReto (estado del reloj), PanelDocente"
     },
     {
       "id": "FR11.6",
       "status": "OK",
-      "target": "Salas, Exportacion"
+      "target": "Exportacion, Reto (paquete por reto; reiniciar con copia)"
     },
     {
       "id": "FR11.7",
       "status": "Deferred",
-      "target": "prueba con varias salas en la prueba común (FR12.3): Units Generation y Build and Test; simulacro sin cambios"
+      "target": "caso de dos colegios arrancados a distinta hora en la prueba común (FR12.3): Units Generation y Build and Test; la equivalencia con el reloj global de hoy está en Clasificacion (ADR-011)"
     },
     {
       "id": "FR12.1",
@@ -307,7 +322,7 @@
     {
       "id": "FR12.2",
       "status": "OK",
-      "target": "todos los componentes valen para cada carpeta de despliegues/; la forma por opción va en su ADR"
+      "target": "los componentes valen para la carpeta despliegues/cloudflare/; la forma por opción va en su ADR"
     },
     {
       "id": "FR12.2a",
@@ -317,7 +332,12 @@
     {
       "id": "FR12.2b",
       "status": "Deferred",
-      "target": "ADR de cada opción: NFR Design e Infrastructure Design"
+      "target": "ADR de la opción Cloudflare: NFR Design e Infrastructure Design"
+    },
+    {
+      "id": "FR12.2c",
+      "status": "OK",
+      "target": "todos los componentes se construyen solo en despliegues/cloudflare/; las demás opciones quedan documentadas"
     },
     {
       "id": "FR12.3",
@@ -338,6 +358,16 @@
       "id": "FR12.6",
       "status": "Deferred",
       "target": "ADR final de elección, después de medir"
+    },
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "Reto (un solo reto a la vez), Persistencia (todas las operaciones de a una); la carga de 40 equipos de 3 colegios se mide en la prueba común (FR12.3)"
+    },
+    {
+      "id": "NFR9",
+      "status": "OK",
+      "target": "Acceso, Arranque (secreto de 12 o más caracteres, tiempo constante, solo X-Clave-Admin, ADR-010)"
     }
   ]
 }

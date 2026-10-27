@@ -1,11 +1,12 @@
 # Code Generation Plan Approval
 
-AI-DLC writes this file when it asks you to approve the plan. To answer here
-instead of in chat, write your answer after `[Answer]:` and tell me in chat when you are done.
+AI-DLC built this plan without asking because plan approval is off for this
+piece of work. This file is the record and asks nothing; to look at a plan
+before it is built, ask in chat.
 
 ## Plan Approval
 
-Approve the code plan for u1-cloudflare-corte?
+Built without asking: plan approval is off for this piece of work (set by you).
 
 - Builds: el corte delgado en Cloudflare Workers (salud, salas, inscripción, comenzar, responder `opcion`, entregar) y la prueba común mínima.
 - Touches: `despliegues/cloudflare/` (src, web, pruebas, wrangler.jsonc, herramientas, LEEME) y `despliegues/prueba_comun/src/prueba.py`.
@@ -16,11 +17,8 @@ Approve the code plan for u1-cloudflare-corte?
 Full plan: aidlc/spaces/default/intents/261024-publicar-reto-nube/construction/u1-cloudflare-corte/code-generation/code-generation-plan.md
 Test instructions: aidlc/spaces/default/intents/261024-publicar-reto-nube/construction/u1-cloudflare-corte/code-generation/unit-test-instructions.md
 
-[Approval Fingerprint]: sha256:v3:008a13b17bb61fe2aa68fd474c1eec9716b40aaa3555347aeedfe6e2cbe5e6c6
-[Planned Source]: 158f403a5092c49a5a6b8df2c192d8cb31b39d388e05db49ed9b3264218878f8
+[Approval Fingerprint]: sha256:v3:2b1e98a7de9559eaf4bcf5d3e69d69776c3ef538550346abbd5b0e533f4c3b05
+[Planned Source]: 1c4d6392f7936ef76b4ac6578dfd46c9b768353623518ef9588ca153e8b5c764
 
-- A. Approve Plan
-- B. Request Changes
-- C. I'll edit the files
 
-[Answer]: A. Approve Plan
+[Answer]: Plan approval off

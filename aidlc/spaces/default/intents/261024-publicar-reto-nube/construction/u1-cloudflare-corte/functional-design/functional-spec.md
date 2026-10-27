@@ -1,5 +1,23 @@
 # Especificación funcional — U1 `u1-cloudflare-corte`
 
+> **Revisión 2026-10-25 (una sola sala, solo Cloudflare).** Este corte ya está construido y se conserva
+> como registro de lo que se hizo (FR11, ADR-009 a ADR-011). U5 (`../../u5-cloudflare-salas/`) reemplaza
+> las partes de varias salas:
+>
+> - **La clave del semillero** (`CLAVE_SEMILLERO`, rol «semillero») pasa a una sola clave docente,
+>   `CLAVE_DOCENTE`, que abre todo `/api/admin/*` (ADR-010).
+> - **Las claves de sala** (`CÓDIGO-SECRETO`, rol «sala») desaparecen.
+> - **Crear sala** (F1 y `POST /api/admin/salas/crear`) desaparece: hay un solo reto, y su código se fija
+>   en el panel. La ruta da 404 desde U5.
+> - **Los colegios provisionales** (F2) pasan a la lista de colegios del docente, con «Arrancar reloj»
+>   (ADR-009, ADR-011).
+> - **El parámetro `?sala=`** de `/api/publico`, `/api/colegios` y el tablero desaparece. `/api/publico`
+>   sin parámetros devuelve el tablero.
+>
+> La migración 2 de U5 aparta las tablas de este corte como `v1_*` (ADR-W19 de U5). Lo demás de este
+> documento (inscribirse, comenzar, responder una pregunta, fugas cerradas, pantallas de hoy) sigue
+> valiendo como base de U5.
+
 Qué hace el corte delgado de Cloudflare Workers, paso a paso. Es la fuente de los flujos y de los
 estados; los datos están en `entities.md` y las reglas en `rules.md`. Sale de `unit-of-work.md` («U1, U7,
 U11»), `requirements.md`, `components.md`, `contract-summary.md` y de las respuestas Q1 a Q5 (todas A).

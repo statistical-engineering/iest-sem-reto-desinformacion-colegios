@@ -47,10 +47,13 @@ GitHub Pages.
 | FR9.5 | U5; U6; U9; U10; U13; U14 | u5-cloudflare-salas; u6-cloudflare-resultados; u9-apps-script-salas; u10-apps-script-resultados; u13-github-pages-salas; u14-github-pages-resultados | sin claves ni tokens |
 | FR10.1 | U4; U8; U12 | u4-cloudflare-reglas; u8-apps-script-reglas; u12-github-pages-reglas | normalizar texto |
 | FR10.2 | U4; U8; U12 | u4-cloudflare-reglas; u8-apps-script-reglas; u12-github-pages-reglas | validar campos |
-| FR10.3 | U5; U9; U13 | u5-cloudflare-salas; u9-apps-script-salas; u13-github-pages-salas | catálogo y colegio provisional |
+| FR10.3 | U5 | u5-cloudflare-salas | lista de colegios del docente (ADR-009) |
 | FR10.4 | U4; U8; U12 | u4-cloudflare-reglas; u8-apps-script-reglas; u12-github-pages-reglas | integrantes |
 | FR10.5 | U4; U8; U12 | u4-cloudflare-reglas; u8-apps-script-reglas; u12-github-pages-reglas | pruebas de las reglas |
-| FR11.1 | U5; U9; U13 | u5-cloudflare-salas; u9-apps-script-salas; u13-github-pages-salas | varias salas |
+| FR2.5 | U4; U6 | u4-cloudflare-reglas; u6-cloudflare-resultados | podio general, por grado y nota |
+| FR2.6 | U4; U5 | u4-cloudflare-reglas; u5-cloudflare-salas | tiempos relativos al arranque del colegio |
+| FR12.2c | U15; U16; U17 | u15-render-documentacion; u16-cloudflare-containers-documentacion; u17-comparacion | solo Cloudflare se construye |
+| FR11.1 | U5 | u5-cloudflare-salas | una sola sala (revisión 2026-10-25) |
 | FR11.2 | U5; U9; U13 | u5-cloudflare-salas; u9-apps-script-salas; u13-github-pages-salas | datos por sala |
 | FR11.3 | U1; U7; U11 | u1-cloudflare-corte; u7-apps-script-corte; u11-github-pages-corte | pantalla del estudiante igual |
 | FR11.4 | U6; U10; U14 | u6-cloudflare-resultados; u10-apps-script-resultados; u14-github-pages-resultados | tablero por sala |

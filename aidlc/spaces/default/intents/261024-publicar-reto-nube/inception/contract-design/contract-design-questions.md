@@ -75,3 +75,41 @@ B. No: cada opción nombra y arma sus reglas como quiera; solo la API tiene que 
 X. Other (please specify)
 
 [Answer]: A
+
+## Revisión 2026-10-25 (una sola sala, solo Cloudflare)
+
+Q1 a Q6 siguen valiendo con un ajuste: Q2 queda sin efecto en lo que decía de la clave del semillero y el
+prefijo de sala, porque hay una sola clave docente (ADR-010). `contract-summary.md` se reescribió para
+una sola sala y solo Cloudflare (FR11, FR12.2c, ADR-009 a ADR-011). Lo que no salió del humano ni de los
+ADR son decisiones del asistente, con la potestad que el humano dio en la revisión de los requisitos:
+
+- **D1.** `reto.reloj_global` (`/api/estado`, `/api/publico`) y `config.reloj_global` (`/api/admin/resumen`)
+  se mantienen en el JSON con valor fijo (`true` / `"1"`) porque `web/js/` las lee (FR4.1); mandar
+  `reloj_global` a `/api/admin/config` da 400. Las copias de las pantallas dejan de usarlas.
+- **D2.** El estudiante recibe `participante.colegio_arranque` y `participante.colegio_restante_seg`;
+  `participante.puesto_grado` solo en «resultados» y «finalizado». Nada más cambia en `/api/estado`.
+- **D3.** La lista de colegios y «Arrancar reloj» van en una sola ruta, `POST /api/admin/colegios`, con
+  `accion` ∈ {`agregar`, `quitar`, `arrancar`}, como `/api/admin/participante`. `agregar` acepta
+  `nombres` (un nombre por línea) o `nombre`; si un nombre ya existe no se agrega ninguno (400 con
+  `existente`).
+- **D4.** En `/api/publico`, el podio son los tres primeros de `ranking` (no hay clave `podio`); se
+  agrega `por_grado` y, en cada fila, `nota` y `puesto_grado`. Con modo sorpresa, `ranking` y `por_grado`
+  se ocultan juntos hasta publicar. `colegios[]` sale en todo estado.
+- **D5.** `experimento` en «cerrado» se recorta a `{n, listo}` (lo único que el tablero usa en ese estado)
+  y sale completo solo en «resultados» (FR6.1).
+- **D6.** Una petición a `/api/admin/*` con `clave` en la URL recibe 403 aunque la cabecera sea correcta.
+  La copia de `admin.js` deja de pasar la clave a mayúsculas, porque la clave docente se compara tal cual
+  (ADR-010).
+- **D7.** `/api/admin/reiniciar` devuelve `copia` como `id_copia`; se agregan `GET /api/admin/copias`,
+  `GET /api/admin/copia?id=` y `POST /api/admin/copia/borrar`.
+- **D8.** El esquema de mediciones (C3) sigue en la versión 1 porque aún no existe ninguna medición;
+  `salas` pasa a `colegios` y la parte `salas` pasa a `relojes`, y se agrega la parte `claves`.
+- **D9** (decisión del asistente, con la potestad del humano). En producción `duracion_min` sigue con
+  mínimo 10. Solo para probar el vencimiento por colegio, la variable `DURACION_MINIMA_MIN` puede bajar
+  ese mínimo; va en `.dev.vars` (ignorado por git) para `wrangler dev` y nunca en `wrangler.jsonc` ni
+  como secreto del despliegue. La prueba común contra la URL pública no prueba el vencimiento real:
+  lo prueba contra `wrangler dev` con 1 minuto. Así no hay ninguna ruta ni opción pública que mueva el
+  reloj (OQ3).
+- **D10** (decisión del asistente). `colegios[]` en `GET /api/publico` sí sale: el nombre de un colegio
+  no es un dato personal de un menor y ya aparece hoy en el tablero. OQ5 (nombres de equipos) no cambia
+  con esto.

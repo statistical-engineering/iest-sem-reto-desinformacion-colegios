@@ -10,22 +10,23 @@ humano aprueba su punto de control antes de seguir (`team.md`, «Walking Skeleto
 
 ## Orden
 
-Las unidades de una misma tanda no dependen entre sí y se construyen en paralelo (Construcción etapa
-por etapa y en paralelo, elección del humano del 2026-10-25).
+**Revisión del 2026-10-25 (una sola sala, solo Cloudflare).** Con los requisitos, el dominio, las
+unidades y el contrato revisados, solo quedan los Bolts de Cloudflare, la prueba común y la comparación.
+B1 (U1) ya pasó su punto de control y está desplegado; B5 (U15) y B6 (U16) ya están hechos.
 
 | Tanda | Bolts | Por qué en esta tanda |
 |---|---|---|
-| 0 | B1 (U1) | Corte delgado; nada empieza antes de su punto de control |
-| 1 | B2 (U2), B3 (U11), B4 (U4), B5 (U15), B6 (U16) | Primero lo más riesgoso: el corte de GitHub Pages y la prueba común (Q1-A). U15 y U16 no dependen de nadie |
-| 2 | B7 (U3), B8 (U12), B9 (U5) | U3 necesita U2; U12 necesita U11; U5 necesita U4 |
-| 3 | B10 (U13), B11 (U6) | Siguen sus cadenas |
-| 4 | B12 (U14) | Último de GitHub Pages |
-| 5 | B13 (U17) | Necesita U2, U6, U14, U15 y U16 |
+| 0 | B1 (U1) | Hecho: corte delgado desplegado en Workers |
+| 1 | B4 (U4), B5 (U15), B6 (U16) | U4 es lo más riesgoso que queda: los 10 tipos de pregunta tienen que dar los mismos puntos que la versión local. U15 y U16 ya están hechos |
+| 2 | B9 (U5) | Necesita las reglas de U4; quita el multi-sala del corte y agrega clave docente, colegios y relojes |
+| 3 | B11 (U6), B2 (U2) | U6 necesita U5; U2 se completa contra el contrato de una sala y mide la versión terminada |
+| 4 | B13 (U17) | Necesita U2, U6, U15 y U16 |
 
-**Apps Script (U7 a U10) no se construye** (Q2-A). Queda «no pasa» por contrato, con la evidencia del
-hallazgo C-01 (`contract-design/reviews/review-01.md`). Al entrar en Construcción se te pide aprobar
-que se salten esas cuatro unidades; con eso dejan de detener a U17 (`unit-of-work-dependency.md`, «Si se
-abandona una opción»). U17 escribe Apps Script en la tabla como «no pasa», con el motivo (FR12.6).
+**Se saltan** con la aprobación del humano («lo referente solo a cloudflare», 2026-10-25), sin borrar
+sus unidades (`project.md`, «Corrections»): B7 (U3, fugas de la versión local), Apps Script (U7 a U10)
+y GitHub Pages (B3, B8, B10, B12: U11 a U14). U17 las escribe en la tabla como «no pasa» (Apps Script,
+por contrato) o «no se construye» (GitHub Pages), con el motivo. Los archivos a medias que dejó U11 en
+`despliegues/github-pages/` no se versionan.
 
 ## Reglas para todos los Bolts
 
@@ -45,78 +46,53 @@ líneas; sí cuentan los cambios que se le hagan después (Q7-A).
 
 ## Bolts
 
-### B1 — U1 `u1-cloudflare-corte` (corte delgado)
+### B1 — U1 `u1-cloudflare-corte` (corte delgado, hecho)
 
-- **Qué prueba de la arquitectura:** Worker, D1 y un Durable Object por sala trabajando juntos detrás de
-  un enlace fijo; claves de sala y del semillero; la prueba común corriendo contra una URL.
-- **Hecho cuando:**
-  - con la clave del semillero se crea y se abre una sala, un estudiante se inscribe y responde una
-    pregunta, y `GET /api/publico` responde `{"ok": true}`;
-  - la prueba común mínima (`despliegues/prueba_comun/src/prueba.py`, Python sin paquetes, Q6-A) da
-    «TODO BIEN» contra la URL de Workers y su parte base contra la versión local;
-  - existe `despliegues/prueba_comun/contrato_api.yaml` con las 16 rutas de hoy y los cambios de C1;
-  - el contrato ya incluye los arreglos de la revisión que U1 necesita (Q4-A): ids opacos también en
-    `respuestas` y `revision` de `/api/estado` (C-02), claves y códigos de sala en mayúsculas (C-03),
-    copia sin `token`, `semilla`, `codigo` ni `clave_huella` (C-06) y la forma de los datos de cada
-    regla en `casos_reglas.json` (C-05);
-  - el ADR de la opción (`construction/u1-cloudflare-corte/decisions.md`) está aprobado antes de
-    escribir su código.
-- **Qué nos dice:** si Workers cumple el enlace fijo, la persistencia y la latencia con la API de hoy.
-- **Demo:** abrir el enlace desde un celular con datos móviles, inscribirse y responder.
-- **Si no pasa** (Q5-A): la prueba común mínima se termina igual y se verifica contra la versión local;
-  U1 se cierra «no pasa» con el motivo y las otras opciones siguen.
-
-### B2 — U2 `u2-prueba-comun`
-
-- **Hecho cuando:** la prueba común tiene las dos partes de FR12.3 y da «TODO BIEN» contra Workers;
-  contra la versión local, la parte base da «TODO BIEN» y las de fugas fallan hasta B7. Escribe el JSON
-  de C3. Incluye los hallazgos menores que le tocan (C-07 a C-15), entre ellos:
-  - comprobaciones de fugas para toda clave nueva que llegue al navegador sin clave (C-14);
-  - tolerar un 5xx sin JSON de la plataforma (C-15).
-- **Qué nos dice:** si la misma prueba sirve para todas las opciones.
-- **Nota:** la duración mínima de un reto es 10 minutos, así que cada corrida completa espera al menos
-  10 minutos reales (C-09).
-
-### B3 — U11 `u11-github-pages-corte`
-
-- **Hecho cuando:** con la clave del semillero se crea y se abre una sala, un estudiante se inscribe y
-  responde una pregunta, y la prueba común mínima da «TODO BIEN». Resuelve CORS y la URL base de la API
-  en `web/js/` (C-04). Su ADR se aprueba antes del código.
-- **Qué nos dice:** si las pantallas en Pages con la API en otro servicio cumplen el contrato.
+- Desplegado en Workers con un Durable Object y SQLite; la prueba común mínima dio «TODO BIEN». Lo que
+  dejó para varias salas (clave del semillero, claves de sala, crear sala) lo reemplaza B9.
 
 ### B4 — U4 `u4-cloudflare-reglas`
 
-- **Hecho cuando:** las «calculadoras» de C4 en JS pasan todos los casos de `casos_reglas.json` y sus
-  pruebas unitarias corren sin servidor ni base.
+- **Hecho cuando:** las «calculadoras» de C4 en JS (los 10 tipos de pregunta, bono, orden total con los
+  tiempos relativos al arranque del colegio, podio general, puesto por grado y nota, transiciones de
+  estado, entrega por colegio) pasan todos los casos de `casos_reglas.json` y sus pruebas `node --test`
+  corren sin servidor ni base.
 - **Qué nos dice:** si las reglas dan los mismos puntos y el mismo orden que la versión local.
 
-### B5 — U15 `u15-render-documentacion` y B6 — U16 `u16-cloudflare-containers-documentacion`
+### B9 — U5 `u5-cloudflare-salas` (reto, colegios y relojes)
 
-- **Hecho cuando:** las cifras de la tabla de comparación salen de la documentación oficial, cada una
-  con su URL y su fecha de consulta. No se despliega nada de pago.
+- **Hecho cuando:** el servicio tiene una sola sala, la clave docente única (`CLAVE_DOCENTE`), la lista de
+  colegios del docente con «Arrancar reloj», el vencimiento por colegio, todas las transiciones de estado
+  y las acciones del docente; las copias de `web/` muestran el aviso de espera y el panel de colegios; la
+  prueba común mínima, ya cambiada a la clave docente, da «TODO BIEN» contra `wrangler dev`.
+- **Qué nos dice:** si el reloj por colegio funciona de punta a punta.
 
-### B7 — U3 `u3-local-fugas`
+### B11 — U6 `u6-cloudflare-resultados`
 
-- **Hecho cuando:** las comprobaciones de fugas de la prueba común pasan contra la versión local y
-  `simulacro.py 40` sigue en «TODO BIEN» sin cambios.
+- **Hecho cuando:** el tablero muestra el podio general y por grado, el panel tiene su resumen, salen
+  los CSV y el paquete, y «Reiniciar» pide BORRAR y guarda la copia antes.
 
-### B8 — U12, B10 — U13, B12 — U14 (GitHub Pages) y B9 — U5, B11 — U6 (Workers)
+### B2 — U2 `u2-prueba-comun`
 
-- **Hecho cuando:** cada uno completa su capa (`unit-of-work.md`) y la prueba común da «TODO BIEN» contra
-  la URL de su opción. U5 y U13 traen las reglas de salas que quedaron de Domain Design: configurar la
-  sala solo antes de abrirla, y «Borrar la sala» solo con la sala cerrada y escribiendo BORRAR.
-- **Qué nos dice:** si cada opción pasa todo (FR12.5).
+- **Hecho cuando:** la prueba común tiene las dos partes de FR12.3 para una sala, da «TODO BIEN» contra
+  `wrangler dev` (vencimiento con `DURACION_MINIMA_MIN=2`, D9) y contra la URL de Workers (sin vencimiento real), y su
+  parte base da «TODO BIEN» contra la versión local. Escribe el JSON de C3.
+
+### B5 — U15 y B6 — U16 (hechos)
+
+- Columnas de Render y Cloudflare Containers con cifras de la documentación oficial.
 
 ### B13 — U17 `u17-comparacion`
 
-- **Hecho cuando:** `despliegues/COMPARACION.md` tiene las cinco opciones con las cifras medidas, el ADR
-  final elige la ganadora y `PUBLICAR_EN_INTERNET.md` se reescribe solo para ella (FR12.5).
-- **Qué nos dice:** cuál opción usar en el aula.
+- **Hecho cuando:** `despliegues/COMPARACION.md` tiene Cloudflare medido y las demás opciones con su
+  motivo, el ADR final registra la elección y `PUBLICAR_EN_INTERNET.md` y el `LEEME.md` de Cloudflare
+  explican cómo desplegarla, también desde Windows con Git Bash.
+- **Qué nos dice:** si Cloudflare queda lista para el aula.
 
 ## Comando de verificación
 
-Cada punto de control corre un comando real. La prueba común todavía no existe: la crea B1. Por eso el
-comando se elige en el punto de control de B1, con la prueba ya escrita.
+Cada punto de control corre un comando real: el que se eligió en el punto de control de B1 (la prueba
+común contra la versión de Cloudflare), más `node --test` de las pruebas de la opción.
 
 ## Sources
 
