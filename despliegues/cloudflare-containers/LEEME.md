@@ -3,7 +3,9 @@
 El servidor en Python corre en un contenedor de Cloudflare, armado igual que la imagen de hoy
 (`2_Aplicacion_Reto/Dockerfile`). Es la opción b del pedido inicial.
 
-**Estado:** sin código. Espera el ADR de esta opción.
+**Estado:** no se despliega: es de pago y no tiene disco persistente (FR12.2a, NFR4). Las cifras, con su
+URL oficial y la fecha de consulta, están en la columna Cloudflare Containers de
+[`../COMPARACION.md`](../COMPARACION.md).
 
 ## Estructura
 
@@ -18,10 +20,14 @@ cloudflare-containers/
 Cuando el ADR lo apruebe, aquí van también el `Dockerfile` propio de esta opción y su configuración de
 Cloudflare. La versión de hoy no se toca: el `Dockerfile` se copia, no se mueve.
 
-## Pendiente de decidir en el ADR
+## Decidido (U16, 2026-10-25)
 
-- Dónde quedan los datos: si el contenedor tiene disco persistente o se apaga a mitad del reto, y qué
-  pasa con la base SQLite en ese caso. Se verifica en la documentación oficial de Cloudflare.
-- Si esta opción tiene plan gratuito. Si no lo tiene, no se despliega sin aprobar antes el costo
-  (FR12.2a).
-- Python: las convenciones están en `.claude/rules/python-code.md` y ruff revisa el estilo (ADR-008).
+- Dónde quedan los datos: en disco efímero; al dormir (10 minutos sin peticiones) o si la plataforma lo
+  para, arranca con un disco nuevo y la base SQLite de `/data` se pierde
+  (https://developers.cloudflare.com/containers/platform-details/,
+  https://developers.cloudflare.com/containers/faq/).
+- Plan gratuito: no hay. Containers exige Workers Paid, como mínimo US$ 5 al mes
+  (https://developers.cloudflare.com/containers/pricing/,
+  https://developers.cloudflare.com/workers/platform/pricing/).
+- No se pide aprobar el costo: aun pagando, no cumpliría NFR4 con el `Dockerfile` actual. La opción
+  Cloudflare Workers (`../cloudflare/`) ya guarda los datos gratis en un Durable Object.
