@@ -4,6 +4,7 @@ El servidor en Python corre en un contenedor de Render y guarda la base SQLite e
 sobrevive a los reinicios.
 
 **Estado:** sin código. Espera el ADR de esta opción.
+Mientras no haya ADR, `PUBLICAR_EN_RENDER.md` explica cómo desplegar a mano la versión local (`2_Aplicacion_Reto/`) en el plan de pago.
 
 ## Estructura
 
