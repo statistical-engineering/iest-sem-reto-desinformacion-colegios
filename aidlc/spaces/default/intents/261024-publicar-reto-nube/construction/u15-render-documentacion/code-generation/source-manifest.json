@@ -1,0 +1,11 @@
+{
+  "stage": "code-generation",
+  "unit": "u15-render-documentacion",
+  "version": 1,
+  "writes": [
+    { "path": "despliegues/COMPARACION.md" },
+    { "path": "despliegues/prueba_comun/herramientas/revisar_comparacion.py" },
+    { "path": "despliegues/prueba_comun/herramientas/test_revisar_comparacion.py" },
+    { "path": "despliegues/render/LEEME.md" }
+  ]
+}

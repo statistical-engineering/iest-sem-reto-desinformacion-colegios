@@ -41,8 +41,8 @@
 ## Runtime State
 - **Revision Count**: 6
 - **Construction Checkpoints**: enabled
-- **Construction Iteration**: stage-major
-- **Construction Execution**: swarm
+- **Construction Iteration**: unit-major
+- **Construction Execution**: serial
 
 - **Unit Ownership**: solo
 
@@ -64,6 +64,177 @@
 
 
 - **Construction Verification Command**: bash despliegues/cloudflare/herramientas/verificar.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -326,7 +497,7 @@
 - **Current Stage**: functional-design
 - **Next Stage**: nfr-requirements
 - **Status**: Running
-- **Last Updated**: 2026-10-26T02:07:24Z
+- **Last Updated**: 2026-10-27T16:48:28Z
 
 - **Construction Autonomy Mode**: autonomous
 

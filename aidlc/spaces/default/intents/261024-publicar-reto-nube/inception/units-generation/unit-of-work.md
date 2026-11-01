@@ -8,6 +8,17 @@ salen del plan aprobado por el humano (2026-10-25, `units-generation-questions.m
   documentación oficial;
 - Q3-A: una unidad corrige solo las fugas de respuestas en la versión local (OQ9 aprobada).
 
+**Revisión del 2026-10-25 (una sola sala, solo Cloudflare).** Con los requisitos revisados (FR11, FR12.2c)
+y los ADR-009 a ADR-011, las unidades se quedan con los mismos ids y carpetas, pero:
+
+- solo se construyen las de Cloudflare (U1, U4, U5, U6), la prueba común (U2) y la comparación (U17);
+- U5 pasa de «salas y catálogo» a **reto, colegios y relojes**: quita el multi-sala que dejó U1 (clave
+  del semillero, claves de sala, crear sala) y agrega la clave docente única y el reloj por colegio;
+- U3 (fugas locales) y las cadenas de Apps Script (U7 a U10) y GitHub Pages (U11 a U14) se saltan con
+  la aprobación del humano («lo referente solo a cloudflare»), sin borrarlas (`project.md`,
+  «Corrections»); en la tabla de comparación quedan como «no pasa» o «no se construye»;
+- U15 y U16 ya están hechas.
+
 Los componentes son los de `../domain-design/components.md` y las decisiones las de
 `../domain-design/decisions.md`. Aquí no se decide qué se construye primero: eso va en Delivery Planning.
 
@@ -17,18 +28,18 @@ Los componentes son los de `../domain-design/components.md` y las decisiones las
 |---|---|---|---|---|---|
 | U1 | `u1-cloudflare-corte` | Cloudflare Workers | Corte delgado inicial del proyecto: crear y abrir una sala, inscribirse y responder una pregunta, más la prueba común mínima | service | L |
 | U2 | `u2-prueba-comun` | todas | La prueba común completa contra la URL de cualquier versión (FR12.3) | library | L |
-| U3 | `u3-local-fugas` | local | Corrige solo las fugas de FR6 en `2_Aplicacion_Reto/` | service | S |
+| U3 | `u3-local-fugas` | local | Corrige solo las fugas de FR6 en `2_Aplicacion_Reto/` (se salta) | service | S |
 | U4 | `u4-cloudflare-reglas` | Cloudflare Workers | Las «calculadoras» de ADR-001 en JS, con sus pruebas | library | M |
-| U5 | `u5-cloudflare-salas` | Cloudflare Workers | Salas, claves, catálogo de colegios, inscripción completa y examen completo | service | L |
-| U6 | `u6-cloudflare-resultados` | Cloudflare Workers | Resultados, tablero por sala, CSV, paquete y copias | service | M |
-| U7 | `u7-apps-script-corte` | Apps Script | Corte delgado desplegado | service | M |
-| U8 | `u8-apps-script-reglas` | Apps Script | Las «calculadoras» en Apps Script, con sus pruebas | library | M |
-| U9 | `u9-apps-script-salas` | Apps Script | Salas, claves, catálogo, inscripción y examen completos | service | L |
-| U10 | `u10-apps-script-resultados` | Apps Script | Resultados, tablero, CSV, paquete y copias | service | M |
-| U11 | `u11-github-pages-corte` | GitHub Pages | Corte delgado desplegado: pantallas en Pages y API en otro servicio | service | M |
-| U12 | `u12-github-pages-reglas` | GitHub Pages | Las «calculadoras» en el lenguaje de su API, con sus pruebas | library | M |
-| U13 | `u13-github-pages-salas` | GitHub Pages | Salas, claves, catálogo, inscripción y examen completos | service | L |
-| U14 | `u14-github-pages-resultados` | GitHub Pages | Resultados, tablero, CSV, paquete y copias | service | M |
+| U5 | `u5-cloudflare-salas` | Cloudflare Workers | Reto de una sala, clave docente, lista de colegios con su reloj, inscripción y examen completos | service | L |
+| U6 | `u6-cloudflare-resultados` | Cloudflare Workers | Resultados, podio general y por grado, panel, CSV, paquete y copias | service | M |
+| U7 | `u7-apps-script-corte` | Apps Script | Corte delgado desplegado (se salta) | service | M |
+| U8 | `u8-apps-script-reglas` | Apps Script | Las «calculadoras» en Apps Script, con sus pruebas (se salta) | library | M |
+| U9 | `u9-apps-script-salas` | Apps Script | Salas, claves, catálogo, inscripción y examen completos (se salta) | service | L |
+| U10 | `u10-apps-script-resultados` | Apps Script | Resultados, tablero, CSV, paquete y copias (se salta) | service | M |
+| U11 | `u11-github-pages-corte` | GitHub Pages | Corte delgado desplegado: pantallas en Pages y API en otro servicio (se salta) | service | M |
+| U12 | `u12-github-pages-reglas` | GitHub Pages | Las «calculadoras» en el lenguaje de su API, con sus pruebas (se salta) | library | M |
+| U13 | `u13-github-pages-salas` | GitHub Pages | Salas, claves, catálogo, inscripción y examen completos (se salta) | service | L |
+| U14 | `u14-github-pages-resultados` | GitHub Pages | Resultados, tablero, CSV, paquete y copias (se salta) | service | M |
 | U15 | `u15-render-documentacion` | Render | Cifras de la documentación oficial para la comparación, sin desplegar | spec | S |
 | U16 | `u16-cloudflare-containers-documentacion` | Cloudflare Containers | Igual que U15 | spec | S |
 | U17 | `u17-comparacion` | todas | `despliegues/COMPARACION.md`, ADR final de elección y guía del ganador | spec | M |
@@ -38,15 +49,14 @@ Los componentes son los de `../domain-design/components.md` y las decisiones las
 ### U2 `u2-prueba-comun`
 
 - **Responsabilidad:** completa la prueba común mínima que dejó U1 en `despliegues/prueba_comun/`. Es
-  una sola prueba que recibe la URL y la **clave
-  del semillero** por argumento o variable de entorno. Con esa clave crea las salas que necesita y usa
-  las claves de sala que le devuelve el servicio. Contra la versión local, que tiene una sola sala,
-  recibe la clave docente. Tiene dos partes (FR12.3):
+  una sola prueba que recibe la URL y la **clave docente** por argumento o variable de entorno, igual
+  contra la nube y contra la versión local (revisión del 2026-10-25: ya no hay clave del semillero). Tiene dos partes (FR12.3):
   - **base:** las 29 comprobaciones de `simulacro.py 40`, sin debilitar ninguna;
   - **nueva:** todo lo que FR12.5 pone en la prueba común:
     - las fugas (FR6.3);
-    - varias salas (FR11.7) y 10 salas de tamaños desiguales que suman 40 participantes (NFR1);
-    - 403 con clave ausente, incorrecta o de otra sala (NFR9);
+    - los relojes por colegio (FR11.7): dos colegios arrancados a distinta hora, cada uno con sus
+      90 minutos y su bono medido desde su arranque; 40 equipos de 3 colegios (NFR1);
+    - 403 con clave ausente, incorrecta o enviada en la URL (NFR9);
     - los mismos puntos y la misma clasificación que la versión local con las mismas respuestas (NFR11);
     - la latencia (NFR2, NFR3), un reinicio a mitad de la prueba (NFR4) y el arranque en frío (NFR5);
     - el consumo medido frente a la cuota gratuita (NFR6).
@@ -54,8 +64,8 @@ Los componentes son los de `../domain-design/components.md` y las decisiones las
 - **Notas:**
   - no abre la base de datos ni pide una ruta para mover el reloj: el vencimiento se prueba esperando
     con una duración corta (`despliegues/prueba_comun/LEEME.md`, «Pendiente de decidir»);
-  - contra la versión local, la parte base da «TODO BIEN»; las de fugas pasan después de U3, y las de
-    varias salas no aplican;
+  - contra la versión local, la parte base da «TODO BIEN»; las de fugas fallan mientras U3 siga saltada, y
+    las de relojes por colegio no aplican;
   - `simulacro.py` no se copia ni se cambia;
   - **salida:** termina en «TODO BIEN» o con la lista de comprobaciones que fallaron, y escribe un archivo
     JSON con cada medición (latencias, consumo, arranque en frío). U17 llena `COMPARACION.md` con ese
@@ -117,34 +127,37 @@ Los componentes son los de `../domain-design/components.md` y las decisiones las
     decimales e `id` creciente (`components.md`, Clasificacion);
   - las transiciones de la sala solo permiten lo que ofrece el panel (FR7.4).
 
-### U5, U9, U13: salas y catálogo de cada opción
+### U5 `u5-cloudflare-salas`: reto, colegios y relojes (U9 y U13 se saltan)
 
-- **Responsabilidad:** los componentes Salas, Acceso, CatalogoColegios, Inscripcion y Examen completos
-  (ADR-002, ADR-003, ADR-004, ADR-005, ADR-007): dos claves con el prefijo `KQMT-…`, código de sala fijo
-  y único, colegios provisionales, acciones del docente, entrega con un solo dueño y la tabla «Revisar y
-  escribir sin cruzarse».
+- **Responsabilidad:** los componentes Reto, CicloDelReto, Acceso, Inscripcion y Examen completos
+  (ADR-004, ADR-007, ADR-009, ADR-010, ADR-011):
+  - una sola fila de reto con estado, configuración y código de sala que fija el docente;
+  - la clave docente única como secreto del hosting, solo por `X-Clave-Admin` (quita la clave del
+    semillero, las claves de sala y «crear sala» que dejó U1);
+  - la lista de colegios que carga el docente (pegar un nombre por línea o uno a uno);
+  - el reloj de cada colegio: «Abrir el reto» arranca los colegios con equipos, «Arrancar reloj» arranca
+    uno, el inicio del equipo es el arranque de su colegio y el vencimiento se aplica por colegio;
+  - las acciones del docente: forzar entrega, anular y reactivar, eliminar inscripciones sin empezar;
+  - todos los cambios de estado (inscripción → abierto → cerrado → resultados), cada uno confirmado.
 - **Despliegue:** el mismo servicio del corte.
-- **Pantallas:** cambia la copia de `web/` de la opción para:
+- **Pantallas:** cambia la copia de `web/` para:
   - la inscripción con colegio de la lista (FR10.3);
-  - el panel de salas, claves y catálogo (FR11.5);
-  - el código de sala que se ve sin poder editarse (R-12);
-  - el botón «Borrar la sala» del semillero.
-- **Notas:** las 2 reglas que dejó la última revisión de Domain Design (`../domain-design/reviews/review-05.md`):
-  - configurar la sala (duración, reloj, colegios) solo se permite antes de abrirla, como hoy, y no se
-    cruza con otra operación de la sala;
-  - «Borrar la sala» solo se permite con la sala cerrada y pide escribir BORRAR, igual que «Reiniciar».
+  - el aviso «Tu colegio todavía no ha empezado. Espera la señal del docente.» (FR3.1);
+  - el panel con la lista de colegios, el estado de su reloj y «Arrancar reloj» (FR11.5).
+- **Notas:** configurar el reto (duración, colegios) se permite antes de cerrar; agregar un colegio
+  también con el reto abierto (ADR-009).
 
-### U6, U10, U14: resultados y exportación de cada opción
+### U6 `u6-cloudflare-resultados` (U10 y U14 se saltan)
 
 - **Responsabilidad:** los componentes Resultados y Exportacion: vista del participante, tablero con
-  `?sala=`, resumen del panel, los dos CSV de hoy, el paquete de datos, la copia de «Reiniciar» y su
-  descarga (FR4.3, FR9, FR11.4).
-- **Pantallas:** cambia la copia de `web/` de la opción para el tablero con `?sala=` y la lista de copias
-  para descargar (`components.md`, «Cambios que el docente ve en el panel»).
+  podio general y clasificación por grado (FR2.5), resumen del panel (`/api/admin/resumen`), los dos CSV
+  de hoy, el paquete de datos, «Reiniciar» con BORRAR y su copia previa, y la descarga (FR4.3, FR9,
+  FR11.4, FR11.6).
+- **Pantallas:** cambia la copia de `web/` para el podio general y por grado del tablero y la descarga
+  del paquete (`components.md`, «Cambios que el docente y el estudiante ven»).
 - **Despliegue:** el mismo servicio del corte.
 - **Notas:**
-  - la copia lleva todas las filas de la sala, pero no `token`, `semilla`, `codigo` personal ni
-    `clave_huella` (`components.md`, «Copias y borrado de una sala»);
+  - la copia lleva todas las filas del reto, pero no `token`, `semilla` ni `codigo` personal;
   - al terminar, la opción pasa la prueba común completa (U2) en «TODO BIEN».
 
 ### U15 `u15-render-documentacion` y U16 `u16-cloudflare-containers-documentacion`
@@ -166,8 +179,8 @@ Los componentes son los de `../domain-design/components.md` y las decisiones las
 - **Notas:**
   - las carpetas de las opciones que pierden se borran solo después de que el humano apruebe el ADR
     final (FR12.6);
-  - U17 empieza cuando las tres opciones gratuitas terminaron su unidad de resultados (U6, U10, U14).
-    Así la tabla nunca se llena a medias;
+  - U17 empieza cuando U6 terminó y U2 midió Cloudflare (revisión del 2026-10-25: las demás opciones
+    no se construyen). Si Cloudflare pasa todo, es la elegida, sin respaldo construido (FR12.2c);
   - si una opción no pasa su corte o se abandona, el humano aprueba saltar sus unidades restantes. Esa
     opción queda en la tabla como «no pasa», con el motivo, y U17 ya no la espera. Si ninguna pasa todo,
     se aplica OQ2 (FR12.6).

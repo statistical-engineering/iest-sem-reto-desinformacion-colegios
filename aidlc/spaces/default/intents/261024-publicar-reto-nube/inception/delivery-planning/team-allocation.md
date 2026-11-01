@@ -18,12 +18,15 @@ misma tanda corren en paralelo, cada uno en su propia copia de trabajo.
 | B8 a B12 | U5, U6, U12, U13, U14 | aidlc-developer-agent | El humano |
 | B13 | U17 | aidlc-developer-agent | El humano: ADR final de elección |
 
+**Revisión del 2026-10-25:** quedan B4, B9, B11, B2 y B13, todos del agente desarrollador; B3, B7, B8,
+B10 y B12 se saltan.
+
 ## Lo que solo hace una persona
 
 Según Q8-A:
 
 - crear la cuenta gratuita de cada hosting (Cloudflare y GitHub) antes de su corte;
-- cargar la clave del semillero como secreto del hosting. El asistente nunca la ve;
+- cargar la clave docente (`CLAVE_DOCENTE`) como secreto de Cloudflare. El asistente nunca la ve;
 - aprobar que se salten U7 a U10 (Apps Script, Q2-A);
 - subir a `develop` cuando lo pida. El humano y el asistente suben directo; el resto del equipo, por PR
   (`team.md`, «Corrections»).

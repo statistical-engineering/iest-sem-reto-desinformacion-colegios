@@ -56,7 +56,10 @@
     "FR12.3",
     "FR12.4",
     "FR12.5",
-    "FR12.6"
+    "FR12.6",
+    "FR2.5",
+    "FR2.6",
+    "FR12.2c"
   ],
   "coverage": [
     {
@@ -336,6 +339,21 @@
     },
     {
       "id": "FR12.6",
+      "status": "OK",
+      "target": "U17"
+    },
+    {
+      "id": "FR2.5",
+      "status": "OK",
+      "target": "U6"
+    },
+    {
+      "id": "FR2.6",
+      "status": "OK",
+      "target": "U5"
+    },
+    {
+      "id": "FR12.2c",
       "status": "OK",
       "target": "U17"
     }

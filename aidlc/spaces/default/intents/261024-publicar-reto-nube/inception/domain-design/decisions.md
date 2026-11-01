@@ -1,9 +1,16 @@
 # Decisiones de diseño del dominio
 
-Registro de decisiones de arquitectura (ADR) de Domain Design. Cada ADR compara al menos tres
-alternativas con su costo y fue aprobado por el humano el 2026-10-25. Valen para cada versión de la nube
-(FR12.2); la versión local (`2_Aplicacion_Reto/`) no cambia. Lo propio de cada plataforma va en el ADR de
-cada opción (FR12.2b).
+Registro de decisiones de arquitectura (ADR) de Domain Design. Cada ADR compara al menos dos
+alternativas con su costo. ADR-001 a ADR-008 fueron aprobados por el humano el 2026-10-25. Valen para la
+versión de la nube que se construye, Cloudflare (FR12.2c); la versión local (`2_Aplicacion_Reto/`) no
+cambia. Lo propio de la plataforma va en el ADR de la opción (FR12.2b).
+
+**Revisión del 2026-10-25 (una sola sala).** El humano fijó que «esto lo controla un solo profesor en un
+solo panel. no con varios profesores con varios paneles. es solo una sala.» y pegó las reglas de negocio
+(`../requirements-analysis/reglas-de-negocio-2026-10-25.md`). Con eso, ADR-002, ADR-003 y ADR-005 quedan
+reemplazados por ADR-009, ADR-010 y ADR-011; su texto se conserva como historia. ADR-004 se ajusta para
+que el vencimiento sea por colegio. Lo que no salió del humano lleva la marca «decisión del asistente», con
+la potestad que él dio en la revisión de los requisitos.
 
 ## ADR-001: Cómo se separan las reglas del reto en cada versión
 
@@ -33,7 +40,7 @@ puro de FR7.1, y FR7.1 se reescribió porque venía del pedido inicial y no de u
 
 - **Decision** — A, aplicada solo a las reglas de la lista. Es la única de las tres cuyo costo de
   prueba no depende del almacenamiento de cada plataforma: B se encarece justo en Apps Script, y C deja
-  sin pruebas unitarias las reglas que más fallan (tiempo y desempates). Lo demás (catálogo, salas,
+  sin pruebas unitarias las reglas que más fallan (tiempo y desempates). Lo demás (reto, colegios,
   exportación y panel) va directo contra la base de cada plataforma, sin capas extra.
 - **Consequences** — A favor: los mismos casos de prueba de las reglas se escriben en Python y en JS.
   Si dos versiones difieren, la diferencia aparece en las pruebas y no el día del reto. En contra: cada
@@ -46,7 +53,11 @@ puro de FR7.1, y FR7.1 se reescribió porque venía del pedido inicial y no de u
 
 ## ADR-002: Catálogo único de colegios del semillero
 
-**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+**Estado:** Reemplazado por ADR-009 (revisión 2026-10-25). Con un solo docente ya no hay semillero que
+mantenga un catálogo ni colegios «provisionales»; FR10.3 vuelve a decir que el docente carga la lista. El
+texto de abajo se conserva como historia.
+
+Aprobado por el humano (2026-10-25). Revisa la versión anterior
 (Q2-A) con la comparación de costos y resuelve el hallazgo R-06 de la primera revisión: quién elige los
 colegios de cada sala y qué pasa si falta uno el día del reto (OQ7).
 
@@ -80,7 +91,11 @@ colegios de cada sala y qué pasa si falta uno el día del reto (OQ7).
 
 ## ADR-003: Clave de sala generada por el servidor y regenerable
 
-**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+**Estado:** Reemplazado por ADR-010 (revisión 2026-10-25). Hay una sola clave docente (NFR9), así que no
+hay claves de sala que generar, guardar como huella ni regenerar. El texto de abajo se conserva como
+historia.
+
+Aprobado por el humano (2026-10-25). Revisa la versión anterior
 (Q3-C) con la comparación de costos y con los dos tipos de clave de NFR9.
 
 - **Context** — Hay dos claves (NFR9): la del semillero, que es un secreto del hosting, y la de cada
@@ -110,27 +125,32 @@ colegios de cada sala y qué pasa si falta uno el día del reto (OQ7).
 
 **Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
 (Q4-A, Q7-A) con la comparación de costos en las cinco plataformas, y resuelve los hallazgos R-01 (quién
-entrega al cerrar la sala) y R-09 (que una entrega no pase dos veces).
+entrega al cerrar el reto) y R-09 (que una entrega no pase dos veces). Ajustado en la revisión del
+2026-10-25: el vencimiento es **por colegio**, porque cada colegio tiene su propio reloj (FR3.1,
+ADR-011); la regla no cambia, solo el `inicio` de cada participante, que ahora es el arranque de su
+colegio.
 
 - **Context** — Hoy un hilo `vigilante` revisa cada 3 s los intentos vencidos (`servidor.py`,
   `vigilante`), y `finalizar` pone la hora de entrega en `fin = min(ahora, inicio + duración)`. Al
-  cerrar la sala, `cambiar_estado` entrega los intentos en curso con la hora del cierre y el motivo
+  cerrar el reto, `cambiar_estado` entrega los intentos en curso con la hora del cierre y el motivo
   `cierre`, y pasa a `no_inicio` a quien nunca empezó. La hora de entrega es el 4.º criterio de desempate
-  (FR2.3), así que tiene que salir exacta.
+  (FR2.3), así que tiene que salir exacta. Con un reloj por colegio, `inicio + duración` es distinto para
+  cada colegio, y al vencer uno se entregan solo sus equipos (FR3.1).
 
 | | A. Vence al consultar | B. Un hilo que revisa cada pocos segundos (como hoy) | C. Un temporizador de cada plataforma |
 |---|---|---|---|
-| Cómo es | Antes de responder cualquier petición de una sala, se entregan los intentos que ya vencieron, con su hora exacta | Un proceso aparte revisa todo cada 3 s | Una alarma programada (por ejemplo la del Durable Object o un activador de Apps Script) entrega a su hora |
+| Cómo es | Antes de responder cualquier petición del reto, se entregan los intentos que ya vencieron, con su hora exacta | Un proceso aparte revisa todo cada 3 s | Una alarma programada (por ejemplo la del Durable Object o un activador de Apps Script) entrega a su hora |
 | ¿Funciona en las cinco? | Sí: no necesita nada de la plataforma | No: Workers y Apps Script no tienen hilos, y una instancia dormida no revisa nada | Sí, pero con un mecanismo distinto en cada una, cada uno con sus propios límites (por verificar en la documentación oficial) |
 | Costo de construir | Bajo: una regla de las «calculadoras» de ADR-001, llamada en cada lectura | Bajo en Python; imposible en JS | Alto: cinco mecanismos distintos |
 | Costo de probar | Bajo: se prueba con una hora fija, sin esperar | Alto: hay que esperar o mover el reloj | Alto: hay que simular la alarma de cada plataforma |
 
 - **Decision** — A. Es la única que funciona igual en las cinco plataformas sin un mecanismo propio de
   cada una, y se prueba sin esperar. Reglas exactas:
-  - la hora de entrega es la menor entre ahora, el vencimiento (`inicio + duración`) y el cierre de la
-    sala, y el motivo es `tiempo` o `cierre`, según cuál llegó primero;
-  - al cerrar la sala, quien nunca empezó pasa a `no_inicio`;
-  - un solo componente, **Examen**, es dueño de escribir la entrega. Salas al cerrar, y Resultados y
+  - la hora de entrega es la menor entre ahora, el vencimiento (`inicio + duración`, donde `inicio` es
+    el arranque del colegio del participante) y el cierre del reto, y el motivo es `tiempo` o `cierre`,
+    según cuál llegó primero; así cada colegio vence por su cuenta y solo se entregan sus equipos;
+  - al cerrar el reto, quien nunca empezó pasa a `no_inicio`;
+  - un solo componente, **Examen**, es dueño de escribir la entrega. Reto al cerrar, y Resultados y
     Exportación antes de leer, le piden a Examen que aplique la regla (R-01);
   - entregar es idempotente: un intento pasa de `en_curso` a `finalizado` una sola vez, dentro de una
     transacción, aunque dos lecturas lleguen a la vez (R-09). El mecanismo de cada plataforma va en su
@@ -143,7 +163,11 @@ entrega al cerrar la sala) y R-09 (que una entrega no pase dos veces).
 
 ## ADR-005: Cada dato lleva su sala, y cada petición dice de qué sala es
 
-**Estado:** aprobado por el humano (2026-10-25). Revisa la versión anterior
+**Estado:** Reemplazado por ADR-011 (revisión 2026-10-25). Hay una sola sala (FR11.1): ningún dato lleva
+sala, el tablero pide `GET /api/publico` sin `?sala=` y la clave no lleva prefijo. El texto de abajo se
+conserva como historia.
+
+Aprobado por el humano (2026-10-25). Revisa la versión anterior
 (Q5-C) con la comparación de costos y resuelve los hallazgos R-03 (cómo indica su sala cada petición) y
 R-05 (que la copia de una sala no lleve datos de otras).
 
@@ -236,7 +260,7 @@ R-02: quién es dueño del estado del participante y de cada acción del docente
 | `eliminar` (solo si está en `registrado` o `no_inicio`): borra al participante y sus eventos | Inscripción |
 | Estado (`registrado`, `en_curso`, `finalizado`, `no_inicio`, `descalificado`), inicio, entrega, puntos y bono | Examen |
 | `finalizar`, `descalificar` y `reactivar` | Examen |
-| Entregar por vencimiento o por cierre de la sala | Examen (ADR-004) |
+| Entregar por vencimiento del reloj de su colegio o por cierre del reto | Examen (ADR-004) |
 
 - **Consequences** — A favor: una sola entidad en las cinco versiones, CSV iguales a hoy y un dueño
   claro por cada dato. En contra: los dos dueños comparten la misma fila. La regla «solo Examen cambia el
@@ -288,3 +312,140 @@ R-02: quién es dueño del estado del participante y de cada acción del docente
   el código viejo con `extend-exclude`: dejaba archivos enteros sin revisar, incluso para errores
   reales (`F`, `B`). Formatear cada archivo cuando se toque: mezcla formato y lógica en el mismo PR y
   lo hace difícil de revisar.
+
+## ADR-009: La lista de colegios la carga el docente en su panel
+
+**Estado:** propuesto en la revisión del 2026-10-25; reemplaza a ADR-002. Fuente: FR10.3 revisado («con
+un solo docente ya no hay catálogo del semillero ni colegios "provisionales"») y la frase del humano «es
+solo una sala». Resuelve OQ7 (cómo se carga la lista y qué pasa si falta un colegio el día del reto).
+
+- **Context** — La lista cerrada de colegios (FR10.3) existe para que «IE San José» y «colegio san jose»
+  no queden como dos colegios, y para que el reloj por colegio (FR3.1) agrupe bien a los equipos. Con un
+  solo docente y un solo panel ya no hay quién mantenga un catálogo entre retos. Los paquetes de varios
+  retos se unen por `colegios.csv` (FR9.1, FR9.2). Toda entrada pasa por LimpiezaEntrada (FR10.2) y
+  solo el docente, con su clave, toca la lista (NFR9).
+
+| | A. El docente carga la lista en su panel | B. Catálogo único del semillero (ADR-002) | C. Texto libre normalizado, sin lista |
+|---|---|---|---|
+| Cómo es | En `inscripcion` o `abierto`, el docente agrega colegios uno a uno o pega un nombre por línea; el servidor genera el `id_colegio`, normaliza el nombre y rechaza un repetido. Un colegio se quita solo si no tiene equipos. Si falta uno el día del reto, lo agrega en ese momento | El semillero mantiene la lista con un id fijo entre años; el docente elige de ahí y agrega «provisionales» | El estudiante escribe el colegio; el servidor agrupa por nombre normalizado |
+| Costo de construir | Bajo: una tabla de colegios, dos rutas del panel y la lista en la inscripción | Medio: catálogo, pantalla del semillero, elección, provisionales y unión posterior | El más bajo |
+| Costo en los datos | Bajo: el id es estable dentro del reto; entre retos se unen por nombre normalizado en `colegios.csv` | Ninguno: el mismo id siempre | Alto: un error de ortografía parte un colegio en dos relojes |
+| ¿Sirve para el reloj por colegio? | Sí: el colegio es una fila con `arranque` | Sí | No con seguridad: dos grafías del mismo colegio serían dos relojes |
+
+- **Decision** — A. Es la más parsimoniosa que cumple FR10.3 y FR3.1 con un solo docente: no exige un
+  actor que ya no existe (B) y no deja que una grafía distinta cree un reloj aparte (C). Detalles que son
+  decisión del asistente: la lista se carga pegando un nombre por línea o agregando uno a uno; el
+  servidor genera el `id_colegio`; un nombre repetido (normalizado) se rechaza con el mensaje del estilo
+  de hoy; un colegio con equipos no se quita ni se renombra (si el docente se equivocó, lo quita y lo
+  agrega de nuevo mientras no tenga equipos); se agrega también en `abierto`, para el colegio que llega
+  el día del reto sin estar en la lista; cada nombre se recorta a 80 caracteres (FR10.2).
+- **Consequences** — A favor: una sola pantalla, la del docente, y ninguna pieza del semillero en el
+  servidor. El reloj por colegio tiene una fila clara donde guardar `arranque`. En contra: el
+  `id_colegio` no se conserva entre retos; unir varios años se hace por nombre normalizado en
+  `colegios.csv`, y el diccionario de datos (FR9.3) lo advierte. «Reiniciar» borra la lista junto con el
+  reto (FR11.6, decisión del asistente), así que el docente la vuelve a cargar en el siguiente reto.
+- **Alternatives Rejected** — B: exige un actor y una pantalla que el humano quitó. C: no garantiza que
+  un colegio tenga un solo reloj.
+
+## ADR-010: Una sola clave docente como secreto del hosting
+
+**Estado:** propuesto en la revisión del 2026-10-25; reemplaza a ADR-003. Fuente: NFR9 revisado («Hay
+una sola clave, la del docente … Vive como secreto del hosting, tiene al menos 12 caracteres, se compara
+en tiempo constante … solo viaja en la cabecera `X-Clave-Admin`»), FR9.5, FR11.5 y la regla de
+`project.md` («NEVER aceptar la clave docente … en la URL (?clave=)»). Cierra OQ6 (límite de intentos).
+
+- **Context** — Hoy `servidor.py` compara la clave con `secrets.compare_digest`, pero la acepta también en
+  `?clave=` (`es_admin`), la guarda en `datos/clave_docente.txt` y la genera con 6 caracteres si nadie la
+  fija. En la nube la URL queda en los registros del hosting y el repositorio es público, así que la
+  clave no puede vivir en un archivo del repositorio ni en la URL. Con una sola sala no hay clave del
+  semillero ni clave por sala.
+
+| | A. Secreto del hosting, solo por cabecera | B. Clave guardada en la base como huella, regenerable (ADR-003) | C. Archivo `clave_docente.txt` junto a la base, como hoy |
+|---|---|---|---|
+| Cómo es | Arranque lee la clave del secreto del hosting y se niega a arrancar si tiene menos de 12 caracteres; Acceso la compara en tiempo constante con `X-Clave-Admin`; `?clave=` da 403 | El servidor genera la clave, la muestra una vez y guarda su huella; el panel la regenera | El servidor la lee o la genera en un archivo del disco persistente |
+| Costo de construir | El más bajo: leer un secreto y comparar | Medio: tabla o fila de huella, ruta para regenerar y mostrarla una vez | Bajo, pero exige disco persistente y un archivo que no entra en la copia |
+| Riesgo | Bajo: no está en la base, el paquete ni el repositorio; cambiarla es cambiar el secreto y redesplegar | Bajo, pero una regeneración a mitad del reto deja al docente afuera | Medio: la clave generada hoy tiene 6 caracteres y vive en disco |
+| ¿Cumple NFR9? | Sí | Sí, con una pieza más | No sin cambios: largo y ubicación |
+
+- **Decision** — A. Cumple NFR9 con la menor cantidad de piezas y deja la clave fuera de la base, del
+  paquete y del repositorio. Reglas exactas:
+  - la clave viaja solo en `X-Clave-Admin`; una clave ausente, incorrecta o pasada en `?clave=` recibe
+    403 sin datos (FR9.5), y A4 confirma que ningún cliente de `web/js/` usa `?clave=`;
+  - se compara en tiempo constante, byte a byte, después de quitar los espacios de los extremos y sin
+    cambiar mayúsculas (decisión del asistente: hoy el servidor la pasa a mayúsculas porque la genera de
+    un alfabeto sin minúsculas; con una clave de 12 o más caracteres fijada por una persona, cambiar las
+    mayúsculas la debilitaría);
+  - Arranque se niega a arrancar si el secreto tiene menos de 12 caracteres, y lo dice en el registro sin
+    mostrar la clave (decisión del asistente: así el requisito se comprueba en el despliegue y no en una
+    revisión);
+  - no hay límite de intentos fallidos (OQ6): con 12 o más caracteres y 403 sin pista, un límite cambiaría
+    la conducta del panel sin necesidad; si el hosting ofrece limitar peticiones sin código, NFR Design lo
+    anota como opcional.
+- **Consequences** — A favor: una pieza menos en la base y en el paquete, y nada que regenerar desde el
+  panel. En contra: cambiar la clave exige cambiar el secreto y redesplegar, y eso solo se hace sin un
+  reto en curso (`project.md`, «Forbidden»); la guía de despliegue (FR8.1) dice cómo fijar el secreto y
+  que tenga al menos 12 caracteres. La clave no se registra nunca (`.claude/rules/python-code.md`,
+  «Logs»).
+- **Alternatives Rejected** — B: una pieza más para un problema que ya no existe sin salas. C: la clave
+  en disco con 6 caracteres no cumple NFR9 y queda fuera de la copia de datos.
+
+## ADR-011: Una sola sala y un reloj por colegio arrancado por el docente
+
+**Estado:** propuesto en la revisión del 2026-10-25; reemplaza a ADR-005. Fuente: el humano («esto lo
+controla un solo profesor en un solo panel … es solo una sala.») y las reglas de negocio §4.1 («los
+relojes son independientes para cada colegio … se garantiza que cada colegio tenga sus 90 min sin importar
+si empezaron 5 o 10 min mas tarde»), §1 («el podio es general») y §7 («Clasificación general y por
+grado»); FR2.5, FR2.6, FR3.1, FR11. Quién arranca cada reloj y cómo se miden los tiempos no salió del
+humano: son decisión del asistente, marcadas abajo.
+
+- **Context** — Hoy `servidor.py` tiene un solo reto con reloj global (todos desde `abierto_en`) o
+  individual (cada equipo desde su «Comenzar»). A la sala entran equipos de varios colegios y cada
+  colegio llega listo a una hora distinta. Hay que garantizar los 90 minutos de cada colegio sin que el
+  bono ni los desempates castiguen al que empezó tarde, y sin cambiar nada más de lo visible (FR11.3).
+
+| | A. Una sala; reloj por colegio arrancado por el docente; tiempos relativos al arranque | B. Varias salas, una por colegio (ADR-005) | C. Una sala con un solo reloj global, como hoy | D. Reloj del colegio que arranca solo con el primer «Comenzar» de ese colegio |
+|---|---|---|---|---|
+| Cómo es | Colegio lleva `arranque`. «Abrir el reto» arranca los colegios que ya tienen equipos; «Arrancar reloj» arranca uno que llega tarde; el inicio del equipo es el arranque de su colegio; entrega = min(ahora, arranque + duración, cierre); bono y desempate miden desde el arranque del colegio | Cada colegio es una sala con su clave, su tablero y su reloj | Un solo `abierto_en`; el que llega tarde pierde minutos | Igual que A, pero el reloj lo dispara el primer equipo del colegio que pulsa «Comenzar» |
+| Costo de construir | Bajo: una columna, una acción del panel y pasar el arranque a la hora de entrega | Alto: todo lo de ADR-002, 003 y 005 | El más bajo: nada | Bajo, igual que A sin el botón |
+| ¿Cumple las reglas de negocio? | Sí: 90 minutos por colegio, podio general entre todos | Sí los 90 minutos, pero el podio general exige cruzar salas | No: un colegio tardío no tiene sus 90 minutos | Sí los 90 minutos, pero el reloj arranca cuando un equipo decide, no cuando el colegio está listo, y un equipo apurado les quita tiempo a los demás de su colegio |
+| ¿Un solo panel y una sola clave? | Sí | No | Sí | Sí |
+
+- **Decision** — A. Es la única que cumple «es solo una sala», los 90 minutos por colegio y el podio
+  general con una columna y un botón más. Reglas exactas (las marcadas son decisión del asistente):
+  - **el docente arranca cada colegio** desde el panel, con confirmación, porque es quien sabe cuándo un
+    colegio está listo (decisión del asistente; §4.1 solo dice «según cuando ellos hayan estado listos»);
+  - **«Abrir el reto»** arranca a la vez los colegios que ya tienen al menos un equipo inscrito
+    (decisión del asistente: es el caso ideal en que todos empiezan juntos y no exige un clic por
+    colegio);
+  - un arranque no se repite ni se deshace; un colegio se arranca solo con el reto en `abierto`;
+  - **«Comenzar»** exige que el colegio del equipo haya arrancado; su `inicio` es el arranque del colegio,
+    aunque pulse después, y mientras espera ve «Tu colegio todavía no ha empezado. Espera la señal del
+    docente.» (FR3.1);
+  - la entrega sigue la regla de ADR-004 con ese `inicio`, así que cada colegio vence por su cuenta y
+    «Cerrar el reto» entrega a todos;
+  - **tiempos relativos al arranque del colegio** (FR2.6, decisión del asistente): el bono usa
+    `tiempo_respuestas` desde el `inicio` (ya es así hoy) y el desempate usa `tiempo_respuestas` ↑ y luego
+    `tiempo_usado` ↑ (`fin − inicio`) en vez de la hora absoluta de entrega; la inscripción más temprana
+    sigue siendo absoluta. Con un solo colegio arrancado al abrir, todos los `inicio` son iguales y el
+    orden es idéntico al de hoy (FR11.7);
+  - **podio general y clasificación por grado** (FR2.5): un solo orden total entre todos los equipos; el
+    podio son sus tres primeros; la clasificación por grado es el mismo orden filtrado por 9.°, 10.° y
+    11.°; la nota es `1 + 4 × puntos / 1.000` sin el bono. El experimento A/B y la publicación de
+    resultados son de toda la sala (FR11.2);
+  - **sin `reloj_global`**: el selector de hoy desaparece del panel porque el reloj por colegio lo
+    reemplaza (decisión del asistente); qué devuelve la API en esa clave, que `web/js/` sigue leyendo
+    (FR4.1), lo fija el contrato de la API;
+  - **un solo tablero** en `/tablero` y `GET /api/publico` sin parámetros, que es también el chequeo de
+    salud (FR11.4). Esto revierte la regla aprendida en Contract Design de responder solo `{"ok": true}`
+    sin `?sala=`, que era para varias salas.
+- **Consequences** — A favor: una columna (`arranque`), una acción del panel y ningún cambio para el
+  estudiante salvo el aviso de espera. Puntos, bono y orden salen iguales que hoy con un solo colegio. En
+  contra: un equipo que se inscribe después del arranque de su colegio empieza con menos tiempo, igual que
+  hoy con el reloj global; el panel muestra el reloj de cada colegio para que el docente lo vea. El 4.º
+  desempate cambia de `fin` absoluto a `tiempo_usado`; es un cambio de conducta solo visible cuando hay
+  dos colegios con arranques distintos, aprobado dentro de FR11 y FR2.6. La prueba común agrega el caso
+  de dos colegios arrancados a distinta hora (FR11.7). Seguridad: solo la clave docente arranca relojes;
+  nada nuevo sale al navegador antes de «resultados» (NFR8).
+- **Alternatives Rejected** — B: contradice «es solo una sala» y multiplica claves, tableros y
+  paneles. C: no da los 90 minutos al colegio que llega tarde. D: deja el arranque en manos de un
+  estudiante y un equipo apurado les quita minutos a los demás de su colegio.

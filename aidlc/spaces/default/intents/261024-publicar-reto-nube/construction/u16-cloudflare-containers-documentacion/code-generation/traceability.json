@@ -1,0 +1,21 @@
+{
+  "stage": "code-generation",
+  "unit": "u16-cloudflare-containers-documentacion",
+  "upstream_ids": ["FR12.2", "FR12.2a", "FR12.4", "FR12.5", "NFR4", "NFR5", "NFR6", "BR16.1", "BR16.2", "BR16.3", "BR16.4", "BR16.5", "BR16.6", "BR16.7"],
+  "coverage": [
+    { "id": "FR12.2", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "FR12.2a", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "FR12.4", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "FR12.5", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "NFR4", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "NFR5", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "NFR6", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.1", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.2", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.3", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.4", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.5", "status": "OK", "target": "despliegues/COMPARACION.md" },
+    { "id": "BR16.6", "status": "OK", "target": "despliegues/cloudflare-containers/LEEME.md" },
+    { "id": "BR16.7", "status": "OK", "target": "despliegues/cloudflare-containers/LEEME.md" }
+  ]
+}

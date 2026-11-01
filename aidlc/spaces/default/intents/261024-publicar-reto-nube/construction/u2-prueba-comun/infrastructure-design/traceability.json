@@ -1,18 +1,87 @@
 {
   "stage": "infrastructure-design",
   "unit": "u2-prueba-comun",
-  "upstream_ids": ["U2-S1", "U2-S5", "U2-E2", "U2-R2", "U2-R3", "U2-R5", "U2-R6", "U2-O1", "U2-O2", "U2-O4", "U2-M1"],
+  "upstream_ids": [
+    "U2-S1",
+    "U2-S5",
+    "U2-E2",
+    "U2-R2",
+    "U2-R3",
+    "U2-R5",
+    "U2-R6",
+    "U2-O1",
+    "U2-O2",
+    "U2-O4",
+    "U2-M1",
+    "U2-R8",
+    "U2-S8"
+  ],
   "coverage": [
-    {"id": "U2-S1", "status": "OK", "target": "infrastructure-specification.md (clave en PRUEBA_CLAVE, nunca en archivo)"},
-    {"id": "U2-S5", "status": "OK", "target": "infrastructure-specification.md (referencia local con --db aparte)"},
-    {"id": "U2-E2", "status": "OK", "target": "monitoring-design.md (peticiones frente a la cuota)"},
-    {"id": "U2-R2", "status": "OK", "target": "infrastructure-specification.md («Qué deja en el servicio probado»)"},
-    {"id": "U2-R3", "status": "OK", "target": "monitoring-design.md"},
-    {"id": "U2-R5", "status": "OK", "target": "infrastructure-specification.md (--reinicio manual con wrangler deploy)"},
-    {"id": "U2-R6", "status": "OK", "target": "infrastructure-specification.md (--frio tras 15 minutos)"},
-    {"id": "U2-O1", "status": "OK", "target": "monitoring-design.md"},
-    {"id": "U2-O2", "status": "OK", "target": "infrastructure-specification.md (mediciones/ versionado)"},
-    {"id": "U2-O4", "status": "OK", "target": "monitoring-design.md"},
-    {"id": "U2-M1", "status": "OK", "target": "cicd-pipeline.md (unittest y trace antes de cada push)"}
-  ]
+    {
+      "id": "U2-S1",
+      "status": "OK",
+      "target": "infrastructure-specification.md (clave docente en PRUEBA_CLAVE, nunca en un archivo versionado)"
+    },
+    {
+      "id": "U2-S5",
+      "status": "OK",
+      "target": "infrastructure-specification.md (referencia local con --db aparte)"
+    },
+    {
+      "id": "U2-E2",
+      "status": "OK",
+      "target": "monitoring-design.md (peticiones frente a la cuota)"
+    },
+    {
+      "id": "U2-R2",
+      "status": "OK",
+      "target": "infrastructure-specification.md («Qué deja en el servicio probado»: reto vacío antes y restaurado después)"
+    },
+    {
+      "id": "U2-R3",
+      "status": "OK",
+      "target": "monitoring-design.md"
+    },
+    {
+      "id": "U2-R5",
+      "status": "OK",
+      "target": "infrastructure-specification.md (--reinicio manual con wrangler deploy)"
+    },
+    {
+      "id": "U2-R6",
+      "status": "OK",
+      "target": "infrastructure-specification.md (--frio tras 15 minutos)"
+    },
+    {
+      "id": "U2-O1",
+      "status": "OK",
+      "target": "monitoring-design.md"
+    },
+    {
+      "id": "U2-O2",
+      "status": "OK",
+      "target": "infrastructure-specification.md (mediciones/ versionado)"
+    },
+    {
+      "id": "U2-O4",
+      "status": "OK",
+      "target": "monitoring-design.md"
+    },
+    {
+      "id": "U2-M1",
+      "status": "OK",
+      "target": "cicd-pipeline.md (unittest y trace antes de cada push)"
+    },
+    {
+      "id": "U2-R8",
+      "status": "OK",
+      "target": "infrastructure-specification.md («Qué deja en el servicio probado»: el reto como estaba)"
+    },
+    {
+      "id": "U2-S8",
+      "status": "OK",
+      "target": "infrastructure-specification.md (clave por el entorno; .dev.vars ignorado)"
+    }
+  ],
+  "revision": "2026-10-27 (una sola sala)"
 }

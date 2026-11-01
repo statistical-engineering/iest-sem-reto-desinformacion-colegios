@@ -1,17 +1,20 @@
 {
   "stage": "infrastructure-design",
   "unit": "u5-cloudflare-salas",
-  "upstream_ids": ["U5-P4", "U5-E2", "U5-E3", "U5-R1", "U5-R5", "U5-R6", "U5-O1", "U5-O2", "U5-O3", "U5-O4"],
+  "revision": "2026-10-27 (una sola sala): se agregan U5-S10 y U5-S11 (secreto CLAVE_DOCENTE y DURACION_MINIMA_MIN solo en .dev.vars)",
+  "upstream_ids": ["U5-P4", "U5-E2", "U5-E3", "U5-R1", "U5-R5", "U5-R6", "U5-O1", "U5-O2", "U5-O3", "U5-O4", "U5-S10", "U5-S11"],
   "coverage": [
     {"id": "U5-P4", "status": "OK", "target": "monitoring-design.md (cpuTime en tail)"},
     {"id": "U5-E2", "status": "OK", "target": "monitoring-design.md"},
     {"id": "U5-E3", "status": "OK", "target": "monitoring-design.md"},
-    {"id": "U5-R1", "status": "OK", "target": "infrastructure-specification.md, cicd-pipeline.md (migración sobre datos previos)"},
-    {"id": "U5-R5", "status": "OK", "target": "cicd-pipeline.md"},
-    {"id": "U5-R6", "status": "OK", "target": "infrastructure-specification.md (paso 4, registro de la migración)"},
+    {"id": "U5-R1", "status": "OK", "target": "infrastructure-specification.md, cicd-pipeline.md (migración sobre datos del corte, F8)"},
+    {"id": "U5-R5", "status": "OK", "target": "cicd-pipeline.md (prueba común mínima y simulacro)"},
+    {"id": "U5-R6", "status": "OK", "target": "infrastructure-specification.md (paso 5, registro de la migración)"},
     {"id": "U5-O1", "status": "OK", "target": "monitoring-design.md"},
     {"id": "U5-O2", "status": "OK", "target": "monitoring-design.md"},
     {"id": "U5-O3", "status": "OK", "target": "monitoring-design.md"},
-    {"id": "U5-O4", "status": "OK", "target": "monitoring-design.md"}
+    {"id": "U5-O4", "status": "OK", "target": "monitoring-design.md"},
+    {"id": "U5-S10", "status": "OK", "target": "infrastructure-specification.md (Piezas, pasos 3 y 6), cicd-pipeline.md"},
+    {"id": "U5-S11", "status": "OK", "target": "infrastructure-specification.md (Piezas)"}
   ]
 }

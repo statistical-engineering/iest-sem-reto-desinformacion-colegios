@@ -2,41 +2,188 @@
   "stage": "nfr-design",
   "unit": "u2-prueba-comun",
   "upstream_ids": [
-    "U2-P1", "U2-P2", "U2-P3", "U2-P4",
-    "U2-S1", "U2-S2", "U2-S3", "U2-S4", "U2-S5", "U2-S6", "U2-S7",
-    "U2-E1", "U2-E2", "U2-E3", "U2-E4",
-    "U2-R1", "U2-R2", "U2-R3", "U2-R4", "U2-R5", "U2-R6", "U2-R7",
-    "U2-O1", "U2-O2", "U2-O3", "U2-O4", "U2-O5",
-    "U2-M1"
+    "U2-P1",
+    "U2-P2",
+    "U2-P3",
+    "U2-P4",
+    "U2-S1",
+    "U2-S2",
+    "U2-S3",
+    "U2-S4",
+    "U2-S5",
+    "U2-S6",
+    "U2-S7",
+    "U2-E1",
+    "U2-E2",
+    "U2-E3",
+    "U2-E4",
+    "U2-R1",
+    "U2-R2",
+    "U2-R3",
+    "U2-R4",
+    "U2-R5",
+    "U2-R6",
+    "U2-R7",
+    "U2-O1",
+    "U2-O2",
+    "U2-O3",
+    "U2-O4",
+    "U2-O5",
+    "U2-M1",
+    "U2-R8",
+    "U2-S8"
   ],
   "coverage": [
-    {"id": "U2-P1", "status": "OK", "target": "performance-design.md"},
-    {"id": "U2-P2", "status": "OK", "target": "performance-design.md"},
-    {"id": "U2-P3", "status": "OK", "target": "performance-design.md"},
-    {"id": "U2-P4", "status": "OK", "target": "performance-design.md"},
-    {"id": "U2-S1", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S2", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S3", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S4", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S5", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S6", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-S7", "status": "OK", "target": "security-design.md"},
-    {"id": "U2-E1", "status": "OK", "target": "scalability-design.md"},
-    {"id": "U2-E2", "status": "OK", "target": "scalability-design.md"},
-    {"id": "U2-E3", "status": "OK", "target": "scalability-design.md"},
-    {"id": "U2-E4", "status": "OK", "target": "scalability-design.md"},
-    {"id": "U2-R1", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R2", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R3", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R4", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R5", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R6", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-R7", "status": "OK", "target": "reliability-design.md"},
-    {"id": "U2-O1", "status": "OK", "target": "observability-design.md"},
-    {"id": "U2-O2", "status": "OK", "target": "observability-design.md"},
-    {"id": "U2-O3", "status": "OK", "target": "observability-design.md"},
-    {"id": "U2-O4", "status": "OK", "target": "observability-design.md"},
-    {"id": "U2-O5", "status": "OK", "target": "observability-design.md"},
-    {"id": "U2-M1", "status": "OK", "target": "logical-components.md (módulos puros con unittest; servidor_falso.py para el cliente y la carga)"}
-  ]
+    {
+      "id": "U2-P1",
+      "status": "OK",
+      "target": "performance-design.md"
+    },
+    {
+      "id": "U2-P2",
+      "status": "OK",
+      "target": "performance-design.md"
+    },
+    {
+      "id": "U2-P3",
+      "status": "OK",
+      "target": "performance-design.md"
+    },
+    {
+      "id": "U2-P4",
+      "status": "OK",
+      "target": "performance-design.md"
+    },
+    {
+      "id": "U2-S1",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S2",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S3",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S4",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S5",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S6",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-S7",
+      "status": "OK",
+      "target": "security-design.md"
+    },
+    {
+      "id": "U2-E1",
+      "status": "OK",
+      "target": "scalability-design.md"
+    },
+    {
+      "id": "U2-E2",
+      "status": "OK",
+      "target": "scalability-design.md"
+    },
+    {
+      "id": "U2-E3",
+      "status": "OK",
+      "target": "scalability-design.md"
+    },
+    {
+      "id": "U2-E4",
+      "status": "OK",
+      "target": "scalability-design.md"
+    },
+    {
+      "id": "U2-R1",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R2",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R3",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R4",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R5",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R6",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-R7",
+      "status": "OK",
+      "target": "reliability-design.md"
+    },
+    {
+      "id": "U2-O1",
+      "status": "OK",
+      "target": "observability-design.md"
+    },
+    {
+      "id": "U2-O2",
+      "status": "OK",
+      "target": "observability-design.md"
+    },
+    {
+      "id": "U2-O3",
+      "status": "OK",
+      "target": "observability-design.md"
+    },
+    {
+      "id": "U2-O4",
+      "status": "OK",
+      "target": "observability-design.md"
+    },
+    {
+      "id": "U2-O5",
+      "status": "OK",
+      "target": "observability-design.md"
+    },
+    {
+      "id": "U2-M1",
+      "status": "OK",
+      "target": "logical-components.md (módulos puros guion, pantallas y mediciones con unittest; servidor_falso.py para el cliente y la carga; test_contrato.py)"
+    },
+    {
+      "id": "U2-R8",
+      "status": "OK",
+      "target": "reliability-design.md (restauración en finally)"
+    },
+    {
+      "id": "U2-S8",
+      "status": "OK",
+      "target": "security-design.md (clave por PRUEBA_CLAVE en verificar.sh y el LEEME)"
+    }
+  ],
+  "revision": "2026-10-27 (una sola sala)"
 }

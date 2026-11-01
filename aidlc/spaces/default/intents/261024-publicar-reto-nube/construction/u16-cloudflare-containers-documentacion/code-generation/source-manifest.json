@@ -1,0 +1,9 @@
+{
+  "stage": "code-generation",
+  "unit": "u16-cloudflare-containers-documentacion",
+  "version": 1,
+  "writes": [
+    { "path": "despliegues/COMPARACION.md" },
+    { "path": "despliegues/cloudflare-containers/LEEME.md" }
+  ]
+}
