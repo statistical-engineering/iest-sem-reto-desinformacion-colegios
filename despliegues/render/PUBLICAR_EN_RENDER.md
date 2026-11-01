@@ -2,7 +2,8 @@
 
 Esta guía documenta el despliegue que se hizo en Render sin usar `render.yaml`: el servicio se crea
 desde el panel con «New → Web Service». Documenta la creación con el plan **Compute** más económico
-(`0.5c-512mb`); la sección 6 explica también el plan gratis, que solo sirve para ensayar.
+(`0.5c-512mb`); la sección 6 explica también el plan gratis, que sirve para ensayar y, aceptando sus
+límites, para un reto oficial.
 
 Resultado: tres enlaces fijos que funcionan desde cualquier computador y red, sin que ningún
 computador del equipo haga de servidor.
@@ -17,9 +18,9 @@ computador del equipo haga de servidor.
 tomado, Render agrega un sufijo; el enlace real aparece arriba en la página del servicio.
 
 > **La clave docente no se escribe en el repositorio.** En esta guía aparece como `<TU_CLAVE>`.
-> Usa 12 o más caracteres: es una recomendación, el servidor no exige un mínimo. El servidor la pasa
-> a mayúsculas, así que no distingue mayúsculas de minúsculas. Compártela solo con quien dirige el
-> reto.
+> Usa 12 o más letras o números, sin espacios: es una recomendación, el servidor no exige un
+> mínimo. El servidor la pasa a mayúsculas, así que no distingue mayúsculas de minúsculas. Compártela
+> solo con quien dirige el reto.
 >
 > **La clave se escribe solo en el formulario de `/admin`, nunca en la URL.** El servidor todavía
 > acepta `?clave=` en la dirección, y en Render esa URL queda en los registros.
@@ -35,8 +36,9 @@ tomado, Render agrega un sufijo; el enlace real aparece arriba en la página del
   ```
 
   Debe terminar con «TODO BIEN».
-- El reto real se despliega desde `main`. A `develop` se sube directo, y un push ahí reiniciaría el
-  servicio en pleno reto (sección 7).
+- El reto real se despliega desde `main`, con Auto-Deploy en Off. Así, fusionar un PR a `main`
+  durante un reto no reinicia el servicio; el despliegue se lanza a mano cuando no hay reto en curso
+  («Manual Deploy»).
 
 ## 2. Crear el servicio
 
@@ -97,15 +99,19 @@ Abre en el navegador:
   del enlace.
 - **El log muestra la clave docente.** Cualquier persona con acceso al panel de Render del servicio
   puede leerla. Limita ese acceso.
+- **El log dice que la clave está «guardada en datos/clave_docente.txt».** En Render el archivo está
+  en `/data/clave_docente.txt`.
 
 ## 4. Antes del día del reto
 
-1. Abre los tres enlaces desde un celular con **datos móviles**, no con el wifi, para confirmar que
+1. Cambia la clave de ensayo por la definitiva: en el servicio, abre «Environment», edita
+   `RETO_CLAVE` y elige «Save and deploy». Va primero porque cambiar `RETO_CLAVE` hace un nuevo
+   despliegue: en el plan gratis eso borra la base y genera otro código de sala, y la prueba de los
+   pasos siguientes quedaría sin efecto.
+2. Abre los tres enlaces desde un celular con **datos móviles**, no con el wifi, para confirmar que
    entran desde otra red.
-2. Haz una inscripción de prueba con el código de sala que muestra el tablero.
-3. En `/admin`, usa «Reiniciar» (pide escribir `BORRAR`) para dejar el reto limpio.
-4. Cambia la clave de ensayo por la definitiva: en el servicio, abre «Environment», edita
-   `RETO_CLAVE` y elige «Save and deploy». Hazlo antes de inscribir a nadie.
+3. Haz una inscripción de prueba con el código de sala que muestra el tablero.
+4. En `/admin`, usa «Reiniciar» (pide escribir `BORRAR`) para dejar el reto limpio.
 
 La clave queda guardada en `/data/clave_docente.txt`. Quitar `RETO_CLAVE` de «Environment» **no la
 borra**: el servidor sigue usando la guardada. Para cambiarla, cambia el valor de `RETO_CLAVE`.
@@ -153,11 +159,23 @@ uso, así que conviene crear el servicio unos días antes del reto y eliminarlo 
 
 | | Free | Compute `0.5c-512mb` con disco |
 |---|---|---|
-| Se duerme sin tráfico | Sí, a los 15 minutos; despertar tarda cerca de 1 minuto | No |
+| Se duerme sin tráfico | Sí, a los 15 minutos; al volver a entrar responde en unos segundos (menos de 10 s observado por el equipo; Render indica hasta cerca de 1 minuto) | No |
 | Disco persistente | No | Sí, montado en `/data` |
 | Datos tras un reinicio | **Se pierden** (inscripciones, respuestas y código de sala) | Se conservan en el disco |
 
-El plan gratis solo sirve para ensayar el despliegue. Para un reto con premios, usa Compute.
+El plan gratis sirve para ensayar el despliegue. También se puede usar en un reto oficial, siempre que
+el equipo acepte sus límites: si el servicio se reinicia (por un despliegue o por decisión de Render),
+la base se crea de nuevo y se pierden las inscripciones, las respuestas y el código de sala. Si se
+elige el plan gratis:
+
+- Deja `/tablero` abierto desde antes de empezar: mientras haya tráfico, el servicio no se duerme.
+- Si se duerme (tras 15 minutos sin tráfico), vuelve a responder en pocos segundos: el equipo observó
+  menos de 10 segundos, aunque Render documenta hasta cerca de 1 minuto. Abre los tres enlaces con
+  antelación para que no se encuentre dormido cuando lleguen los estudiantes.
+- Descarga los CSV a media sesión, como respaldo.
+- No hagas ningún despliegue durante el reto.
+
+Para un reto con premios o con resultados que deban conservarse, se recomienda Compute con disco.
 
 Con un disco adjunto, Render detiene la instancia anterior antes de iniciar la nueva, así que cada
 despliegue corta el servicio cerca de un minuto. Verifica en el panel que el disco se puede agregar
@@ -165,9 +183,9 @@ al crear el servicio (campo «Disk» en «Advanced») o después, desde la confi
 
 ## 7. Rama y Auto-Deploy
 
-El reto real se despliega desde `main`, con Auto-Deploy en Off (Settings → Auto-Deploy). A `develop`
-se sube directo: con Auto-Deploy activo, un push ahí reiniciaría el servicio en pleno reto y cortaría
-a los estudiantes que estén respondiendo.
+El reto real se despliega desde `main`, con Auto-Deploy en Off (Settings → Auto-Deploy). Así,
+fusionar un PR a `main` durante un reto no reinicia el servicio; el despliegue se lanza a mano cuando
+no hay reto en curso («Manual Deploy»).
 
 Con disco, los datos guardados se conservan tras el despliegue; sin disco, se pierden.
 
@@ -183,8 +201,8 @@ Con disco, los datos guardados se conservan tras el despliegue; sin disco, se pi
 |---|---|
 | Error de `pip` o de `requirements.txt` | «Language» quedó en Python 3. Cámbialo a Docker |
 | «Dockerfile not found» | Revisa que las dos rutas empiecen con `./2_Aplicacion_Reto` |
-| La primera visita tarda o muestra una pantalla de Render | El servicio gratis estaba dormido; espera 1 minuto y recarga |
-| El código de sala cambió | El servicio se reinició y creó una base nueva |
+| La primera visita tarda o muestra una pantalla de Render | El servicio gratis estaba dormido; espera unos segundos (Render indica hasta cerca de 1 minuto) y recarga |
+| El código de sala cambió | Alguien lo cambió en la configuración de `/admin`. En el plan gratis, también puede ser que el servicio se reinició y creó una base nueva |
 | `/admin` pide la clave y no la acepta | Revisa `RETO_CLAVE` en «Environment» y que el servicio se haya desplegado con el valor nuevo («Save and deploy») |
 | Los estudiantes no entran | Confirma que usan el enlace público y que tienen internet |
 
