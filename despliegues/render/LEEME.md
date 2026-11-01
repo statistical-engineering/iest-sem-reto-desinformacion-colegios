@@ -15,6 +15,8 @@ python3 despliegues/prueba_comun/herramientas/revisar_comparacion.py --opcion re
 Si el semillero aprueba un monto y un tope, se agregan las unidades para construirla (corte delgado,
 reglas, salas y catálogo, resultados y exportación) y el monto queda en el ADR de esta opción (FR12.2a).
 
+Mientras no haya ADR, `PUBLICAR_EN_RENDER.md` explica cómo desplegar a mano la versión local (`2_Aplicacion_Reto/`) en el plan de pago.
+
 ## Estructura
 
 ```text
