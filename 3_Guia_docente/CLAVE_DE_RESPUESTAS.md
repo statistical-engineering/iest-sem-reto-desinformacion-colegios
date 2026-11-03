@@ -1,6 +1,6 @@
 # Clave de respuestas — Detectives de la desinformación
 
-Generada automáticamente desde `banco_preguntas.json` (versión **542852ee46**). Es exactamente lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.
+Generada automáticamente desde `banco_preguntas.json` (versión **3b1af60c57**). Es exactamente lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.
 
 > Guarda este documento: contiene todas las respuestas. No lo compartas con los estudiantes antes del reto.
 
@@ -172,8 +172,8 @@ Arma la conclusión del caso como lo haría un investigador: una afirmación, la
 Respuesta:
 
 - *Conclusión principal:* **Las elecciones casi no cambian CUÁNTO verifica el medio, pero sí cambian DE QUÉ se ocupa**
-- *Evidencia que la sostiene:* **A y C: el volumen mensual y anual es casi estable; B: la parte electoral se dispara justo en los meses de votación**
-- *Limitación que hay que declarar:* **Muestra lo que el verificador decidió revisar, con un equipo de tamaño fijo, no cuánta desinformación electoral circuló**
+- *Evidencia que la sostiene:* **A y C: el volumen de chequeos es casi estable; B: la parte electoral se dispara en los meses de votación**
+- *Limitación que hay que declarar:* **Muestra lo que el verificador eligió revisar con un equipo fijo, no cuánta desinformación circuló**
 
 > Un verificador tiene capacidad casi fija (C: entre 423 y 479 chequeos al año). En elecciones no publica mucho más (A), pero dedica una parte mucho mayor a temas electorales (B). Eso describe su agenda, no el volumen de desinformación que circuló. Compara con tu hipótesis: ¿acertaste?
 
@@ -221,9 +221,9 @@ Arma la conclusión del caso como lo haría un investigador: una afirmación, la
 
 Respuesta:
 
-- *Conclusión principal:* **El % Falso total depende de la MEZCLA de lo que se verifica: al dejar de revisar discurso público, el total sube aunque las redes cambien menos**
-- *Evidencia que la sostiene:* **A: el discurso público rara vez es «Falso»; C: casi desapareció después de 2023; B: la línea total se pega a la de redes**
-- *Precaución que hay que declarar:* **Comparar promedios totales de años con mezclas distintas puede engañar: hay que mirar cada grupo por separado**
+- *Conclusión principal:* **El % Falso total depende de la MEZCLA: al dejar de revisar discurso público, el total sube**
+- *Evidencia que la sostiene:* **A: el discurso público rara vez es «Falso»; C: casi desapareció tras 2023; B: el total se pega a redes**
+- *Precaución que hay que declarar:* **Comparar promedios de años con mezclas distintas engaña: hay que mirar cada grupo por separado**
 
 > Mirar solo el total habría llevado a concluir que «todo se volvió más falso». Separando los grupos se ve que parte del cambio es de mezcla: menos discurso público (que casi nunca es Falso).
 
@@ -271,9 +271,9 @@ Arma la conclusión del caso como lo haría un investigador: una afirmación, la
 
 Respuesta:
 
-- *Conclusión principal:* **La IA gana terreno como herramienta de engaño: su peso entre lo verificado sube cada año, aunque el conteo de 2026 aún no esté completo**
-- *Evidencia que la sostiene:* **B: el porcentaje con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los videos ganan peso**
-- *Limitación que hay que declarar:* **Se cuentan palabras en el título (un chequeo de IA que no lo diga no se cuenta) y 2026 es un año incompleto**
+- *Conclusión principal:* **La IA gana terreno: su peso entre lo verificado sube cada año, aunque 2026 aún está incompleto**
+- *Evidencia que la sostiene:* **B: el % con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los videos ganan peso**
+- *Limitación que hay que declarar:* **Se cuentan palabras del título (un chequeo de IA que no lo diga no cuenta) y 2026 está incompleto**
 
 > El conteo (A) engaña por el año incompleto; la proporción (B) muestra la tendencia real. C y D dicen qué tipo de engaño es: contenido fabricado (casi siempre Falso) y cada vez más en video.
 
@@ -312,9 +312,9 @@ Arma la conclusión del caso como lo haría un investigador: una afirmación, la
 
 Respuesta:
 
-- *Conclusión principal:* **Las redes llegan casi por igual al campo y a la ciudad, pero en el campo se usan mucho menos otras fuentes digitales para contrastar información**
-- *Evidencia que la sostiene:* **B: redes con porcentajes casi iguales; periódicos digitales y correo mucho más bajos en lo rural**
-- *Limitación que hay que declarar:* **La encuesta mide si se hace cada actividad y cuántas horas de internet, no cuánta desinformación ve o cree cada persona**
+- *Conclusión principal:* **Las redes llegan casi igual al campo y a la ciudad, pero en el campo se usan menos otras fuentes digitales**
+- *Evidencia que la sostiene:* **B: redes casi iguales en campo y ciudad; periódicos digitales y correo, mucho más bajos en lo rural**
+- *Limitación que hay que declarar:* **La encuesta mide qué hace cada persona y cuántas horas, no cuánta desinformación ve o cree**
 
 > B permite hablar de canales de información (las redes llegan a todos; las alternativas para contrastar, no). Para hablar de vulnerabilidad haría falta medir creencias o exposición, que esta encuesta no mide.
 

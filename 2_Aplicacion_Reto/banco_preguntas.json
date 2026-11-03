@@ -625,19 +625,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "A y C: el volumen mensual y anual es casi estable; B: la parte electoral se dispara justo en los meses de votación"
+         "texto": "A y C: el volumen de chequeos es casi estable; B: la parte electoral se dispara en los meses de votación"
         },
         {
          "id": "b",
-         "texto": "A: los meses de votación son, uno por uno, los picos más altos de toda la serie mensual"
+         "texto": "A: los meses de votación son, uno por uno, los picos más altos de toda la serie mensual de chequeos"
         },
         {
          "id": "c",
-         "texto": "B: la parte electoral se mantiene alta todo el tiempo, también fuera de época de elecciones"
+         "texto": "B: la parte electoral se mantiene alta todo el tiempo, también en los meses en que no hubo ninguna elección"
         },
         {
          "id": "d",
-         "texto": "C: el número de chequeos por año crece a medida que se acercan las elecciones"
+         "texto": "C: el número de chequeos de cada año crece a medida que se acercan las fechas de las elecciones"
         }
        ]
       },
@@ -647,19 +647,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "Muestra lo que el verificador decidió revisar, con un equipo de tamaño fijo, no cuánta desinformación electoral circuló"
+         "texto": "Muestra lo que el verificador eligió revisar con un equipo fijo, no cuánta desinformación circuló"
         },
         {
          "id": "b",
-         "texto": "Incluye una sola jornada electoral, así que no permite comparar entre elecciones"
+         "texto": "Incluye una sola jornada electoral, así que no permite comparar unas elecciones con otras distintas"
         },
         {
          "id": "c",
-         "texto": "Los meses tienen distinta cantidad de días, por eso sus porcentajes no se pueden comparar"
+         "texto": "Los meses tienen distinta cantidad de días, y por eso sus porcentajes no se pueden comparar entre sí"
         },
         {
          "id": "d",
-         "texto": "Los datos vienen de una encuesta a ciudadanos y dependen de lo que la gente recuerde"
+         "texto": "Los datos vienen de una encuesta a ciudadanos y dependen de lo que cada persona logre recordar"
         }
        ]
       }
@@ -1119,7 +1119,7 @@
       },
       {
        "id": "b",
-       "texto": "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre termina acercándose al de redes"
+       "texto": "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre termina acercándose al porcentaje de redes"
       },
       {
        "id": "c",
@@ -1145,7 +1145,7 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "El % Falso total depende de la MEZCLA de lo que se verifica: al dejar de revisar discurso público, el total sube aunque las redes cambien menos"
+         "texto": "El % Falso total depende de la MEZCLA: al dejar de revisar discurso público, el total sube"
         },
         {
          "id": "b",
@@ -1157,7 +1157,7 @@
         },
         {
          "id": "d",
-         "texto": "Los datos muestran que los políticos dicen la verdad más a menudo que las publicaciones de redes"
+         "texto": "Los datos muestran que los políticos dicen la verdad más a menudo que las publicaciones en redes"
         }
        ]
       },
@@ -1167,11 +1167,11 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "A: el discurso público rara vez es «Falso»; C: casi desapareció después de 2023; B: la línea total se pega a la de redes"
+         "texto": "A: el discurso público rara vez es «Falso»; C: casi desapareció tras 2023; B: el total se pega a redes"
         },
         {
          "id": "b",
-         "texto": "B: la línea de redes sube todos los años sin excepción y arrastra con ella al total"
+         "texto": "B: la línea de redes sube todos los años sin excepción y arrastra con ella a la línea del total"
         },
         {
          "id": "c",
@@ -1179,7 +1179,7 @@
         },
         {
          "id": "d",
-         "texto": "C: los chequeos de discurso público se duplicaron entre 2022 y 2025"
+         "texto": "C: los chequeos de discurso público se duplicaron entre 2022 y 2025, mientras los de redes bajaron"
         }
        ]
       },
@@ -1189,19 +1189,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "Comparar promedios totales de años con mezclas distintas puede engañar: hay que mirar cada grupo por separado"
+         "texto": "Comparar promedios de años con mezclas distintas engaña: hay que mirar cada grupo por separado"
         },
         {
          "id": "b",
-         "texto": "Hay que sumar los porcentajes de los dos tipos para obtener el % Falso total de cada año"
+         "texto": "Hay que sumar los porcentajes de los dos tipos de contenido para obtener el % Falso total de cada año"
         },
         {
          "id": "c",
-         "texto": "Los años con pocos chequeos de discurso público invalidan todo el gráfico B"
+         "texto": "Los años con pocos chequeos de discurso público invalidan todo el gráfico B y deben descartarse"
         },
         {
          "id": "d",
-         "texto": "Como 2026 no tiene discurso público, ningún año se puede comparar con otro"
+         "texto": "Como 2026 no tiene discurso público, ningún año de la serie se puede comparar con ningún otro"
         }
        ]
       }
@@ -1502,11 +1502,11 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "La IA gana terreno como herramienta de engaño: su peso entre lo verificado sube cada año, aunque el conteo de 2026 aún no esté completo"
+         "texto": "La IA gana terreno: su peso entre lo verificado sube cada año, aunque 2026 aún está incompleto"
         },
         {
          "id": "b",
-         "texto": "La IA empezó a perder fuerza en 2026: ese año se verificaron menos casos que en 2025"
+         "texto": "La IA empezó a perder fuerza en 2026: ese año se verificaron menos casos de IA que en 2025"
         },
         {
          "id": "c",
@@ -1514,7 +1514,7 @@
         },
         {
          "id": "d",
-         "texto": "El contenido hecho con IA resulta verdadero tan a menudo como el resto de lo que se verifica"
+         "texto": "El contenido hecho con IA resulta verdadero tan a menudo como todo el resto de lo que Colombiacheck verifica"
         }
        ]
       },
@@ -1524,19 +1524,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "B: el porcentaje con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los videos ganan peso"
+         "texto": "B: el % con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los videos ganan peso"
         },
         {
          "id": "b",
-         "texto": "A: el conteo de 2026 es menor que el de 2025, lo que confirma que la tendencia ya cambió"
+         "texto": "A: el conteo de 2026 es menor que el de 2025, lo que confirma que la tendencia ya cambió de rumbo"
         },
         {
          "id": "c",
-         "texto": "C: lo de IA y el resto se califican «Falso» en proporciones muy parecidas"
+         "texto": "C: lo de IA y el resto de chequeos se califican «Falso» en proporciones muy parecidas entre sí"
         },
         {
          "id": "d",
-         "texto": "D: las fotos crecen mucho más rápido que los videos, señal de imágenes generadas"
+         "texto": "D: las fotos crecen mucho más rápido que los videos, una señal clara de imágenes generadas con IA"
         }
        ]
       },
@@ -1546,19 +1546,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "Se cuentan palabras en el título (un chequeo de IA que no lo diga no se cuenta) y 2026 es un año incompleto"
+         "texto": "Se cuentan palabras del título (un chequeo de IA que no lo diga no cuenta) y 2026 está incompleto"
         },
         {
          "id": "b",
-         "texto": "La proporción de 2026 no es válida porque se calcula con un total de chequeos más pequeño"
+         "texto": "La proporción de 2026 no es válida porque se calcula con un total de chequeos mucho más pequeño"
         },
         {
          "id": "c",
-         "texto": "Los gráficos A y B se contradicen, así que alguno de los dos está mal calculado"
+         "texto": "Los gráficos A y B se contradicen entre sí, así que alguno de los dos tiene que estar mal calculado"
         },
         {
          "id": "d",
-         "texto": "Los años 2020 a 2022 deberían quitarse porque en ellos no hay ningún caso de IA"
+         "texto": "Los años 2020 a 2022 deberían quitarse del análisis porque en ellos no hay ningún caso de IA"
         }
        ]
       }
@@ -1843,19 +1843,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "Las redes llegan casi por igual al campo y a la ciudad, pero en el campo se usan mucho menos otras fuentes digitales para contrastar información"
+         "texto": "Las redes llegan casi igual al campo y a la ciudad, pero en el campo se usan menos otras fuentes digitales"
         },
         {
          "id": "b",
-         "texto": "La población rural está más desinformada porque usa menos horas de internet que la urbana"
+         "texto": "La población rural está más desinformada porque usa muchas menos horas de internet que la urbana"
         },
         {
          "id": "c",
-         "texto": "Donde la gente se conecta a diario pasa más horas en internet, y por eso está más expuesta"
+         "texto": "Donde la gente se conecta a diario pasa más horas en internet, y por eso queda mucho más expuesta a la información falsa"
         },
         {
          "id": "d",
-         "texto": "En la ciudad se usan menos las redes sociales, porque allí hay más alternativas digitales"
+         "texto": "En la ciudad se usan menos las redes sociales, porque allí hay muchas más alternativas digitales"
         }
        ]
       },
@@ -1865,19 +1865,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "B: redes con porcentajes casi iguales; periódicos digitales y correo mucho más bajos en lo rural"
+         "texto": "B: redes casi iguales en campo y ciudad; periódicos digitales y correo, mucho más bajos en lo rural"
         },
         {
          "id": "b",
-         "texto": "A: la nube de puntos sube con claridad: más uso diario, más horas al día"
+         "texto": "A: la nube de puntos sube con claridad: a más uso diario, más horas al día conectados a internet"
         },
         {
          "id": "c",
-         "texto": "C y D: hay casi tantos usuarios rurales como urbanos y usan internet las mismas horas"
+         "texto": "C y D: hay casi tantos usuarios rurales como urbanos, y usan internet las mismas horas al día"
         },
         {
          "id": "d",
-         "texto": "D: el promedio nacional queda justo a mitad de camino entre lo urbano y lo rural"
+         "texto": "D: el promedio nacional de horas queda justo a mitad de camino entre lo urbano y lo rural"
         }
        ]
       },
@@ -1887,19 +1887,19 @@
        "opciones": [
         {
          "id": "a",
-         "texto": "La encuesta mide si se hace cada actividad y cuántas horas de internet, no cuánta desinformación ve o cree cada persona"
+         "texto": "La encuesta mide qué hace cada persona y cuántas horas, no cuánta desinformación ve o cree"
         },
         {
          "id": "b",
-         "texto": "La zona rural tiene tan pocos usuarios que no se puede comparar con la urbana"
+         "texto": "La zona rural tiene tan pocos usuarios en la encuesta que no se puede comparar con la urbana"
         },
         {
          "id": "c",
-         "texto": "Los departamentos con pocos habitantes deberían borrarse del gráfico A para no confundir"
+         "texto": "Los departamentos con pocos habitantes deberían borrarse del gráfico A para no confundir a nadie"
         },
         {
          "id": "d",
-         "texto": "Como es una encuesta y no un censo, sus cifras no permiten concluir nada"
+         "texto": "Como es una encuesta y no un censo de toda la población, sus cifras no permiten concluir nada"
         }
        ]
       }
@@ -3294,5 +3294,5 @@
    ]
   }
  ],
- "version": "542852ee46"
+ "version": "3b1af60c57"
 }

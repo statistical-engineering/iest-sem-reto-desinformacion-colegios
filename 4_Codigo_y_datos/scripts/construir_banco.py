@@ -648,36 +648,64 @@ def caso_elecciones():
                         "Evidencia que la sostiene",
                         [
                             (
-                                "A y C: el volumen mensual y anual es casi estable; B: la parte electoral se dispara justo en "  # noqa: E501
-                                "los meses de votación",
+                                (
+                                    "A y C: el volumen de chequeos es casi estable; B: la parte electoral se dispara "
+                                    "en los meses de votación"
+                                ),
                                 True,
                             ),
                             (
-                                "A: los meses de votación son, uno por uno, los picos más altos de toda la serie mensual",  # noqa: E501
+                                (
+                                    "A: los meses de votación son, uno por uno, los picos más altos de toda la serie "
+                                    "mensual de chequeos"
+                                ),
                                 False,
                             ),
                             (
-                                "B: la parte electoral se mantiene alta todo el tiempo, también fuera de época de elecciones",  # noqa: E501
+                                (
+                                    "B: la parte electoral se mantiene alta todo el tiempo, también en los meses en "
+                                    "que no hubo ninguna elección"
+                                ),
                                 False,
                             ),
-                            ("C: el número de chequeos por año crece a medida que se acercan las elecciones", False),
+                            (
+                                (
+                                    "C: el número de chequeos de cada año crece a medida que se acercan las fechas de "
+                                    "las elecciones"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                     (
                         "Limitación que hay que declarar",
                         [
                             (
-                                "Muestra lo que el verificador decidió revisar, con un equipo de tamaño fijo, no cuánta "  # noqa: E501
-                                "desinformación electoral circuló",
+                                (
+                                    "Muestra lo que el verificador eligió revisar con un equipo fijo, no cuánta "
+                                    "desinformación circuló"
+                                ),
                                 True,
                             ),
-                            ("Incluye una sola jornada electoral, así que no permite comparar entre elecciones", False),
                             (
-                                "Los meses tienen distinta cantidad de días, por eso sus porcentajes no se pueden comparar",  # noqa: E501
+                                (
+                                    "Incluye una sola jornada electoral, así que no permite comparar unas elecciones "
+                                    "con otras distintas"
+                                ),
                                 False,
                             ),
                             (
-                                "Los datos vienen de una encuesta a ciudadanos y dependen de lo que la gente recuerde",
+                                (
+                                    "Los meses tienen distinta cantidad de días, y por eso sus porcentajes no se "
+                                    "pueden comparar entre sí"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "Los datos vienen de una encuesta a ciudadanos y dependen de lo que cada persona "
+                                    "logre recordar"
+                                ),
                                 False,
                             ),
                         ],
@@ -850,7 +878,7 @@ def caso_composicion():
                     (
                         (
                             "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total "
-                            "siempre termina acercándose al de redes"
+                            "siempre termina acercándose al porcentaje de redes"
                         ),
                         False,
                     ),
@@ -880,23 +908,31 @@ def caso_composicion():
                         "Conclusión principal",
                         [
                             (
-                                "El % Falso total depende de la MEZCLA de lo que se verifica: al dejar de revisar discurso "  # noqa: E501
-                                "público, el total sube aunque las redes cambien menos",
+                                (
+                                    "El % Falso total depende de la MEZCLA: al dejar de revisar discurso público, el "
+                                    "total sube"
+                                ),
                                 True,
                             ),
                             (
-                                "El % Falso total subió porque el contenido de redes se volvió más falso año tras año desde "  # noqa: E501
-                                "2020",
+                                (
+                                    "El % Falso total subió porque el contenido de redes se volvió más falso año tras "
+                                    "año desde 2020"
+                                ),
                                 False,
                             ),
                             (
-                                "El total subió porque Colombiacheck empezó a calificar con más dureza el discurso público "  # noqa: E501
-                                "desde 2024",
+                                (
+                                    "El total subió porque Colombiacheck empezó a calificar con más dureza el "
+                                    "discurso público desde 2024"
+                                ),
                                 False,
                             ),
                             (
-                                "Los datos muestran que los políticos dicen la verdad más a menudo que las publicaciones de "  # noqa: E501
-                                "redes",
+                                (
+                                    "Los datos muestran que los políticos dicen la verdad más a menudo que las "
+                                    "publicaciones en redes"
+                                ),
                                 False,
                             ),
                         ],
@@ -905,35 +941,66 @@ def caso_composicion():
                         "Evidencia que la sostiene",
                         [
                             (
-                                "A: el discurso público rara vez es «Falso»; C: casi desapareció después de 2023; B: la línea "  # noqa: E501
-                                "total se pega a la de redes",
+                                (
+                                    "A: el discurso público rara vez es «Falso»; C: casi desapareció tras 2023; B: el "
+                                    "total se pega a redes"
+                                ),
                                 True,
                             ),
                             (
-                                "B: la línea de redes sube todos los años sin excepción y arrastra con ella al total",
+                                (
+                                    "B: la línea de redes sube todos los años sin excepción y arrastra con ella a la "
+                                    "línea del total"
+                                ),
                                 False,
                             ),
                             (
-                                "A: los chequeos de redes son «Cuestionable» casi tan a menudo como los de discurso público",  # noqa: E501
+                                (
+                                    "A: los chequeos de redes son «Cuestionable» casi tan a menudo como los de "
+                                    "discurso público"
+                                ),
                                 False,
                             ),
-                            ("C: los chequeos de discurso público se duplicaron entre 2022 y 2025", False),
+                            (
+                                (
+                                    "C: los chequeos de discurso público se duplicaron entre 2022 y 2025, mientras "
+                                    "los de redes bajaron"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                     (
                         "Precaución que hay que declarar",
                         [
                             (
-                                "Comparar promedios totales de años con mezclas distintas puede engañar: hay que mirar cada "  # noqa: E501
-                                "grupo por separado",
+                                (
+                                    "Comparar promedios de años con mezclas distintas engaña: hay que mirar cada "
+                                    "grupo por separado"
+                                ),
                                 True,
                             ),
                             (
-                                "Hay que sumar los porcentajes de los dos tipos para obtener el % Falso total de cada año",  # noqa: E501
+                                (
+                                    "Hay que sumar los porcentajes de los dos tipos de contenido para obtener el % "
+                                    "Falso total de cada año"
+                                ),
                                 False,
                             ),
-                            ("Los años con pocos chequeos de discurso público invalidan todo el gráfico B", False),
-                            ("Como 2026 no tiene discurso público, ningún año se puede comparar con otro", False),
+                            (
+                                (
+                                    "Los años con pocos chequeos de discurso público invalidan todo el gráfico B y "
+                                    "deben descartarse"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "Como 2026 no tiene discurso público, ningún año de la serie se puede comparar "
+                                    "con ningún otro"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                 ],
@@ -1090,20 +1157,31 @@ def caso_ia():
                         "Conclusión principal",
                         [
                             (
-                                "La IA gana terreno como herramienta de engaño: su peso entre lo verificado sube cada año, "  # noqa: E501
-                                "aunque el conteo de 2026 aún no esté completo",
+                                (
+                                    "La IA gana terreno: su peso entre lo verificado sube cada año, aunque 2026 aún "
+                                    "está incompleto"
+                                ),
                                 True,
                             ),
                             (
-                                "La IA empezó a perder fuerza en 2026: ese año se verificaron menos casos que en 2025",
+                                (
+                                    "La IA empezó a perder fuerza en 2026: ese año se verificaron menos casos de IA "
+                                    "que en 2025"
+                                ),
                                 False,
                             ),
                             (
-                                "La IA ya es la forma principal de desinformación en Colombia, por encima de cualquier otra",  # noqa: E501
+                                (
+                                    "La IA ya es la forma principal de desinformación en Colombia, por encima de "
+                                    "cualquier otra"
+                                ),
                                 False,
                             ),
                             (
-                                "El contenido hecho con IA resulta verdadero tan a menudo como el resto de lo que se verifica",  # noqa: E501
+                                (
+                                    "El contenido hecho con IA resulta verdadero tan a menudo como todo el resto de "
+                                    "lo que Colombiacheck verifica"
+                                ),
                                 False,
                             ),
                         ],
@@ -1112,32 +1190,66 @@ def caso_ia():
                         "Evidencia que la sostiene",
                         [
                             (
-                                "B: el porcentaje con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: los "  # noqa: E501
-                                "videos ganan peso",
+                                (
+                                    "B: el % con IA sube cada año hasta 2026; C: casi todo lo de IA es «Falso»; D: "
+                                    "los videos ganan peso"
+                                ),
                                 True,
                             ),
                             (
-                                "A: el conteo de 2026 es menor que el de 2025, lo que confirma que la tendencia ya cambió",  # noqa: E501
+                                (
+                                    "A: el conteo de 2026 es menor que el de 2025, lo que confirma que la tendencia "
+                                    "ya cambió de rumbo"
+                                ),
                                 False,
                             ),
-                            ("C: lo de IA y el resto se califican «Falso» en proporciones muy parecidas", False),
-                            ("D: las fotos crecen mucho más rápido que los videos, señal de imágenes generadas", False),
+                            (
+                                (
+                                    "C: lo de IA y el resto de chequeos se califican «Falso» en proporciones muy "
+                                    "parecidas entre sí"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "D: las fotos crecen mucho más rápido que los videos, una señal clara de imágenes "
+                                    "generadas con IA"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                     (
                         "Limitación que hay que declarar",
                         [
                             (
-                                "Se cuentan palabras en el título (un chequeo de IA que no lo diga no se cuenta) y 2026 es un "  # noqa: E501
-                                "año incompleto",
+                                (
+                                    "Se cuentan palabras del título (un chequeo de IA que no lo diga no cuenta) y "
+                                    "2026 está incompleto"
+                                ),
                                 True,
                             ),
                             (
-                                "La proporción de 2026 no es válida porque se calcula con un total de chequeos más pequeño",  # noqa: E501
+                                (
+                                    "La proporción de 2026 no es válida porque se calcula con un total de chequeos "
+                                    "mucho más pequeño"
+                                ),
                                 False,
                             ),
-                            ("Los gráficos A y B se contradicen, así que alguno de los dos está mal calculado", False),
-                            ("Los años 2020 a 2022 deberían quitarse porque en ellos no hay ningún caso de IA", False),
+                            (
+                                (
+                                    "Los gráficos A y B se contradicen entre sí, así que alguno de los dos tiene que "
+                                    "estar mal calculado"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "Los años 2020 a 2022 deberían quitarse del análisis porque en ellos no hay "
+                                    "ningún caso de IA"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                 ],
@@ -1318,20 +1430,31 @@ def caso_exposicion():
                         "Conclusión principal",
                         [
                             (
-                                "Las redes llegan casi por igual al campo y a la ciudad, pero en el campo se usan mucho menos otras "  # noqa: E501
-                                "fuentes digitales para contrastar información",
+                                (
+                                    "Las redes llegan casi igual al campo y a la ciudad, pero en el campo se usan "
+                                    "menos otras fuentes digitales"
+                                ),
                                 True,
                             ),
                             (
-                                "La población rural está más desinformada porque usa menos horas de internet que la urbana",  # noqa: E501
+                                (
+                                    "La población rural está más desinformada porque usa muchas menos horas de "
+                                    "internet que la urbana"
+                                ),
                                 False,
                             ),
                             (
-                                "Donde la gente se conecta a diario pasa más horas en internet, y por eso está más expuesta",  # noqa: E501
+                                (
+                                    "Donde la gente se conecta a diario pasa más horas en internet, y por eso queda "
+                                    "mucho más expuesta a la información falsa"
+                                ),
                                 False,
                             ),
                             (
-                                "En la ciudad se usan menos las redes sociales, porque allí hay más alternativas digitales",  # noqa: E501
+                                (
+                                    "En la ciudad se usan menos las redes sociales, porque allí hay muchas más "
+                                    "alternativas digitales"
+                                ),
                                 False,
                             ),
                         ],
@@ -1340,31 +1463,66 @@ def caso_exposicion():
                         "Evidencia que la sostiene",
                         [
                             (
-                                "B: redes con porcentajes casi iguales; periódicos digitales y correo mucho más bajos en lo rural",  # noqa: E501
+                                (
+                                    "B: redes casi iguales en campo y ciudad; periódicos digitales y correo, mucho "
+                                    "más bajos en lo rural"
+                                ),
                                 True,
                             ),
-                            ("A: la nube de puntos sube con claridad: más uso diario, más horas al día", False),
                             (
-                                "C y D: hay casi tantos usuarios rurales como urbanos y usan internet las mismas horas",
+                                (
+                                    "A: la nube de puntos sube con claridad: a más uso diario, más horas al día "
+                                    "conectados a internet"
+                                ),
                                 False,
                             ),
-                            ("D: el promedio nacional queda justo a mitad de camino entre lo urbano y lo rural", False),
+                            (
+                                (
+                                    "C y D: hay casi tantos usuarios rurales como urbanos, y usan internet las mismas "
+                                    "horas al día"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "D: el promedio nacional de horas queda justo a mitad de camino entre lo urbano y "
+                                    "lo rural"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                     (
                         "Limitación que hay que declarar",
                         [
                             (
-                                "La encuesta mide si se hace cada actividad y cuántas horas de internet, no cuánta desinformación "  # noqa: E501
-                                "ve o cree cada persona",
+                                (
+                                    "La encuesta mide qué hace cada persona y cuántas horas, no cuánta desinformación "
+                                    "ve o cree"
+                                ),
                                 True,
                             ),
-                            ("La zona rural tiene tan pocos usuarios que no se puede comparar con la urbana", False),
                             (
-                                "Los departamentos con pocos habitantes deberían borrarse del gráfico A para no confundir",  # noqa: E501
+                                (
+                                    "La zona rural tiene tan pocos usuarios en la encuesta que no se puede comparar "
+                                    "con la urbana"
+                                ),
                                 False,
                             ),
-                            ("Como es una encuesta y no un censo, sus cifras no permiten concluir nada", False),
+                            (
+                                (
+                                    "Los departamentos con pocos habitantes deberían borrarse del gráfico A para no "
+                                    "confundir a nadie"
+                                ),
+                                False,
+                            ),
+                            (
+                                (
+                                    "Como es una encuesta y no un censo de toda la población, sus cifras no permiten "
+                                    "concluir nada"
+                                ),
+                                False,
+                            ),
                         ],
                     ),
                 ],
@@ -2178,6 +2336,18 @@ def mision_ciencia():
 
 
 # =========================================================================== VALIDACIÓN Y SALIDA
+def largo_no_delata(qid, ops, correcta):
+    """La opción correcta no puede ser bastante más larga que la incorrecta más larga: si lo es, quien
+    escoge siempre la más larga acierta sin leer."""
+    largos = {o["id"]: len(o["texto"]) for o in ops}
+    otra = max(n for oid, n in largos.items() if oid != correcta)
+    if largos[correcta] > 1.1 * otra:
+        sys.exit(
+            f"[error] {qid}: la opción correcta ({largos[correcta]} caracteres) delata la respuesta por su largo; "
+            f"la incorrecta más larga tiene {otra}. Empareja los textos."
+        )
+
+
 def validar(banco):  # noqa: C901
     total, ids = 0, set()
     for m in banco["misiones"]:
@@ -2200,12 +2370,16 @@ def validar(banco):  # noqa: C901
                     oids = {o["id"] for o in cuerpo["opciones"]}
                     r = cuerpo["respuesta"]
                     assert (r in oids) if isinstance(r, str) else set(r) <= oids, q["id"]
+                    if isinstance(r, str):
+                        largo_no_delata(q["id"], cuerpo["opciones"], r)
                 if q["tipo"] == "ordenar":
                     assert sorted(cuerpo["respuesta"]) == sorted(i["id"] for i in cuerpo["items"]), q["id"]
                 if q["tipo"] == "construir":
                     partes = {p["id"]: {o["id"] for o in p["opciones"]} for p in cuerpo["partes"]}
                     assert set(cuerpo["respuesta"]) == set(partes), q["id"]
                     assert all(cuerpo["respuesta"][k] in partes[k] for k in partes), q["id"]
+                    for p in cuerpo["partes"]:
+                        largo_no_delata(f"{q['id']} · {p['etiqueta']}", p["opciones"], cuerpo["respuesta"][p["id"]])
         for q in m["preguntas"]:
             if "requiere" in q:
                 assert q["requiere"] in ids, q["id"]
