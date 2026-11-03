@@ -611,7 +611,7 @@ def caso_elecciones():
                 "tolerancia": 0.3,
                 "unidad": "veces",
                 **req,
-                "enunciado": f"Usa el Gráfico B (pasa el cursor sobre «oct 23», elecciones locales de 2023). En los "
+                "enunciado": f"Usa el Gráfico B (toca o pasa el cursor sobre «oct 23», elecciones de 2023). En los "
                 f"meses SIN elecciones, en promedio el {num(pct_sin)} % de los chequeos fue sobre elecciones. "
                 f"¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)",
                 "respuesta": round(float(razon), 2),
@@ -791,10 +791,9 @@ def caso_composicion():
                         {"nombre": "Discurso público", "valor": round(float(f_disc), 2)},
                     ],
                 },
-                "enunciado": f"Simulador: en todo el periodo, el contenido de redes es Falso el {num(f_redes)} % de las "  # noqa: E501
-                f"veces y el discurso público el {num(f_disc)} % (Gráfico A). Mueve el deslizador: ¿qué "
-                f"porcentaje de discurso público tendría que haber en la mezcla para que el % Falso TOTAL "
-                f"fuera exactamente {num(meta, 0)} %? (Un decimal; también lo puedes despejar.)",
+                "enunciado": f"Simulador: en redes, lo «Falso» es el {num(f_redes)} %; en discurso público, el "
+                f"{num(f_disc)} % (Gráfico A). ¿Qué porcentaje de discurso público debe tener la mezcla para que el "
+                f"total «Falso» sea {num(meta, 0)} %? Usa el deslizador o despéjalo. (Un decimal.)",
                 "respuesta": round(float(p_meta), 2),
                 "explicacion": f"Total = {num(f_redes)} × (1 − p) + {num(f_disc)} × p = {num(meta, 0)} → p = "
                 f"({num(f_redes)} − {num(meta, 0)}) ÷ ({num(f_redes)} − {num(f_disc)}) ≈ {num(p_meta)} %. "
@@ -842,22 +841,31 @@ def caso_composicion():
                 f"se cerró la brecha?",
                 [
                     (
-                        "Porque en 2022 una parte de los chequeos era discurso público, que rara vez es «Falso», y "
-                        "jalaba el promedio total hacia abajo; en 2025 casi todo era contenido de redes",
+                        (
+                            "Porque en 2022 se verificaba más discurso público, que rara vez es «Falso» y "
+                            "bajaba el total; en 2025 casi todo era de redes"
+                        ),
                         True,
                     ),
                     (
-                        "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre se "
-                        "acerca al de redes",
+                        (
+                            "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total "
+                            "siempre termina acercándose al de redes"
+                        ),
                         False,
                     ),
                     (
-                        "Porque el % de redes se calcula sobre todos los chequeos del año, así que en 2025 los dos "
-                        "números son el mismo cálculo",
+                        (
+                            "Porque desde 2023 Colombiacheck califica igual el discurso público y las redes, "
+                            "y por eso sus porcentajes se igualaron"
+                        ),
                         False,
                     ),
                     (
-                        "Porque en 2022 hubo errores de calificación que Colombiacheck corrigió en los años siguientes",
+                        (
+                            "Porque en 2022 hubo errores de calificación que Colombiacheck corrigió después, "
+                            "y eso terminó igualando las cifras"
+                        ),
                         False,
                     ),
                 ],
@@ -1286,10 +1294,11 @@ def caso_exposicion():
             q_opcion(
                 "c4_ponderado",
                 f"Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet "
-                f"{num(rur_h['horas_dia_promedio'], 2)} horas al día, y nadie más cambia sus hábitos. ¿Qué pasa con "
-                f"el promedio nacional de horas?",
+                f"{num(rur_h['horas_dia_promedio'], 2)} horas al día (menos que el promedio nacional de "
+                f"{num(nac_h['horas_dia_promedio'], 2)} horas), y nadie más cambia sus hábitos. ¿Qué pasa con el "
+                f"promedio nacional?",
                 [
-                    ("Baja un poco, aunque ninguna persona haya cambiado sus hábitos", True),
+                    ("Baja un poco, aunque ninguna persona haya cambiado sus hábitos de uso de internet", True),
                     ("Sube, porque al haber más usuarios conectados aumenta el uso de internet del país", False),
                     ("No cambia, porque el promedio de cada grupo (urbano y rural) sigue siendo el mismo", False),
                     (
@@ -1492,16 +1501,33 @@ def caso_condicional():
                 "¿Cuál es el error del influencer?",
                 [
                     (
-                        f"Confunde dos probabilidades: que lo de IA sea casi siempre falso ({num(p_f_ia, 0)} %) no "
-                        f"significa que lo falso sea casi siempre IA ({num(p_ia_f)} %)",
+                        (
+                            "Confunde dos probabilidades: que lo de IA sea casi siempre falso no implica que "
+                            "lo falso sea casi siempre IA"
+                        ),
                         True,
                     ),
                     (
-                        "Ninguno: si el 98 % de lo de IA es falso, entonces casi todo lo falso tiene que ser de IA",
+                        (
+                            "Ninguno: si el 98 % de lo que trata de IA es falso, entonces casi todo lo falso "
+                            "que circula tiene que venir de la IA"
+                        ),
                         False,
                     ),
-                    ("Su único error es redondear 98,4 % a 98 %", False),
-                    ("El error es usar porcentajes: con conteos la conclusión sí sería correcta", False),
+                    (
+                        (
+                            "Su error es redondear: el dato exacto es 98,4 %, y con esa cifra la conclusión "
+                            "cambiaría por completo"
+                        ),
+                        False,
+                    ),
+                    (
+                        (
+                            "Usa porcentajes: si hubiera trabajado con conteos de chequeos, su conclusión sí "
+                            "habría sido correcta"
+                        ),
+                        False,
+                    ),
                 ],
                 20,
                 "Es la «falacia de la probabilidad inversa»: P(A | B) no es igual a P(B | A). Pasa en medicina, "
@@ -1648,9 +1674,8 @@ def caso_encuestas():
                 "tipo": "clasificar",
                 "estilo": "expediente",
                 "puntos": 30,
-                "enunciado": "Usa el Gráfico A (cada barra horizontal es el intervalo de confianza del 95 %). En cada "
-                "pareja, ¿en cuál de los dos departamentos se usa internet más horas al día? Si los intervalos se "
-                "cruzan, no se puede asegurar.",
+                "enunciado": "Gráfico A: cada barra es un intervalo de confianza del 95 %. En cada pareja, ¿dónde se "
+                "usa internet más horas al día? Si las barras se cruzan, no se puede asegurar.",
                 "categorias": [
                     {"id": "P", "texto": "En el primero se usa más"},
                     {"id": "S", "texto": "En el segundo se usa más"},
@@ -1669,13 +1694,33 @@ def caso_encuestas():
                 f"(± {num(d.loc['Bogotá D.C.', 'horas_dia_ic'], 2)} h). ¿Por qué?",
                 [
                     (
-                        "Porque allí la estimación es menos precisa: se encuesta a menos hogares y las respuestas varían "  # noqa: E501
-                        "más, así que hay más incertidumbre",
+                        (
+                            "Porque allí se encuestó a menos hogares y sus respuestas varían más, así que la "
+                            "estimación es menos precisa"
+                        ),
                         True,
                     ),
-                    ("Porque en Vaupés y Guainía la gente usa internet más horas que en Bogotá", False),
-                    ("Porque el DANE se equivocó al hacer la encuesta en esos departamentos", False),
-                    ("Porque son departamentos más grandes en territorio, y eso agranda el intervalo", False),
+                    (
+                        (
+                            "Porque en Vaupés y Guainía la gente usa internet más horas, y un promedio más "
+                            "alto da un intervalo más ancho"
+                        ),
+                        False,
+                    ),
+                    (
+                        (
+                            "Porque el DANE cometió errores al aplicar la encuesta en esos departamentos y el "
+                            "intervalo los compensa"
+                        ),
+                        False,
+                    ),
+                    (
+                        (
+                            "Porque son departamentos más grandes en territorio, y a más kilómetros cuadrados "
+                            "el intervalo se agranda"
+                        ),
+                        False,
+                    ),
                 ],
                 15,
                 "El ancho del intervalo depende sobre todo del tamaño de la muestra y de cuánto varían las "
@@ -1687,7 +1732,8 @@ def caso_encuestas():
                 "tipo": "ordenar",
                 "puntos": 25,
                 "enunciado": "Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. "
-                "Necesitas combinar los Gráficos B y C (cantidad = % × usuarios).",
+                "Para cada departamento, multiplica su % de uso diario (Gráfico B) por su número de usuarios "
+                "(Gráfico C).",
                 "items": [{"id": f"d{i}", "texto": x} for i, x in enumerate(deps)],
                 "respuesta": [f"d{deps.index(x)}" for x in orden_ok],
                 "explicacion": "Personas conectadas a diario (millones): "
@@ -1701,13 +1747,33 @@ def caso_encuestas():
                 f"tiene unas {num(veces, 0)} veces más personas conectadas a diario?",
                 [
                     (
-                        "Porque el porcentaje se calcula sobre poblaciones de tamaño muy distinto: el mismo % de una base "  # noqa: E501
-                        "más grande da muchas más personas",
+                        (
+                            "Porque Bogotá tiene muchos más usuarios: el mismo porcentaje de una población "
+                            "mayor da muchas más personas"
+                        ),
                         True,
                     ),
-                    ("Porque en Bogotá cada persona se conecta más veces al día", False),
-                    ("Porque los porcentajes de Meta están mal calculados", False),
-                    ("Porque Bogotá tiene un porcentaje mucho más alto que Meta", False),
+                    (
+                        (
+                            "Porque en Bogotá cada persona se conecta más veces al día, y el gráfico cuenta "
+                            "cada una de esas conexiones por separado"
+                        ),
+                        False,
+                    ),
+                    (
+                        (
+                            "Porque los porcentajes de Meta están mal calculados y en realidad allí se "
+                            "conecta mucha menos gente"
+                        ),
+                        False,
+                    ),
+                    (
+                        (
+                            "Porque Bogotá tiene un porcentaje de uso diario mucho más alto, aunque en el "
+                            "gráfico se vean parecidos"
+                        ),
+                        False,
+                    ),
                 ],
                 20,
                 "Un porcentaje responde «qué parte»; una cantidad responde «cuántos». Para una campaña que "
@@ -1824,13 +1890,21 @@ def caso_taller():
                 "las mujeres!». ¿Qué tiene de tramposo?",
                 [
                     (
-                        f"El eje vertical empieza en 4,80 y no en cero: una diferencia de unos {num(dif_min, 0)} "
-                        f"minutos parece enorme",
+                        "El eje vertical no empieza en cero, así que una diferencia de unos 9 minutos parece enorme",
                         True,
                     ),
-                    ("Nada: la diferencia de verdad es enorme", False),
-                    ("Los colores de las barras están invertidos", False),
-                    ("Debería ser un gráfico de líneas porque son dos grupos", False),
+                    (
+                        "Nada: los hombres usan internet bastante más, y el gráfico solo lo muestra con claridad",
+                        False,
+                    ),
+                    (
+                        "Los colores están invertidos: la barra de las mujeres debería ser la más alta del gráfico",
+                        False,
+                    ),
+                    (
+                        "Debería ser un gráfico de líneas, porque compara dos grupos de personas y no dos categorías",
+                        False,
+                    ),
                 ],
                 15,
                 f"Hombres {num(hom_h['horas_dia_promedio'], 2)} h y mujeres "
@@ -1867,8 +1941,8 @@ def caso_taller():
                     fuente=FUENTE_CC,
                 ),
                 "enunciado": f"Un trino dice: «¡Desde 2022 lo falso se disparó: subió {num(subida_trino, 0)} puntos!». "
-                f"Con el gráfico (pasa el cursor por los puntos), ¿cuántos puntos porcentuales subió el % "
-                f"Falso entre 2020, el primer año de la serie, y 2025? (Un decimal.)",
+                f"El trino compara desde 2022. Calcula tú la subida en toda la serie: con el gráfico (toca o pasa "
+                f"el cursor por los puntos), ¿cuántos puntos subió el % Falso de 2020 a 2025? (Un decimal.)",
                 "respuesta": round(float(subida_real), 2),
                 "explicacion": f"{num(pf[2025])} − {num(pf[2020])} = {num(subida_real)} puntos, no {num(subida_trino)}.",  # noqa: E501
             },
@@ -1877,12 +1951,11 @@ def caso_taller():
                 "¿Qué truco usó el trino?",
                 [
                     (
-                        f"Escogió como punto de partida 2022, el año más bajo de la serie, para que la subida pareciera "  # noqa: E501, F541
-                        f"mucho mayor",  # noqa: F541
+                        "Empezó en 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor",
                         True,
                     ),
-                    ("Usó porcentajes en vez de conteos, y los porcentajes siempre exageran los cambios", False),
-                    ("Comparó un año incompleto con uno completo", False),
+                    ("Usó porcentajes en vez de conteos, y los porcentajes siempre exageran cualquier cambio", False),
+                    ("Comparó un año incompleto con uno completo, y eso infla la diferencia entre los dos", False),
                     ("No hay truco: desde 2022 hasta 2025 la subida es la misma que en toda la serie", False),
                 ],
                 15,
@@ -1919,13 +1992,27 @@ def caso_taller():
                 f"número describe mejor al periodista típico, y por qué?",
                 [
                     (
-                        f"La mediana: unos pocos periodistas con más de 100 chequeos ({hist.iloc[-1]} personas) inflan el "  # noqa: E501
-                        f"promedio, mientras la mayoría firmó muy pocos",
+                        (
+                            "La mediana: unos pocos periodistas con muchísimos chequeos inflan el promedio, y "
+                            "la mayoría firmó muy pocos"
+                        ),
                         True,
                     ),
-                    ("El promedio, porque usa todos los datos y por eso siempre es el mejor resumen", False),
-                    ("Los dos por igual, porque siempre dan casi el mismo resultado", False),
-                    ("Ninguno: con tantos periodistas no se puede resumir", False),
+                    (
+                        (
+                            "El promedio: usa todos los datos, incluidos los periodistas más activos, y por "
+                            "eso resume mejor al grupo"
+                        ),
+                        False,
+                    ),
+                    (
+                        "Los dos por igual: con 261 periodistas, el promedio y la mediana terminan contando lo mismo",
+                        False,
+                    ),
+                    (
+                        "Ninguno: cuando los datos son tan desiguales, ningún número sirve para describir al típico",
+                        False,
+                    ),
                 ],
                 10,
                 "Cuando unos pocos valores son muy grandes (distribución sesgada), el promedio se va hacia ellos "
@@ -1996,13 +2083,18 @@ def mision_ciencia():
                 "¿Qué encontraron al comparar lo que la gente CREE con lo que COMPARTE?",
                 [
                     (
-                        "Muchas personas compartirían titulares falsos que reconocerían como falsos si se les "
-                        "preguntara por su exactitud",
+                        "Muchos compartirían titulares falsos que sí reconocerían como falsos si les preguntaran",
                         True,
                     ),
-                    ("La gente solo comparte lo que cree que es verdad", False),
-                    ("Nadie dijo que compartiría titulares falsos", False),
-                    ("Quienes más comparten son siempre quienes menos saben", False),
+                    (
+                        (
+                            "La gente solo comparte lo que cree que es verdad, así que creer y compartir van "
+                            "siempre juntos"
+                        ),
+                        False,
+                    ),
+                    ("Casi nadie dijo que compartiría titulares falsos cuando se le preguntó directamente", False),
+                    ("Quienes más comparten noticias son siempre quienes menos saben distinguir lo falso", False),
                 ],
                 20,
                 "Es la «brecha entre creer y compartir». El tablero de la clase compara cuánto compartieron "
@@ -2013,9 +2105,9 @@ def mision_ciencia():
                 "¿Qué intervención fue más efectiva y cuál le pareció más útil a la gente?",
                 [
                     ("Más efectivo: el recordatorio de exactitud. Más útil según la gente: los consejos", True),
-                    ("Más efectivos: los consejos. Más útil según la gente: el recordatorio", False),
-                    ("Ninguna de las dos funcionó", False),
-                    ("Las dos fueron igual de efectivas y les parecieron igual de útiles", False),
+                    ("Más efectivos: los consejos. Más útil según la gente: el recordatorio de exactitud", False),
+                    ("Ninguna de las dos redujo lo que se compartiría, y a nadie le parecieron útiles", False),
+                    ("Las dos fueron igual de efectivas, y a la gente le parecieron igual de útiles", False),
                 ],
                 20,
                 "Lo que parece útil no siempre es lo que funciona; por eso se mide con experimentos.",
@@ -2026,13 +2118,15 @@ def mision_ciencia():
                 "grupos con y sin recordatorio. ¿Para qué sirve repartir al azar?",
                 [
                     (
-                        "Para que los grupos se parezcan en todo lo demás, y así la diferencia se pueda atribuir al "
-                        "recordatorio",
+                        "Para que los grupos se parezcan en todo lo demás y la diferencia se deba al recordatorio",
                         True,
                     ),
-                    ("Para que los resultados salgan más altos", False),
-                    ("Para no tener que contar cuántas personas hay en cada grupo", False),
-                    ("Para que cada persona pueda escoger el grupo que prefiera", False),
+                    (
+                        "Para que los resultados del grupo con recordatorio salgan más altos que los del otro grupo",
+                        False,
+                    ),
+                    ("Para no tener que contar cuántas personas quedan en cada grupo al final del estudio", False),
+                    ("Para que cada persona pueda escoger el grupo en el que se siente más cómoda", False),
                 ],
                 15,
                 "La asignación al azar es lo que permite pasar de «van juntos» (correlación) a «esto causó "
@@ -2043,13 +2137,12 @@ def mision_ciencia():
                 "¿Qué significa la «sabiduría de la multitud» en este estudio?",
                 [
                     (
-                        "Que el promedio de las opiniones de muchas personas no expertas distinguía titulares "
-                        "verdaderos de falsos con alta precisión",
+                        "Que el promedio de muchas opiniones no expertas distinguía bien lo verdadero de lo falso",
                         True,
                     ),
-                    ("Que lo que comparte la mayoría siempre es verdad", False),
-                    ("Que los expertos se equivocan más que la gente común", False),
-                    ("Que hay que creer lo que tiene más «me gusta»", False),
+                    ("Que lo que comparte la mayoría de la gente en redes siempre termina siendo verdad", False),
+                    ("Que los expertos se equivocan más que la gente común al calificar titulares", False),
+                    ("Que conviene creer en las publicaciones que tienen más «me gusta» y comentarios", False),
                 ],
                 15,
                 "No es «la mayoría tiene razón»: es promediar juicios independientes sobre la exactitud.",
@@ -2072,10 +2165,10 @@ def mision_ciencia():
                 "m5_limites",
                 "¿Cuál es una limitación que reconocen los propios autores?",
                 [
-                    ("El «compartir» fue hipotético y solo usaron titulares sobre COVID-19", True),
-                    ("Solo participaron 16 personas", False),
-                    ("Solo se hizo en Estados Unidos", False),
-                    ("No usaron titulares falsos", False),
+                    ("El «compartir» fue hipotético y solo se usaron titulares sobre COVID-19", True),
+                    ("Solo participaron 16 personas, demasiado pocas para sacar conclusiones generales", False),
+                    ("Solo se hizo en Estados Unidos, así que no aplica a América Latina", False),
+                    ("No usaron titulares falsos, solo verdaderos, para no confundir a nadie", False),
                 ],
                 15,
                 "Reconocer límites hace más confiable un estudio, no menos.",

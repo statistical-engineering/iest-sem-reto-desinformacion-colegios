@@ -1,6 +1,6 @@
 # Clave de respuestas — Detectives de la desinformación
 
-Generada automáticamente desde `banco_preguntas.json` (versión **18f0f539fc**). Es exactamente lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.
+Generada automáticamente desde `banco_preguntas.json` (versión **542852ee46**). Es exactamente lo que califica la aplicación. Si se modifica el banco, vuelve a generar este archivo.
 
 > Guarda este documento: contiene todas las respuestas. No lo compartas con los estudiantes antes del reto.
 
@@ -157,7 +157,7 @@ Respuesta:
 
 ### 3. (18 pts · numero)
 
-Usa el Gráfico B (pasa el cursor sobre «oct 23», elecciones locales de 2023). En los meses SIN elecciones, en promedio el 4,6 % de los chequeos fue sobre elecciones. ¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)
+Usa el Gráfico B (toca o pasa el cursor sobre «oct 23», elecciones de 2023). En los meses SIN elecciones, en promedio el 4,6 % de los chequeos fue sobre elecciones. ¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)
 
 Respuesta:
 
@@ -183,7 +183,7 @@ Respuesta:
 
 ### 1. (25 pts · numero)
 
-Simulador: en todo el periodo, el contenido de redes es Falso el 79,4 % de las veces y el discurso público el 40,7 % (Gráfico A). Mueve el deslizador: ¿qué porcentaje de discurso público tendría que haber en la mezcla para que el % Falso TOTAL fuera exactamente 75 %? (Un decimal; también lo puedes despejar.)
+Simulador: en redes, lo «Falso» es el 79,4 %; en discurso público, el 40,7 % (Gráfico A). ¿Qué porcentaje de discurso público debe tener la mezcla para que el total «Falso» sea 75 %? Usa el deslizador o despéjalo. (Un decimal.)
 
 Respuesta:
 
@@ -211,7 +211,7 @@ En 2022 el % Falso total (70,6 %) quedó 4,7 puntos por DEBAJO del de redes (75,
 
 Respuesta:
 
-**Porque en 2022 una parte de los chequeos era discurso público, que rara vez es «Falso», y jalaba el promedio total hacia abajo; en 2025 casi todo era contenido de redes**
+**Porque en 2022 se verificaba más discurso público, que rara vez es «Falso» y bajaba el total; en 2025 casi todo era de redes**
 
 > El total es un promedio ponderado de los dos grupos. Cuando un grupo (discurso público) casi desaparece (C), el total se pega al otro grupo (redes). Es un efecto de composición.
 
@@ -298,11 +298,11 @@ Respuesta:
 
 ### 2. (18 pts · opcion)
 
-Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet 3,28 horas al día, y nadie más cambia sus hábitos. ¿Qué pasa con el promedio nacional de horas?
+Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet 3,28 horas al día (menos que el promedio nacional de 4,90 horas), y nadie más cambia sus hábitos. ¿Qué pasa con el promedio nacional?
 
 Respuesta:
 
-**Baja un poco, aunque ninguna persona haya cambiado sus hábitos**
+**Baja un poco, aunque ninguna persona haya cambiado sus hábitos de uso de internet**
 
 > El promedio nacional es un promedio ponderado: si crece el grupo que usa menos horas, el total baja aunque nadie cambie. Es el mismo efecto de composición del Caso 2.
 
@@ -358,7 +358,7 @@ Respuesta:
 
 Respuesta:
 
-**Confunde dos probabilidades: que lo de IA sea casi siempre falso (98 %) no significa que lo falso sea casi siempre IA (5,4 %)**
+**Confunde dos probabilidades: que lo de IA sea casi siempre falso no implica que lo falso sea casi siempre IA**
 
 > Es la «falacia de la probabilidad inversa»: P(A | B) no es igual a P(B | A). Pasa en medicina, en juicios y en redes sociales. La clave es preguntar siempre: ¿de qué total estoy hablando?
 
@@ -382,7 +382,7 @@ Respuesta:
 
 ### 1. (30 pts · clasificar)
 
-Usa el Gráfico A (cada barra horizontal es el intervalo de confianza del 95 %). En cada pareja, ¿en cuál de los dos departamentos se usa internet más horas al día? Si los intervalos se cruzan, no se puede asegurar.
+Gráfico A: cada barra es un intervalo de confianza del 95 %. En cada pareja, ¿dónde se usa internet más horas al día? Si las barras se cruzan, no se puede asegurar.
 
 Respuesta:
 
@@ -401,13 +401,13 @@ Los intervalos de Vaupés (± 0,38 h) y de Guainía (± 0,60 h) son más anchos 
 
 Respuesta:
 
-**Porque allí la estimación es menos precisa: se encuesta a menos hogares y las respuestas varían más, así que hay más incertidumbre**
+**Porque allí se encuestó a menos hogares y sus respuestas varían más, así que la estimación es menos precisa**
 
 > El ancho del intervalo depende sobre todo del tamaño de la muestra y de cuánto varían las respuestas. Con pocos datos, más incertidumbre: por eso los rankings con encuestas deben mostrar el margen de error.
 
 ### 3. (25 pts · ordenar)
 
-Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. Necesitas combinar los Gráficos B y C (cantidad = % × usuarios).
+Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. Para cada departamento, multiplica su % de uso diario (Gráfico B) por su número de usuarios (Gráfico C).
 
 Respuesta:
 
@@ -425,7 +425,7 @@ Meta y Bogotá tienen porcentajes de uso diario parecidos (Gráfico B). ¿Por qu
 
 Respuesta:
 
-**Porque el porcentaje se calcula sobre poblaciones de tamaño muy distinto: el mismo % de una base más grande da muchas más personas**
+**Porque Bogotá tiene muchos más usuarios: el mismo porcentaje de una población mayor da muchas más personas**
 
 > Un porcentaje responde «qué parte»; una cantidad responde «cuántos». Para una campaña que quiere llegar a más personas importa la cantidad; para comparar hábitos, el porcentaje.
 
@@ -453,13 +453,13 @@ Un perfil publicó este gráfico con el mensaje: «¡Los hombres usan internet M
 
 Respuesta:
 
-**El eje vertical empieza en 4,80 y no en cero: una diferencia de unos 9 minutos parece enorme**
+**El eje vertical no empieza en cero, así que una diferencia de unos 9 minutos parece enorme**
 
 > Hombres 4,98 h y mujeres 4,83 h: unos 9 minutos de diferencia. Cortar el eje en barras exagera las diferencias.
 
 ### 3. (15 pts · numero)
 
-Un trino dice: «¡Desde 2022 lo falso se disparó: subió 12 puntos!». Con el gráfico (pasa el cursor por los puntos), ¿cuántos puntos porcentuales subió el % Falso entre 2020, el primer año de la serie, y 2025? (Un decimal.)
+Un trino dice: «¡Desde 2022 lo falso se disparó: subió 12 puntos!». El trino compara desde 2022. Calcula tú la subida en toda la serie: con el gráfico (toca o pasa el cursor por los puntos), ¿cuántos puntos subió el % Falso de 2020 a 2025? (Un decimal.)
 
 Respuesta:
 
@@ -473,7 +473,7 @@ Respuesta:
 
 Respuesta:
 
-**Escogió como punto de partida 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor**
+**Empezó en 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor**
 
 > Elegir a conveniencia el inicio o el final de una serie («cherry picking») es uno de los trucos más usados. Antes de creer una subida, mira la serie completa (y recuerda el Caso 2: parte de ese cambio es de mezcla).
 
@@ -493,7 +493,7 @@ El PROMEDIO es 11,4 chequeos por periodista, pero la mediana es 1. ¿Qué númer
 
 Respuesta:
 
-**La mediana: unos pocos periodistas con más de 100 chequeos (9 personas) inflan el promedio, mientras la mayoría firmó muy pocos**
+**La mediana: unos pocos periodistas con muchísimos chequeos inflan el promedio, y la mayoría firmó muy pocos**
 
 > Cuando unos pocos valores son muy grandes (distribución sesgada), el promedio se va hacia ellos y la mediana describe mejor a la mayoría. Pasa con salarios, likes o seguidores.
 
@@ -517,7 +517,7 @@ Respuesta:
 
 Respuesta:
 
-**Muchas personas compartirían titulares falsos que reconocerían como falsos si se les preguntara por su exactitud**
+**Muchos compartirían titulares falsos que sí reconocerían como falsos si les preguntaran**
 
 > Es la «brecha entre creer y compartir». El tablero de la clase compara cuánto compartieron con cuánto creyeron.
 
@@ -537,7 +537,7 @@ En el estudio (y en nuestra clase) las personas se repartieron AL AZAR entre los
 
 Respuesta:
 
-**Para que los grupos se parezcan en todo lo demás, y así la diferencia se pueda atribuir al recordatorio**
+**Para que los grupos se parezcan en todo lo demás y la diferencia se deba al recordatorio**
 
 > La asignación al azar es lo que permite pasar de «van juntos» (correlación) a «esto causó aquello» (efecto causal) en un experimento.
 
@@ -547,7 +547,7 @@ Respuesta:
 
 Respuesta:
 
-**Que el promedio de las opiniones de muchas personas no expertas distinguía titulares verdaderos de falsos con alta precisión**
+**Que el promedio de muchas opiniones no expertas distinguía bien lo verdadero de lo falso**
 
 > No es «la mayoría tiene razón»: es promediar juicios independientes sobre la exactitud.
 
@@ -569,6 +569,6 @@ Respuesta:
 
 Respuesta:
 
-**El «compartir» fue hipotético y solo usaron titulares sobre COVID-19**
+**El «compartir» fue hipotético y solo se usaron titulares sobre COVID-19**
 
 > Reconocer límites hace más confiable un estudio, no menos.

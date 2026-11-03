@@ -588,7 +588,7 @@
      "tolerancia": 0.3,
      "unidad": "veces",
      "requiere": "c1_hipotesis",
-     "enunciado": "Usa el Gráfico B (pasa el cursor sobre «oct 23», elecciones locales de 2023). En los meses SIN elecciones, en promedio el 4,6 % de los chequeos fue sobre elecciones. ¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)",
+     "enunciado": "Usa el Gráfico B (toca o pasa el cursor sobre «oct 23», elecciones de 2023). En los meses SIN elecciones, en promedio el 4,6 % de los chequeos fue sobre elecciones. ¿Cuántas VECES mayor fue esa proporción en octubre de 2023? (Un decimal.)",
      "respuesta": 7.47,
      "explicacion": "34,5 % ÷ 4,6 % ≈ 7,5 veces. Comparar proporciones («qué parte del total») permite ver un cambio que el conteo total esconde."
     },
@@ -1053,7 +1053,7 @@
        }
       ]
      },
-     "enunciado": "Simulador: en todo el periodo, el contenido de redes es Falso el 79,4 % de las veces y el discurso público el 40,7 % (Gráfico A). Mueve el deslizador: ¿qué porcentaje de discurso público tendría que haber en la mezcla para que el % Falso TOTAL fuera exactamente 75 %? (Un decimal; también lo puedes despejar.)",
+     "enunciado": "Simulador: en redes, lo «Falso» es el 79,4 %; en discurso público, el 40,7 % (Gráfico A). ¿Qué porcentaje de discurso público debe tener la mezcla para que el total «Falso» sea 75 %? Usa el deslizador o despéjalo. (Un decimal.)",
      "respuesta": 11.48,
      "explicacion": "Total = 79,4 × (1 − p) + 40,7 × p = 75 → p = (79,4 − 75) ÷ (79,4 − 40,7) ≈ 11,5 %. Ninguno de los dos grupos cambió: solo la mezcla. En 2022 el discurso público era el 12,6 % de los chequeos."
     },
@@ -1115,19 +1115,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Porque en 2022 una parte de los chequeos era discurso público, que rara vez es «Falso», y jalaba el promedio total hacia abajo; en 2025 casi todo era contenido de redes"
+       "texto": "Porque en 2022 se verificaba más discurso público, que rara vez es «Falso» y bajaba el total; en 2025 casi todo era de redes"
       },
       {
        "id": "b",
-       "texto": "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre se acerca al de redes"
+       "texto": "Porque en 2025 se publicaron más chequeos que en 2022, y con más datos el total siempre termina acercándose al de redes"
       },
       {
        "id": "c",
-       "texto": "Porque el % de redes se calcula sobre todos los chequeos del año, así que en 2025 los dos números son el mismo cálculo"
+       "texto": "Porque desde 2023 Colombiacheck califica igual el discurso público y las redes, y por eso sus porcentajes se igualaron"
       },
       {
        "id": "d",
-       "texto": "Porque en 2022 hubo errores de calificación que Colombiacheck corrigió en los años siguientes"
+       "texto": "Porque en 2022 hubo errores de calificación que Colombiacheck corrigió después, y eso terminó igualando las cifras"
       }
      ],
      "respuesta": "a",
@@ -1809,11 +1809,11 @@
     {
      "id": "c4_ponderado",
      "tipo": "opcion",
-     "enunciado": "Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet 3,28 horas al día, y nadie más cambia sus hábitos. ¿Qué pasa con el promedio nacional de horas?",
+     "enunciado": "Imagina que mañana se conecta un millón de usuarios rurales nuevos que usan internet 3,28 horas al día (menos que el promedio nacional de 4,90 horas), y nadie más cambia sus hábitos. ¿Qué pasa con el promedio nacional?",
      "opciones": [
       {
        "id": "a",
-       "texto": "Baja un poco, aunque ninguna persona haya cambiado sus hábitos"
+       "texto": "Baja un poco, aunque ninguna persona haya cambiado sus hábitos de uso de internet"
       },
       {
        "id": "b",
@@ -2369,19 +2369,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Confunde dos probabilidades: que lo de IA sea casi siempre falso (98 %) no significa que lo falso sea casi siempre IA (5,4 %)"
+       "texto": "Confunde dos probabilidades: que lo de IA sea casi siempre falso no implica que lo falso sea casi siempre IA"
       },
       {
        "id": "b",
-       "texto": "Ninguno: si el 98 % de lo de IA es falso, entonces casi todo lo falso tiene que ser de IA"
+       "texto": "Ninguno: si el 98 % de lo que trata de IA es falso, entonces casi todo lo falso que circula tiene que venir de la IA"
       },
       {
        "id": "c",
-       "texto": "Su único error es redondear 98,4 % a 98 %"
+       "texto": "Su error es redondear: el dato exacto es 98,4 %, y con esa cifra la conclusión cambiaría por completo"
       },
       {
        "id": "d",
-       "texto": "El error es usar porcentajes: con conteos la conclusión sí sería correcta"
+       "texto": "Usa porcentajes: si hubiera trabajado con conteos de chequeos, su conclusión sí habría sido correcta"
       }
      ],
      "respuesta": "a",
@@ -2567,7 +2567,7 @@
      "tipo": "clasificar",
      "estilo": "expediente",
      "puntos": 30,
-     "enunciado": "Usa el Gráfico A (cada barra horizontal es el intervalo de confianza del 95 %). En cada pareja, ¿en cuál de los dos departamentos se usa internet más horas al día? Si los intervalos se cruzan, no se puede asegurar.",
+     "enunciado": "Gráfico A: cada barra es un intervalo de confianza del 95 %. En cada pareja, ¿dónde se usa internet más horas al día? Si las barras se cruzan, no se puede asegurar.",
      "categorias": [
       {
        "id": "P",
@@ -2625,19 +2625,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Porque allí la estimación es menos precisa: se encuesta a menos hogares y las respuestas varían más, así que hay más incertidumbre"
+       "texto": "Porque allí se encuestó a menos hogares y sus respuestas varían más, así que la estimación es menos precisa"
       },
       {
        "id": "b",
-       "texto": "Porque en Vaupés y Guainía la gente usa internet más horas que en Bogotá"
+       "texto": "Porque en Vaupés y Guainía la gente usa internet más horas, y un promedio más alto da un intervalo más ancho"
       },
       {
        "id": "c",
-       "texto": "Porque el DANE se equivocó al hacer la encuesta en esos departamentos"
+       "texto": "Porque el DANE cometió errores al aplicar la encuesta en esos departamentos y el intervalo los compensa"
       },
       {
        "id": "d",
-       "texto": "Porque son departamentos más grandes en territorio, y eso agranda el intervalo"
+       "texto": "Porque son departamentos más grandes en territorio, y a más kilómetros cuadrados el intervalo se agranda"
       }
      ],
      "respuesta": "a",
@@ -2648,7 +2648,7 @@
      "id": "c6_ordenar",
      "tipo": "ordenar",
      "puntos": 25,
-     "enunciado": "Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. Necesitas combinar los Gráficos B y C (cantidad = % × usuarios).",
+     "enunciado": "Ordena de MÁS a MENOS según el NÚMERO de personas que usan internet todos los días. Para cada departamento, multiplica su % de uso diario (Gráfico B) por su número de usuarios (Gráfico C).",
      "items": [
       {
        "id": "d0",
@@ -2687,19 +2687,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Porque el porcentaje se calcula sobre poblaciones de tamaño muy distinto: el mismo % de una base más grande da muchas más personas"
+       "texto": "Porque Bogotá tiene muchos más usuarios: el mismo porcentaje de una población mayor da muchas más personas"
       },
       {
        "id": "b",
-       "texto": "Porque en Bogotá cada persona se conecta más veces al día"
+       "texto": "Porque en Bogotá cada persona se conecta más veces al día, y el gráfico cuenta cada una de esas conexiones por separado"
       },
       {
        "id": "c",
-       "texto": "Porque los porcentajes de Meta están mal calculados"
+       "texto": "Porque los porcentajes de Meta están mal calculados y en realidad allí se conecta mucha menos gente"
       },
       {
        "id": "d",
-       "texto": "Porque Bogotá tiene un porcentaje mucho más alto que Meta"
+       "texto": "Porque Bogotá tiene un porcentaje de uso diario mucho más alto, aunque en el gráfico se vean parecidos"
       }
      ],
      "respuesta": "a",
@@ -2923,19 +2923,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "El eje vertical empieza en 4,80 y no en cero: una diferencia de unos 9 minutos parece enorme"
+       "texto": "El eje vertical no empieza en cero, así que una diferencia de unos 9 minutos parece enorme"
       },
       {
        "id": "b",
-       "texto": "Nada: la diferencia de verdad es enorme"
+       "texto": "Nada: los hombres usan internet bastante más, y el gráfico solo lo muestra con claridad"
       },
       {
        "id": "c",
-       "texto": "Los colores de las barras están invertidos"
+       "texto": "Los colores están invertidos: la barra de las mujeres debería ser la más alta del gráfico"
       },
       {
        "id": "d",
-       "texto": "Debería ser un gráfico de líneas porque son dos grupos"
+       "texto": "Debería ser un gráfico de líneas, porque compara dos grupos de personas y no dos categorías"
       }
      ],
      "respuesta": "a",
@@ -3006,7 +3006,7 @@
       "y_min": 0,
       "y_max": 100
      },
-     "enunciado": "Un trino dice: «¡Desde 2022 lo falso se disparó: subió 12 puntos!». Con el gráfico (pasa el cursor por los puntos), ¿cuántos puntos porcentuales subió el % Falso entre 2020, el primer año de la serie, y 2025? (Un decimal.)",
+     "enunciado": "Un trino dice: «¡Desde 2022 lo falso se disparó: subió 12 puntos!». El trino compara desde 2022. Calcula tú la subida en toda la serie: con el gráfico (toca o pasa el cursor por los puntos), ¿cuántos puntos subió el % Falso de 2020 a 2025? (Un decimal.)",
      "respuesta": 4.61,
      "explicacion": "82,5 − 77,9 = 4,6 puntos, no 11,9."
     },
@@ -3017,15 +3017,15 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Escogió como punto de partida 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor"
+       "texto": "Empezó en 2022, el año más bajo de la serie, para que la subida pareciera mucho mayor"
       },
       {
        "id": "b",
-       "texto": "Usó porcentajes en vez de conteos, y los porcentajes siempre exageran los cambios"
+       "texto": "Usó porcentajes en vez de conteos, y los porcentajes siempre exageran cualquier cambio"
       },
       {
        "id": "c",
-       "texto": "Comparó un año incompleto con uno completo"
+       "texto": "Comparó un año incompleto con uno completo, y eso infla la diferencia entre los dos"
       },
       {
        "id": "d",
@@ -3083,19 +3083,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "La mediana: unos pocos periodistas con más de 100 chequeos (9 personas) inflan el promedio, mientras la mayoría firmó muy pocos"
+       "texto": "La mediana: unos pocos periodistas con muchísimos chequeos inflan el promedio, y la mayoría firmó muy pocos"
       },
       {
        "id": "b",
-       "texto": "El promedio, porque usa todos los datos y por eso siempre es el mejor resumen"
+       "texto": "El promedio: usa todos los datos, incluidos los periodistas más activos, y por eso resume mejor al grupo"
       },
       {
        "id": "c",
-       "texto": "Los dos por igual, porque siempre dan casi el mismo resultado"
+       "texto": "Los dos por igual: con 261 periodistas, el promedio y la mediana terminan contando lo mismo"
       },
       {
        "id": "d",
-       "texto": "Ninguno: con tantos periodistas no se puede resumir"
+       "texto": "Ninguno: cuando los datos son tan desiguales, ningún número sirve para describir al típico"
       }
      ],
      "respuesta": "a",
@@ -3130,19 +3130,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Muchas personas compartirían titulares falsos que reconocerían como falsos si se les preguntara por su exactitud"
+       "texto": "Muchos compartirían titulares falsos que sí reconocerían como falsos si les preguntaran"
       },
       {
        "id": "b",
-       "texto": "La gente solo comparte lo que cree que es verdad"
+       "texto": "La gente solo comparte lo que cree que es verdad, así que creer y compartir van siempre juntos"
       },
       {
        "id": "c",
-       "texto": "Nadie dijo que compartiría titulares falsos"
+       "texto": "Casi nadie dijo que compartiría titulares falsos cuando se le preguntó directamente"
       },
       {
        "id": "d",
-       "texto": "Quienes más comparten son siempre quienes menos saben"
+       "texto": "Quienes más comparten noticias son siempre quienes menos saben distinguir lo falso"
       }
      ],
      "respuesta": "a",
@@ -3160,15 +3160,15 @@
       },
       {
        "id": "b",
-       "texto": "Más efectivos: los consejos. Más útil según la gente: el recordatorio"
+       "texto": "Más efectivos: los consejos. Más útil según la gente: el recordatorio de exactitud"
       },
       {
        "id": "c",
-       "texto": "Ninguna de las dos funcionó"
+       "texto": "Ninguna de las dos redujo lo que se compartiría, y a nadie le parecieron útiles"
       },
       {
        "id": "d",
-       "texto": "Las dos fueron igual de efectivas y les parecieron igual de útiles"
+       "texto": "Las dos fueron igual de efectivas, y a la gente le parecieron igual de útiles"
       }
      ],
      "respuesta": "a",
@@ -3182,19 +3182,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Para que los grupos se parezcan en todo lo demás, y así la diferencia se pueda atribuir al recordatorio"
+       "texto": "Para que los grupos se parezcan en todo lo demás y la diferencia se deba al recordatorio"
       },
       {
        "id": "b",
-       "texto": "Para que los resultados salgan más altos"
+       "texto": "Para que los resultados del grupo con recordatorio salgan más altos que los del otro grupo"
       },
       {
        "id": "c",
-       "texto": "Para no tener que contar cuántas personas hay en cada grupo"
+       "texto": "Para no tener que contar cuántas personas quedan en cada grupo al final del estudio"
       },
       {
        "id": "d",
-       "texto": "Para que cada persona pueda escoger el grupo que prefiera"
+       "texto": "Para que cada persona pueda escoger el grupo en el que se siente más cómoda"
       }
      ],
      "respuesta": "a",
@@ -3208,19 +3208,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "Que el promedio de las opiniones de muchas personas no expertas distinguía titulares verdaderos de falsos con alta precisión"
+       "texto": "Que el promedio de muchas opiniones no expertas distinguía bien lo verdadero de lo falso"
       },
       {
        "id": "b",
-       "texto": "Que lo que comparte la mayoría siempre es verdad"
+       "texto": "Que lo que comparte la mayoría de la gente en redes siempre termina siendo verdad"
       },
       {
        "id": "c",
-       "texto": "Que los expertos se equivocan más que la gente común"
+       "texto": "Que los expertos se equivocan más que la gente común al calificar titulares"
       },
       {
        "id": "d",
-       "texto": "Que hay que creer lo que tiene más «me gusta»"
+       "texto": "Que conviene creer en las publicaciones que tienen más «me gusta» y comentarios"
       }
      ],
      "respuesta": "a",
@@ -3272,19 +3272,19 @@
      "opciones": [
       {
        "id": "a",
-       "texto": "El «compartir» fue hipotético y solo usaron titulares sobre COVID-19"
+       "texto": "El «compartir» fue hipotético y solo se usaron titulares sobre COVID-19"
       },
       {
        "id": "b",
-       "texto": "Solo participaron 16 personas"
+       "texto": "Solo participaron 16 personas, demasiado pocas para sacar conclusiones generales"
       },
       {
        "id": "c",
-       "texto": "Solo se hizo en Estados Unidos"
+       "texto": "Solo se hizo en Estados Unidos, así que no aplica a América Latina"
       },
       {
        "id": "d",
-       "texto": "No usaron titulares falsos"
+       "texto": "No usaron titulares falsos, solo verdaderos, para no confundir a nadie"
       }
      ],
      "respuesta": "a",
@@ -3294,5 +3294,5 @@
    ]
   }
  ],
- "version": "18f0f539fc"
+ "version": "542852ee46"
 }
